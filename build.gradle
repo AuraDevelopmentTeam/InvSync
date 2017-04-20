@@ -1,9 +1,11 @@
+import io.franzbecker.gradle.lombok.task.DelombokTask
 import java.util.regex.*
 import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
     id "org.spongepowered.plugin" version "0.8.1"
     id "com.github.johnrengelman.shadow" version "1.2.4"
+    id "io.franzbecker.gradle-lombok" version "1.8"
 }
 
 apply plugin: "java"
@@ -103,6 +105,15 @@ sponge {
     }
 }
 
+lombok {
+    version = "1.16.16"
+    sha256 = "fbf682c7ff113e5187a9c4b4cbd7a8ad782abd8ccff91b9fa7289a4a6aa8c19a"
+}
+
+task delombok(type: DelombokTask) {
+    args("src/main/java", "-d", "build/sources/delomboked/java")
+}
+
 task showVersion {
     description "Displays the current version"
     group "help"
@@ -137,6 +148,7 @@ task gitTag {
         ("git tag -a ${tagVersion} -m \"" + getChangelog() + "\"").execute();
     }
 }
+
 
 processResources {
     // this will ensure that this task is redone when the versions change.

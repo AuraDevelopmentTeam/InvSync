@@ -4,12 +4,14 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
     id "org.spongepowered.plugin" version "0.8.1"
+    id "com.github.johnrengelman.shadow" version "1.2.4"
 }
 
 apply plugin: "java"
 apply plugin: "eclipse"
 apply plugin: "maven"
 apply plugin: "maven-publish"
+apply plugin: "com.github.johnrengelman.shadow"
 
 def getChangelog() {
     Pattern pattern = Pattern.compile("^.+?\n-+\n\n((?:- .+?\n)+)");
@@ -88,6 +90,7 @@ repositories {
 
 dependencies {
     compile "org.spongepowered:spongeapi:${sponge_version}"
+    runtime "mysql:mysql-connector-java:${msql_jdbc_version}"
 }
 
 sponge {
@@ -162,8 +165,24 @@ task processSources (type: Copy) {
 }
 
 jar {
+    classifier = "dev"
+    
     doLast {
         signJar(jar)
+    }
+}
+
+shadowJar {
+    classifier = null
+
+    dependencies {
+        include dependency("mysql:mysql-connector-java")
+    }
+    
+    relocate "com.mysql", "${project.group}.shadow.mysql"
+   
+    doLast {
+        signJar(shadowJar)
     }
 }
 
@@ -179,6 +198,7 @@ task sourceJar (type: Jar, dependsOn: processSources) {
 
 artifacts {
     archives jar
+    archives shadowJar
     archives sourceJar
 }
 

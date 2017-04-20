@@ -1,10 +1,13 @@
-package world.jnc.invsync;
+package world.jnc.invsync.util;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
 
+import lombok.Cleanup;
 import lombok.Getter;
 
 public class MysqlConnection {
@@ -35,6 +38,20 @@ public class MysqlConnection {
 
 			return false;
 		}
+	}
+
+	public Statement getStatement() throws SQLException {
+		if (!isConnectionActive())
+			throw new SQLException("MySQL-connection is not active!");
+
+		return connection.createStatement();
+	}
+
+	public ResultSet executeQuery(String query) throws SQLException {
+		@Cleanup
+		Statement statement = getStatement();
+
+		return statement.executeQuery(query);
 	}
 
 	@Override

@@ -133,7 +133,10 @@ task gitTag {
             tagVersion = "v" + version.split("-")[0]
         }
         
-        ("git tag -a ${tagVersion} -m '" + getChangelog() + "'").execute();
+        exec {
+            executable "git"
+            args "tag", "-a", tagVersion, "-m", getChangelog()
+        }
     }
 }
 

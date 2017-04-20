@@ -11,7 +11,6 @@ apply plugin: "java"
 apply plugin: "eclipse"
 apply plugin: "maven"
 apply plugin: "maven-publish"
-apply plugin: "com.github.johnrengelman.shadow"
 
 def getChangelog() {
     Pattern pattern = Pattern.compile("^.+?\n-+\n\n((?:- .+?\n)+)");
@@ -176,7 +175,7 @@ shadowJar {
     classifier = null
 
     dependencies {
-        include dependency("mysql:mysql-connector-java")
+        exclude dependency("org.spongepowered:spongeapi")
     }
     
     relocate "com.mysql", "${project.group}.shadow.mysql"

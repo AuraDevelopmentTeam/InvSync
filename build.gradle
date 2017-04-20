@@ -165,3 +165,49 @@ artifacts {
     archives sourceJar
 }
 
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            if (project.hasProperty("local_maven")) {
+                repository(url: "file://${local_maven}")
+                pom {
+                    groupId = project.group
+                    version = project.version
+                    artifactId = project.archivesBaseName
+                    project {
+                        name project.archivesBaseName
+                        packaging "jar"
+                        description "This plugin synchronizes the player inventory with a database"
+                        url "https://github.com/BrainStone/InvSync"
+                        scm {
+                            url "https://github.com/BrainStone/InvSync"
+                            connection "scm:git:git@github.com:BrainStone/InvSync.git"
+                            developerConnection "scm:git:git@github.com:BrainStone/InvSync.git"
+                        }
+                        issueManagement {
+                            system "github"
+                            url "https://github.com/BrainStone/InvSync/issues"
+                        }
+                        licenses {
+                            license {
+                                name "License"
+                                url "https://raw.githubusercontent.com/BrainStone/InvSync/master/LICENSE"
+                                distribution "repo"
+                            }
+                        }
+                        developers {
+                            developer {
+                                id "brainstone"
+                                name "The_BrainStone"
+                                roles {
+                                    role "owner"
+                                    role "developer"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

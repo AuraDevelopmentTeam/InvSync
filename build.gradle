@@ -73,7 +73,7 @@ def signJar(archivePath) {
 }
 
 def MainDirResources = fileTree(dir: file("."), includes: ["README.md", "LICENSE", "CHANGELOG.md"])
-group = "jnc.world"
+group = "world.jnc.invsync"
 version = getVersionName()
 
 repositories {
@@ -136,6 +136,14 @@ task gitTag {
     }
 }
 
+processResources {
+    // this will ensure that this task is redone when the versions change.
+    inputs.property "version", project.version
+    inputs.property "sponge_version", project.sponge_version
+
+    from MainDirResources
+}
+
 jar {
     doLast {
         signJar(jar)
@@ -145,6 +153,7 @@ jar {
 task sourceJar (type: Jar, dependsOn: classes) {
     classifier = "sources"
     from sourceSets.main.allSource
+    from MainDirResources
 
     doLast {
         signJar(sourceJar.archivePath)

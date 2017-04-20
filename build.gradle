@@ -167,7 +167,7 @@ jar {
     classifier = "dev"
     
     doLast {
-        signJar(jar)
+        signJar(jar.archivePath)
     }
 }
 
@@ -181,7 +181,7 @@ shadowJar {
     relocate "com.mysql", "${project.group}.shadow.mysql"
    
     doLast {
-        signJar(shadowJar)
+        signJar(shadowJar.archivePath)
     }
 }
 

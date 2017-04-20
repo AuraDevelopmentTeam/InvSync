@@ -135,7 +135,7 @@ task gitTag {
             tagVersion = "v" + version.split("-")[0]
         }
         
-        ("git tag -a ${tagVersion} -m \"" + StringEscapeUtils.escapeJava(getChangelog()) + "\"").execute();
+        ("git tag -a ${tagVersion} -m \"" + getChangelog() + "\"").execute();
     }
 }
 

@@ -1,5 +1,6 @@
 import groovy.json.*
 import java.util.regex.*
+import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
     id "org.spongepowered.plugin" version "0.8.1"
@@ -144,15 +145,31 @@ processResources {
     from MainDirResources
 }
 
+task processSources (type: Copy) {
+    inputs.property "version", project.version
+    inputs.property "sponge_version", project.sponge_version
+    
+    from "src/main/java"
+    into "$buildDir/generated-src"
+    filter (ReplaceTokens, tokens: [
+        "version": sponge.plugin.meta.version,
+        "id": sponge.plugin.id,
+        "name": sponge.plugin.meta.name
+    ])
+    
+    compileJava.source = processSources.outputs.files
+    compileJava.dependsOn processSources
+}
+
 jar {
     doLast {
         signJar(jar)
     }
 }
 
-task sourceJar (type: Jar, dependsOn: classes) {
+task sourceJar (type: Jar, dependsOn: processSources) {
     classifier = "sources"
-    from sourceSets.main.allSource
+    from processSources.outputs
     from MainDirResources
 
     doLast {

@@ -89,7 +89,7 @@ repositories {
 
 dependencies {
     compile "org.spongepowered:spongeapi:${sponge_version}"
-    runtime "mysql:mysql-connector-java:${msql_jdbc_version}"
+    compile "mysql:mysql-connector-java:${msql_jdbc_version}"
 }
 
 sponge {
@@ -175,7 +175,7 @@ shadowJar {
     classifier = null
 
     dependencies {
-        exclude dependency("org.spongepowered:spongeapi")
+        include dependency("mysql:mysql-connector-java")
     }
     
     relocate "com.mysql", "${project.group}.shadow.mysql"

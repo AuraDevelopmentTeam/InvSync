@@ -49,8 +49,6 @@ def getVersionName() {
                 version += "-" + tmp[3];
         }
         
-        version = "${minecraft_version}-${version}";
-        
         if (mod_version_postfix.isEmpty())
             return version;
         else

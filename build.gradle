@@ -93,18 +93,6 @@ dependencies {
     compile "mysql:mysql-connector-java:${msql_jdbc_version}"
 }
 
-sponge {
-    plugin {
-        id = "invsync"
-        
-        meta {
-            name = "Inventory Sync"
-            version = getVersionName()
-            description = "This plugin synchronizes the player inventory with a database"
-        }
-    }
-}
-
 lombok {
     version = "1.16.16"
     sha256 = "fbf682c7ff113e5187a9c4b4cbd7a8ad782abd8ccff91b9fa7289a4a6aa8c19a"
@@ -158,16 +146,14 @@ processResources {
     from MainDirResources
 }
 
-task processSources (type: Copy) {
+task processSources (type: Sync) {
     inputs.property "version", project.version
     inputs.property "sponge_version", project.sponge_version
     
     from "src/main/java"
     into "$buildDir/generated-src"
     filter (ReplaceTokens, tokens: [
-        "version": sponge.plugin.meta.version,
-        "id": sponge.plugin.id,
-        "name": sponge.plugin.meta.name
+        "version": version
     ])
     
     compileJava.source = processSources.outputs.files

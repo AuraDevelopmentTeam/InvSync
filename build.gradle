@@ -1,3 +1,4 @@
+import groovy.json.*
 import java.util.regex.*
 
 plugins {
@@ -56,7 +57,7 @@ def getVersionName() {
             return version.replaceFirst("(.+?-[^\\-]+)(-)?", "\$1-${mod_version_postfix}\$2");
     } catch(Exception e) {
         println e
-        return "UNKNOW-VERSION"
+        return "UNKNOWN-VERSION"
     }
 }
 def signJar(archivePath) {
@@ -130,10 +131,10 @@ task gitTag {
         if ( project.hasProperty("tagVersion") ) {
             tagVersion = project.tagVersion
         } else {
-            tagVersion = "v" + version.split("-")[1]
+            tagVersion = "v" + version.split("-")[0]
         }
         
-        "git tag -a ${tagVersion} -m \"" + StringEscapeUtils.escapeJava(getChangelog()) + "\"".execute();
+        ("git tag -a ${tagVersion} -m \"" + StringEscapeUtils.escapeJava(getChangelog()) + "\"").execute();
     }
 }
 

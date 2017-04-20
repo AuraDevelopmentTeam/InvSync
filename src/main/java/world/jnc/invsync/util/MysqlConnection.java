@@ -57,8 +57,9 @@ public class MysqlConnection {
 	@Override
 	protected void finalize() throws Throwable {
 		try {
-			if ((connection != null) && !connection.isClosed())
+			if ((connection != null) && !connection.isClosed()) {
 				connection.close();
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

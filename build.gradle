@@ -49,10 +49,10 @@ def getVersionName() {
                 version += "-" + tmp[3];
         }
         
-        if (mod_version_postfix.isEmpty())
+        if (plugin_version_postfix.isEmpty())
             return version;
         else
-            return version.replaceFirst("(.+?-[^\\-]+)(-)?", "\$1-${mod_version_postfix}\$2");
+            return version.replaceFirst("(.+?-[^\\-]+)(-)?", "\$1-${plugin_version_postfix}\$2");
     } catch(Exception e) {
         println e
         return "UNKNOWN-VERSION"

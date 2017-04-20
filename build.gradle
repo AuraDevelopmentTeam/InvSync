@@ -1,0 +1,159 @@
+import java.util.regex.*
+
+plugins {
+    id "org.spongepowered.plugin" version "0.8.1"
+}
+
+apply plugin: "java"
+apply plugin: "eclipse"
+apply plugin: "maven"
+apply plugin: "maven-publish"
+
+def getChangelog() {
+    Pattern pattern = Pattern.compile("^.+?\n-+\n\n((?:- .+?\n)+)");
+    Matcher match = pattern.matcher(file("CHANGELOG.md").text.replaceAll("\r", ""));
+    
+    if (match.find()) {
+        String res = match.group(1);
+    
+        return res.substring(0, res.length() - 1);
+    } else {
+        return "";
+    }
+}
+def getVersionType() {
+    def lower_version = version.toLowerCase();
+    
+    if (lower_version.contains("beta") || lower_version.contains("rc"))
+        return "beta";
+    else if (lower_version.contains("alpha"))
+        return "alpha";
+    else
+        return "release";
+}
+def getVersionName() {
+    try {
+        def version;
+        def tmp = "git describe --tags --dirty=-SNAPSHOT".execute().text.trim().substring(1).split("-");
+        
+        if (tmp.length <= 2) {
+            version = tmp.join("-");
+        } else {
+            def versions = tmp[0].split("\\.");
+            versions[2] = String.valueOf(versions[2].toInteger() + tmp[1].toInteger());
+            
+            version = versions.join(".");
+            
+            if (tmp.length == 4)
+                version += "-" + tmp[3];
+        }
+        
+        version = "${minecraft_version}-${version}";
+        
+        if (mod_version_postfix.isEmpty())
+            return version;
+        else
+            return version.replaceFirst("(.+?-[^\\-]+)(-)?", "\$1-${mod_version_postfix}\$2");
+    } catch(Exception e) {
+        println e
+        return "UNKNOW-VERSION"
+    }
+}
+def signJar(archivePath) {
+    if (project.hasProperty("keyStoreAlias") && project.hasProperty("keyStore") && project.hasProperty("keyStorePass")) {
+        ant.signjar(
+            jar:                  archivePath,
+            alias:                project.keyStoreAlias,
+            keystore:             project.keyStore,
+            storepass:            project.keyStorePass,
+            preservelastmodified: true
+        )
+    } else {
+        println "WARNING!!!\tCannot sign jar!"
+    }
+}
+
+def MainDirResources = fileTree(dir: file("."), includes: ["README.md", "LICENSE", "CHANGELOG.md"])
+group = "jnc.world"
+version = getVersionName()
+
+repositories {
+    jcenter()
+    mavenCentral()
+    maven {
+        name = "sponge"
+        url = "https://repo.spongepowered.org/maven"
+    }
+}
+
+dependencies {
+    compile "org.spongepowered:spongeapi:${sponge_version}"
+}
+
+sponge {
+    plugin {
+        id = "invsync"
+        
+        meta {
+            name = "Inventory Sync"
+            version = getVersionName()
+            description = "This plugin synchronizes the player inventory with a database"
+        }
+    }
+}
+
+task showVersion {
+    description "Displays the current version"
+    group "help"
+    
+    generateMetadata.dependsOn showVersion
+  
+    doLast {
+        println version
+        
+        def versionFile = new File(buildDir, '.version');
+    
+        versionFile.getParentFile().mkdirs();
+        versionFile.text = version;
+    }
+    
+    outputs.upToDateWhen { false }
+}
+
+task gitTag {
+    description "Tags the current version in git. Specify the version by passing \"-PtagVersion=version\""
+    group "help"
+    
+    doLast {
+        def tagVersion
+    
+        if ( project.hasProperty("tagVersion") ) {
+            tagVersion = project.tagVersion
+        } else {
+            tagVersion = "v" + version.split("-")[1]
+        }
+        
+        "git tag -a ${tagVersion} -m \"" + StringEscapeUtils.escapeJava(getChangelog()) + "\"".execute();
+    }
+}
+
+jar {
+    doLast {
+        signJar(jar)
+    }
+}
+
+task sourceJar (type: Jar, dependsOn: classes) {
+    classifier = "sources"
+    from sourceSets.main.allSource
+
+    doLast {
+        signJar(sourceJar.archivePath)
+    }
+}
+
+artifacts {
+    archives jar
+    archives sourceJar
+}
+

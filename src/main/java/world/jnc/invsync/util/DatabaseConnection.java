@@ -19,6 +19,9 @@ import lombok.Getter;
 public class DatabaseConnection {
 	public static final int DEFAULT_MYSQL_PORT = 3306;
 	protected static SqlService sql;
+	
+	@Getter
+	protected Connection connection;
 
 	protected static DataSource getDataSource(String jdbcUrl) throws SQLException {
 		if (sql == null) {
@@ -38,9 +41,6 @@ public class DatabaseConnection {
 			return null;
 		}
 	}
-	
-	@Getter
-	protected Connection connection;
 
 	/**
 	 * Opens a MySQL database connection.

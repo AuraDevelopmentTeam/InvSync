@@ -7,8 +7,8 @@ This plugin synchronizes the player inventory with a database
 
 ## [Issue Reporting](https://github.com/BrainStone/InvSync/issues)
 
-If you found a bug or even are experiencing a crash please report it so we can fix it. Please check at first if a bug report for the issue already [exits]
-(https://github.com/BrainStone/InvSync/issues). If not just create a [new issue](https://github.com/BrainStone/InvSync/issues/new) and fill out the form.
+If you found a bug or even are experiencing a crash please report it so we can fix it. Please check at first if a bug report for the issue already
+[exits](https://github.com/BrainStone/InvSync/issues). If not just create a [new issue](https://github.com/BrainStone/InvSync/issues/new) and fill out the form.
 
 Please include the following:
 

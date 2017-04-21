@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.zip.DataFormatException;
 
+import org.spongepowered.api.data.persistence.DataTranslator;
 import org.spongepowered.api.data.persistence.DataTranslators;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -27,6 +28,8 @@ import world.jnc.invsync.InventorySync;
 
 @UtilityClass
 public class InventorySerializer {
+	private static final DataTranslator<ConfigurationNode> CONFIGURATION_NODE = DataTranslators.CONFIGURATION_NODE;
+
 	public static byte[] serializeInventory(Inventory inventory) throws IOException, DataFormatException {
 		@Cleanup
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -94,7 +97,7 @@ public class InventorySerializer {
 			StringWriter sink = new StringWriter();
 			GsonConfigurationLoader loader = GsonConfigurationLoader.builder().setSink(() -> new BufferedWriter(sink))
 					.setIndent(0).build();
-			ConfigurationNode node = DataTranslators.CONFIGURATION_NODE.translate(item.toContainer());
+			ConfigurationNode node = CONFIGURATION_NODE.translate(item.toContainer());
 			loader.save(node);
 			return Optional.of(sink.toString());
 		} catch (Exception e) {
@@ -109,8 +112,8 @@ public class InventorySerializer {
 			GsonConfigurationLoader loader = GsonConfigurationLoader.builder()
 					.setSource(() -> new BufferedReader(source)).build();
 			ConfigurationNode node = loader.load();
-			return Optional
-					.of(ItemStack.builder().fromContainer(DataTranslators.CONFIGURATION_NODE.translate(node)).build());
+			// TODO Fix Enchantments and stuff!
+			return Optional.of(ItemStack.builder().fromContainer(CONFIGURATION_NODE.translate(node)).build());
 		} catch (Exception e) {
 			e.printStackTrace();
 			return Optional.empty();

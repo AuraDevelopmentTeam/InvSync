@@ -15,6 +15,7 @@ import world.jnc.invsync.InventorySync;
 @UtilityClass
 public class CompressionUtils {
 	private static final Logger logger = InventorySync.getLogger();
+	private static final int MAX_COMPRESSION_LEVEL = 9;
 
 	public static byte[] compress(byte[] data) throws IOException {
 		Deflater deflater = new Deflater();
@@ -22,6 +23,7 @@ public class CompressionUtils {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
 		byte[] buffer = new byte[1024];
 
+		deflater.setLevel(MAX_COMPRESSION_LEVEL);
 		deflater.setInput(data);
 		deflater.finish();
 

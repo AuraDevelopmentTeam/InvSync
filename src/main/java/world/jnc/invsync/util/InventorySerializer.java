@@ -13,6 +13,7 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.zip.DataFormatException;
 
 import org.spongepowered.api.data.persistence.DataTranslators;
 import org.spongepowered.api.item.inventory.Inventory;
@@ -26,7 +27,7 @@ import world.jnc.invsync.InventorySync;
 
 @UtilityClass
 public class InventorySerializer {
-	public static byte[] serializeInventory(Inventory inventory) throws IOException {
+	public static byte[] serializeInventory(Inventory inventory) throws IOException, DataFormatException {
 		@Cleanup
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		@Cleanup
@@ -52,13 +53,13 @@ public class InventorySerializer {
 
 		objOut.close();
 
-		return out.toByteArray();
+		return CompressionUtils.compress(out.toByteArray());
 	}
 
 	public static void deserializeInventory(byte[] data, Inventory inventory)
-			throws IOException, ClassNotFoundException {
+			throws IOException, ClassNotFoundException, DataFormatException {
 		@Cleanup
-		ObjectInputStream objIn = new ObjectInputStream(new ByteArrayInputStream(data));
+		ObjectInputStream objIn = new ObjectInputStream(new ByteArrayInputStream(CompressionUtils.decompress(data)));
 
 		Map<Integer, ItemStack> stacks = new HashMap<>();
 		int i;

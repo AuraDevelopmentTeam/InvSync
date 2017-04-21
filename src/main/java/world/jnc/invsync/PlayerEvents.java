@@ -1,6 +1,7 @@
 package world.jnc.invsync;
 
 import java.io.IOException;
+import java.util.zip.DataFormatException;
 
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -12,7 +13,8 @@ import world.jnc.invsync.util.InventorySerializer;
 
 public class PlayerEvents {
 	@Listener
-	public void onPlayerJoin(ClientConnectionEvent.Join event) throws IOException, ClassNotFoundException {
+	public void onPlayerJoin(ClientConnectionEvent.Join event)
+			throws IOException, ClassNotFoundException, DataFormatException {
 		@NonNull
 		Player player = event.getTargetEntity();
 		@NonNull

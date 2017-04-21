@@ -1,0 +1,2 @@
+# InvSync
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/09e53d10121c46d693e2cb251fd12bf0)](https://www.codacy.com/app/BrainStone/InvSync?utm_source=github.com&utm_medium=referral&utm_content=BrainStone/InvSync&utm_campaign=badger)

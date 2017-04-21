@@ -10,7 +10,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.Iterator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import org.spongepowered.api.data.persistence.DataTranslators;
@@ -59,29 +60,31 @@ public class InventorySerializer {
 		@Cleanup
 		ObjectInputStream objIn = new ObjectInputStream(new ByteArrayInputStream(data));
 
-		int i = 0;
-		int nextIndex;
-		ItemStack nextStack;
-		Iterator<Inventory> slotIt = inventory.slots().iterator();
-		Inventory slot = slotIt.next();
+		Map<Integer, ItemStack> stacks = new HashMap<>();
+		int i;
+		ItemStack stack;
 
 		while (true) {
 			try {
-				nextIndex = objIn.readInt();
+				i = objIn.readInt();
+				stack = deserializeItemStack((String) objIn.readObject()).get();
+
+				stacks.put(i, stack);
 			} catch (EOFException e) {
 				break;
 			}
+		}
 
-			nextStack = deserializeItemStack((String) objIn.readObject()).get();
+		i = 0;
 
-			while (i != nextIndex) {
+		for (Inventory slot : inventory.slots()) {
+			if (stacks.containsKey(i)) {
+				slot.set(stacks.get(i));
+			} else {
 				slot.clear();
-
-				slot = slotIt.next();
-				++i;
 			}
 
-			slot.set(nextStack);
+			++i;
 		}
 	}
 

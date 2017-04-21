@@ -32,6 +32,6 @@ public class PlayerEvents {
 
 	@Listener
 	public void onPlayerLeave(ClientConnectionEvent.Disconnect event) {
-		;
+		// TODO
 	}
 }

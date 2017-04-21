@@ -4,7 +4,6 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
     id "org.spongepowered.plugin" version "0.8.1"
-    id "com.github.johnrengelman.shadow" version "1.2.4"
     id "io.franzbecker.gradle-lombok" version "1.8"
 }
 
@@ -90,7 +89,6 @@ repositories {
 
 dependencies {
     compile "org.spongepowered:spongeapi:${sponge_version}"
-    compile "mysql:mysql-connector-java:${msql_jdbc_version}"
 }
 
 lombok {
@@ -164,27 +162,8 @@ task processSources (type: Sync) {
 }
 
 jar {
-    classifier = "dev"
-    
     doLast {
         signJar(jar.archivePath)
-    }
-}
-
-shadowJar {
-    classifier = null
-
-    dependencies {
-        include dependency("mysql:mysql-connector-java")
-    }
-    
-    relocate ("com.mysql", "${project.group}.shadow.mysql") {
-        // Bug in relocate!
-        exclude "com.mysql.cj.jdbc.Driver"
-    }
-   
-    doLast {
-        signJar(shadowJar.archivePath)
     }
 }
 
@@ -200,7 +179,6 @@ task sourceJar (type: Jar, dependsOn: processSources) {
 
 artifacts {
     archives jar
-    archives shadowJar
     archives sourceJar
 }
 

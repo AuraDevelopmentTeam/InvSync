@@ -83,6 +83,8 @@ public class InventorySync {
 
 	@Listener
 	public void reload(GameReloadEvent event) {
-		// Do reload stuff
+		config.load();
+		
+		// TODO update more stuff
 	}
 }

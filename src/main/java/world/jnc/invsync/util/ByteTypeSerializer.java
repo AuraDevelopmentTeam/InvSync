@@ -17,7 +17,7 @@ public class ByteTypeSerializer implements TypeSerializer<Byte> {
 
 	@Override
 	public Byte deserialize(TypeToken<?> type, ConfigurationNode value) throws ObjectMappingException {
-		if (!type.equals(byteToken))
+		if (!byteToken.equals(type))
 			throw new ObjectMappingException();
 
 		return (byte) value.getInt();
@@ -25,7 +25,7 @@ public class ByteTypeSerializer implements TypeSerializer<Byte> {
 
 	@Override
 	public void serialize(TypeToken<?> type, Byte obj, ConfigurationNode value) throws ObjectMappingException {
-		if (!type.equals(byteToken))
+		if (!byteToken.equals(type))
 			throw new ObjectMappingException();
 
 		value.setValue(integerToken, (int) obj);

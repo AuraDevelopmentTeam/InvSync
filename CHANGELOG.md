@@ -11,7 +11,7 @@
 
 - Added MySQL driver
 - Fixed signing
-- Added Lombox to project
+- Added Lombok to project
 - Added basic functionality
 - Added MySQL connection handler/wrapper
 

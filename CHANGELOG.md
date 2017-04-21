@@ -1,3 +1,11 @@
+0.2.0-alpha
+-----------
+
+- Removed MySQL driver (sponge alerady has it implemented)
+- Added inventory serialization and deserialization (Not working 100%)
+- Added README
+- Compressing serialized data to safe space
+
 0.1.0-alpha
 -----------
 

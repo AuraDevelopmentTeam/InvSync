@@ -1,21 +1,28 @@
 package world.jnc.invsync.util;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.Optional;
 
-import org.spongepowered.api.data.DataQuery;
-import org.spongepowered.api.data.MemoryDataContainer;
+import org.spongepowered.api.data.persistence.DataFormats;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 
+import com.google.common.reflect.TypeToken;
+
 import lombok.Cleanup;
 import lombok.experimental.UtilityClass;
+import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.gson.GsonConfigurationLoader;
 import world.jnc.invsync.InventorySync;
 
 @UtilityClass
@@ -35,7 +42,7 @@ public class InventorySerializer {
 			if (stack.isPresent()) {
 				try {
 					objOut.writeInt(i);
-					writeItemStack(stack.get(), objOut);
+					objOut.writeObject(serializeItemStack(stack.get()).get());
 				} catch (IOException e) {
 					InventorySync.getLogger().error("Error while serializing inventory", e);
 				}
@@ -67,7 +74,7 @@ public class InventorySerializer {
 				break;
 			}
 
-			nextStack = getNextItemStack(objIn);
+			nextStack = deserializeItemStack((String) objIn.readObject()).get();
 
 			while (i != nextIndex) {
 				slot.clear();
@@ -80,19 +87,46 @@ public class InventorySerializer {
 		}
 	}
 
-	private static void writeItemStack(ItemStack stack, ObjectOutputStream objOut) throws IOException {
-		objOut.writeObject(stack.toContainer().toString());
+	private static Optional<String> serializeItemStack(ItemStack item) {
+		// try {
+		// ConfigurationNode configNode = SimpleConfigurationNode.root();
+		//
+		// configNode.getNode("myItem").setValue(TypeToken.of(ItemStack.class),
+		// item);
+		//
+		// return Optional.of(configNode.toString());
+		// } catch (ObjectMappingException e) {
+		// e.printStackTrace();
+		// return Optional.empty();
+		// }
 
-		for (DataQuery query : stack.toContainer().getKeys(false)) {
-			InventorySync.getLogger().info(query.toString());
-		}
-
-		for (DataQuery query : stack.toContainer().getKeys(true)) {
-			InventorySync.getLogger().info(query.toString());
+		try {
+			StringWriter sink = new StringWriter();
+			GsonConfigurationLoader loader = GsonConfigurationLoader.builder().setSink(() -> new BufferedWriter(sink))
+					.build();
+			ConfigurationNode node = loader.createEmptyNode();
+			node.setValue(TypeToken.of(ItemStack.class), item);
+			loader.save(node);
+			return Optional.of(sink.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Optional.empty();
 		}
 	}
 
-	private static ItemStack getNextItemStack(ObjectInputStream objIn) throws IOException, ClassNotFoundException {
-		return ItemStack.builder().fromContainer((MemoryDataContainer) objIn.readObject()).build();
+	private static Optional<ItemStack> deserializeItemStack(String json) {
+		// ItemStack item =
+		// configNode.getNode("myItem").getValue(TypeToken.of(ItemStack.class));
+
+		try {
+			StringReader source = new StringReader(json);
+			GsonConfigurationLoader loader = GsonConfigurationLoader.builder()
+					.setSource(() -> new BufferedReader(source)).build();
+			ConfigurationNode node = loader.load();
+			return Optional.of(node.getValue(TypeToken.of(ItemStack.class)));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Optional.empty();
+		}
 	}
 }

@@ -63,4 +63,4 @@ are free to verify it.
 Copyright 2017 [Yannick Schinko](https://github.com/BrainStone). All rights reserved
 
 ### License
-TGUI is licensed under the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.html)
+InvSync is licensed under the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.html)

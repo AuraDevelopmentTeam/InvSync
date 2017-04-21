@@ -35,8 +35,8 @@ public class CompressionUtils {
 		outputStream.close();
 		byte[] output = outputStream.toByteArray();
 
-		logger.debug("Original: " + data.length / 1024 + " Kb");
-		logger.debug("Compressed: " + output.length / 1024 + " Kb");
+		logger.debug("Original: " + data.length);
+		logger.debug("Compressed: " + output.length);
 
 		return output;
 	}

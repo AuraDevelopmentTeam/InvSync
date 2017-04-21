@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -99,6 +100,10 @@ public class DatabaseConnection {
 			throw new SQLException("MySQL-connection is not active!");
 
 		return connection.createStatement();
+	}
+	
+	public PreparedStatement getPreparedStatement(String statement) throws SQLException {
+		return connection.prepareStatement(statement);
 	}
 
 	public ResultSet executeQuery(String query) throws SQLException {

@@ -15,12 +15,13 @@ Please include the following:
 * Minecraft version
 * Inventory Sync version
 * Sponge version/build
-* Versions of any mods/plugins potentially related to the issue 
+* Versions of any mods/plugins potentially related to the issue
 * Any relevant screenshots are greatly appreciated.
 * For crashes:
   * Steps to reproduce
   * latest.log (the FML log) from the log folder of the server
- 
+
+*(When creating a new issue please follow the template)*
 
 ## [Feature Requests](https://github.com/BrainStone/InvSync/issues)
 
@@ -40,7 +41,7 @@ So all you have to do to include the mod is add these lines *(in the appropriate
         }
         // Other repos...
     }
-    
+
     dependencies {
         compile "world.jnc.invsync:InvSync:<version>"
         // Other dependencies

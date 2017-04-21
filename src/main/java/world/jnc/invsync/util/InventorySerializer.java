@@ -13,10 +13,9 @@ import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.Optional;
 
+import org.spongepowered.api.data.persistence.DataTranslators;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
-
-import com.google.common.reflect.TypeToken;
 
 import lombok.Cleanup;
 import lombok.experimental.UtilityClass;
@@ -90,9 +89,8 @@ public class InventorySerializer {
 		try {
 			StringWriter sink = new StringWriter();
 			GsonConfigurationLoader loader = GsonConfigurationLoader.builder().setSink(() -> new BufferedWriter(sink))
-					.build();
-			ConfigurationNode node = loader.createEmptyNode();
-			node.setValue(TypeToken.of(ItemStack.class), item);
+					.setIndent(0).build();
+			ConfigurationNode node = DataTranslators.CONFIGURATION_NODE.translate(item.toContainer());
 			loader.save(node);
 			return Optional.of(sink.toString());
 		} catch (Exception e) {
@@ -107,7 +105,8 @@ public class InventorySerializer {
 			GsonConfigurationLoader loader = GsonConfigurationLoader.builder()
 					.setSource(() -> new BufferedReader(source)).build();
 			ConfigurationNode node = loader.load();
-			return Optional.of(node.getValue(TypeToken.of(ItemStack.class)));
+			return Optional
+					.of(ItemStack.builder().fromContainer(DataTranslators.CONFIGURATION_NODE.translate(node)).build());
 		} catch (Exception e) {
 			e.printStackTrace();
 			return Optional.empty();

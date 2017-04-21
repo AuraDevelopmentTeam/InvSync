@@ -25,9 +25,6 @@ public class PlayerEvents {
 		byte[] inventoryBytes = InventorySerializer.serializeInventory(inventory);
 		byte[] enderInventoryBytes = InventorySerializer.serializeInventory(enderInventory);
 
-		InventorySync.getLogger().info(new String(inventoryBytes));
-		InventorySync.getLogger().info(new String(enderInventoryBytes));
-
 		InventorySerializer.deserializeInventory(inventoryBytes, inventory);
 		InventorySerializer.deserializeInventory(enderInventoryBytes, enderInventory);
 	}

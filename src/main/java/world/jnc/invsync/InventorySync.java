@@ -1,7 +1,11 @@
 package world.jnc.invsync;
 
+import java.nio.file.Path;
+
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.config.ConfigDir;
+import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
@@ -27,9 +31,31 @@ public class InventorySync {
 	@Inject
 	@NonNull
 	private Logger logger;
+	@Inject
+	@DefaultConfig(sharedRoot = false)
+	@NonNull
+	private Path configFile;
+	@Inject
+	@ConfigDir(sharedRoot = false)
+	@NonNull
+	private Path configDir;
+	@NonNull
+	private Config config;
 
 	public static Logger getLogger() {
 		return instance.logger;
+	}
+
+	public static Path getConfigFile() {
+		return instance.configFile;
+	}
+
+	public static Path getConfigDir() {
+		return instance.configDir;
+	}
+
+	public static Config getConfig() {
+		return instance.config;
 	}
 
 	@Listener
@@ -39,12 +65,18 @@ public class InventorySync {
 
 	@Listener
 	public void init(GameInitializationEvent event) {
+		logger.info("Initializing " + NAME + " Version " + VERSION);
+
 		if (VERSION.contains("SNAPSHOT")) {
 			logger.warn("WARNING! This is a snapshot version!");
 			logger.warn("Use at your own risk!");
 		}
 
+		config = new Config(configFile, configDir);
+		config.load();
+		
 		Sponge.getEventManager().registerListeners(this, new PlayerEvents());
+		logger.debug("Registered events");
 
 		logger.info("Loaded successfully!");
 	}

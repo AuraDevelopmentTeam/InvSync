@@ -11,6 +11,7 @@ import org.spongepowered.api.plugin.Plugin;
 import com.google.inject.Inject;
 
 import lombok.NonNull;
+import world.jnc.invsync.util.ByteTypeSerializer;
 
 @Plugin(id = "invsync", name = "Inventory Sync", version = "@version@", description = "This plugin synchronizes the player inventory with a database", authors = {
 		"The_BrainStone" })
@@ -29,13 +30,14 @@ public class InventorySync {
 	@Listener
 	public void preInit(GamePreInitializationEvent event) {
 		instance = this;
+		ByteTypeSerializer.register();
 	}
 
 	@Listener
 	public void init(GameInitializationEvent event) {
 		Sponge.getEventManager().registerListeners(this, new PlayerEvents());
 
-		logger.info("Finished loading!");
+		logger.info("Loaded successfully!");
 	}
 
 	@Listener

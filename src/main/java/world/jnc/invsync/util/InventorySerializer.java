@@ -13,7 +13,6 @@ import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.Optional;
 
-import org.spongepowered.api.data.persistence.DataFormats;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 
@@ -88,18 +87,6 @@ public class InventorySerializer {
 	}
 
 	private static Optional<String> serializeItemStack(ItemStack item) {
-		// try {
-		// ConfigurationNode configNode = SimpleConfigurationNode.root();
-		//
-		// configNode.getNode("myItem").setValue(TypeToken.of(ItemStack.class),
-		// item);
-		//
-		// return Optional.of(configNode.toString());
-		// } catch (ObjectMappingException e) {
-		// e.printStackTrace();
-		// return Optional.empty();
-		// }
-
 		try {
 			StringWriter sink = new StringWriter();
 			GsonConfigurationLoader loader = GsonConfigurationLoader.builder().setSink(() -> new BufferedWriter(sink))
@@ -115,9 +102,6 @@ public class InventorySerializer {
 	}
 
 	private static Optional<ItemStack> deserializeItemStack(String json) {
-		// ItemStack item =
-		// configNode.getNode("myItem").getValue(TypeToken.of(ItemStack.class));
-
 		try {
 			StringReader source = new StringReader(json);
 			GsonConfigurationLoader loader = GsonConfigurationLoader.builder()

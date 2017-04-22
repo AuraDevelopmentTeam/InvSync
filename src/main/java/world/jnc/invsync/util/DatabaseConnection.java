@@ -1,8 +1,8 @@
 package world.jnc.invsync.util;
 
-import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,7 +20,7 @@ import lombok.Getter;
 public class DatabaseConnection {
 	public static final int DEFAULT_MYSQL_PORT = 3306;
 	protected static SqlService sql;
-	
+
 	@Getter
 	protected Connection connection;
 
@@ -45,7 +45,7 @@ public class DatabaseConnection {
 
 	/**
 	 * Opens a MySQL database connection.
-	 * 
+	 *
 	 * @param host
 	 *            Host to connect to
 	 * @param port
@@ -72,15 +72,15 @@ public class DatabaseConnection {
 
 	/**
 	 * Opens a h2 database connection.
-	 * 
+	 *
 	 * @param databaseFile
 	 *            storage of the database file
 	 * @throws SQLException
 	 */
-	public DatabaseConnection(File databaseFile) throws SQLException {
+	public DatabaseConnection(Path databaseFile) throws SQLException {
 		StringBuilder connectionURL = new StringBuilder();
 
-		connectionURL.append("jdbc:h2:").append(databaseFile.getAbsolutePath());
+		connectionURL.append("jdbc:h2:").append(databaseFile.toAbsolutePath());
 
 		connection = getDataSource(connectionURL.toString()).getConnection();
 	}
@@ -101,7 +101,7 @@ public class DatabaseConnection {
 
 		return connection.createStatement();
 	}
-	
+
 	public PreparedStatement getPreparedStatement(String statement) throws SQLException {
 		return connection.prepareStatement(statement);
 	}

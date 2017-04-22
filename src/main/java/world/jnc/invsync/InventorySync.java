@@ -14,6 +14,7 @@ import org.spongepowered.api.plugin.Plugin;
 
 import com.google.inject.Inject;
 
+import lombok.Getter;
 import lombok.NonNull;
 
 @Plugin(id = InventorySync.ID, name = InventorySync.NAME, version = InventorySync.VERSION, description = InventorySync.DESCRIPTION, authors = {
@@ -26,6 +27,7 @@ public class InventorySync {
 	public static final String AUTHOR = "The_BrainStone";
 
 	@NonNull
+	@Getter
 	private static InventorySync instance = null;
 
 	@Inject
@@ -72,9 +74,9 @@ public class InventorySync {
 			logger.warn("Use at your own risk!");
 		}
 
-		config = new Config(configFile, configDir);
+		config = new Config(this, configFile, configDir);
 		config.load();
-		
+
 		Sponge.getEventManager().registerListeners(this, new PlayerEvents());
 		logger.debug("Registered events");
 
@@ -84,7 +86,9 @@ public class InventorySync {
 	@Listener
 	public void reload(GameReloadEvent event) {
 		config.load();
-		
+
 		// TODO update more stuff
+
+		logger.info("Reloaded successfully!");
 	}
 }

@@ -23,7 +23,7 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import lombok.Cleanup;
 import lombok.experimental.UtilityClass;
 import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.gson.GsonConfigurationLoader;
+import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import world.jnc.invsync.InventorySync;
 
 @UtilityClass
@@ -95,8 +95,8 @@ public class InventorySerializer {
 	private static Optional<String> serializeItemStack(ItemStack item) {
 		try {
 			StringWriter sink = new StringWriter();
-			GsonConfigurationLoader loader = GsonConfigurationLoader.builder().setSink(() -> new BufferedWriter(sink))
-					.setIndent(0).build();
+			HoconConfigurationLoader loader = HoconConfigurationLoader.builder().setSink(() -> new BufferedWriter(sink))
+					.build();
 			ConfigurationNode node = CONFIGURATION_NODE.translate(item.toContainer());
 			loader.save(node);
 			return Optional.of(sink.toString());
@@ -109,10 +109,9 @@ public class InventorySerializer {
 	private static Optional<ItemStack> deserializeItemStack(String json) {
 		try {
 			StringReader source = new StringReader(json);
-			GsonConfigurationLoader loader = GsonConfigurationLoader.builder()
+			HoconConfigurationLoader loader = HoconConfigurationLoader.builder()
 					.setSource(() -> new BufferedReader(source)).build();
 			ConfigurationNode node = loader.load();
-			// TODO Fix Enchantments and stuff!
 			return Optional.of(ItemStack.builder().fromContainer(CONFIGURATION_NODE.translate(node)).build());
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -16,6 +16,10 @@ import world.jnc.invsync.InventorySync;
 public class CompressionUtils {
 	private static final Logger logger = InventorySync.getLogger();
 	private static final int MAX_COMPRESSION_LEVEL = 9;
+	private static final String MSG_PREFIX = "[Compression] ";
+	private static final String MSG_ORIGINAL = MSG_PREFIX + "Original: ";
+	private static final String MSG_COMPRESSED = MSG_PREFIX + "Compressed: ";
+	private static final String MSG_DECOMPRESSED = MSG_PREFIX + "Decompressed: ";
 
 	public static byte[] compress(byte[] data) throws IOException {
 		Deflater deflater = new Deflater();
@@ -37,8 +41,8 @@ public class CompressionUtils {
 		outputStream.close();
 		byte[] output = outputStream.toByteArray();
 
-		logger.debug("Original: " + data.length);
-		logger.debug("Compressed: " + output.length);
+		logger.debug(MSG_ORIGINAL + data.length);
+		logger.debug(MSG_COMPRESSED + output.length);
 
 		return output;
 	}
@@ -59,8 +63,8 @@ public class CompressionUtils {
 		outputStream.close();
 		byte[] output = outputStream.toByteArray();
 
-		logger.debug("Original: " + data.length);
-		logger.debug("Decompressed: " + output.length);
+		logger.debug(MSG_ORIGINAL + data.length);
+		logger.debug(MSG_DECOMPRESSED + output.length);
 
 		return output;
 	}

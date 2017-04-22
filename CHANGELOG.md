@@ -1,3 +1,10 @@
+0.3.8-beta
+----------
+
+- Synchronizing from database now working
+- Fixed reloading bug
+- Fixed several bugs with statements
+
 0.3.0-alpha
 -----------
 

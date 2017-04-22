@@ -1,8 +1,18 @@
 package world.jnc.invsync;
 
+import java.nio.ByteBuffer;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
+import java.util.UUID;
 
+import org.spongepowered.api.entity.living.player.Player;
+
+import lombok.Cleanup;
+import lombok.NonNull;
 import world.jnc.invsync.util.DatabaseConnection;
+import world.jnc.invsync.util.Pair;
 
 public class DataSource {
 	private final DatabaseConnection connection;
@@ -10,6 +20,22 @@ public class DataSource {
 	private final boolean mysql;
 
 	private final String tableInventories;
+	private final String tableInventoriesColumnUUID;
+	private final String tableInventoriesColumnInventory;
+	private final String tableInventoriesColumnEnderchest;
+
+	@NonNull
+	private PreparedStatement insertInventory;
+	@NonNull
+	private PreparedStatement getInventory;
+
+	private static byte[] getBytesFromUUID(UUID uuid) {
+		ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
+		bb.putLong(uuid.getMostSignificantBits());
+		bb.putLong(uuid.getLeastSignificantBits());
+
+		return bb.array();
+	}
 
 	public DataSource() throws SQLException {
 		if ("h2".equals(Config.Values.getStorageEngine())) {
@@ -28,8 +54,64 @@ public class DataSource {
 			throw new IllegalArgumentException("Invalid storage Engine!");
 
 		tableInventories = getTableName("inventories");
+		tableInventoriesColumnUUID = "UUID";
+		tableInventoriesColumnInventory = "Inventory";
+		tableInventoriesColumnEnderchest = "Enderchest";
 
 		prepareTable();
+		prepareStatements();
+	}
+
+	public void saveInventory(Player player, byte[] inventoryData, byte[] enderChestData) {
+		String playerName = getPlayerString(player);
+
+		try {
+			InventorySync.getLogger().debug("Saving inventory for player " + playerName);
+
+			insertInventory.setBytes(1, getBytesFromUUID(player.getUniqueId()));
+			insertInventory.setBytes(2, inventoryData);
+			insertInventory.setBytes(3, enderChestData);
+
+			insertInventory.executeUpdate();
+		} catch (SQLException e) {
+			InventorySync.getLogger().error("Could not save invetory for player " + playerName, e);
+		}
+	}
+
+	public Optional<Pair<byte[], byte[]>> loadInventory(Player player) {
+		String playerName = getPlayerString(player);
+
+		try {
+			InventorySync.getLogger().debug("Loading inventory for player " + playerName);
+
+			getInventory.setBytes(1, getBytesFromUUID(player.getUniqueId()));
+
+			@Cleanup
+			ResultSet result = insertInventory.executeQuery();
+
+			if (result.next())
+				return Optional.of(Pair.of(result.getBytes(tableInventoriesColumnInventory),
+						result.getBytes(tableInventoriesColumnEnderchest)));
+			else
+				return Optional.empty();
+		} catch (SQLException e) {
+			InventorySync.getLogger().error("Could not save invetory for player " + playerName, e);
+
+			return Optional.empty();
+		}
+	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		if (insertInventory != null) {
+			insertInventory.close();
+		}
+
+		if (getInventory != null) {
+			getInventory.close();
+		}
+
+		super.finalize();
 	}
 
 	private String getTableName(String baseName) {
@@ -49,12 +131,43 @@ public class DataSource {
 
 	private void prepareTable() {
 		try {
-			connection.executeStatement("CREATE TABLE IF NOT EXISTS " + tableInventories
-					+ " (UUID BINARY(16) NOT NULL,Inventory MEDIUMBLOB NOT NULL,PRIMARY KEY (UUID)) DEFAULT CHARSET=utf8;");
+			StringBuilder createTable = new StringBuilder();
 
-			InventorySync.getLogger().debug("Creating table if not exists");
+			createTable.append("CREATE TABLE IF NOT EXISTS ").append(tableInventories).append(" (")
+					.append(tableInventoriesColumnUUID).append(" BINARY(16) NOT NULL, ")
+					.append(tableInventoriesColumnInventory).append(" MEDIUMBLOB NOT NULL, ")
+					.append(tableInventoriesColumnEnderchest)
+					.append(" MEDIUMBLOB NOT NULL, PRIMARY KEY (UUID)) DEFAULT CHARSET=utf8");
+
+			connection.executeStatement(createTable.toString());
+
+			InventorySync.getLogger().debug("Created table");
 		} catch (SQLException e) {
 			InventorySync.getLogger().error("Could not create table!", e);
 		}
+	}
+
+	private void prepareStatements() {
+		try {
+			StringBuilder insertInventoryStr = new StringBuilder();
+			StringBuilder getInventoryStr = new StringBuilder();
+
+			insertInventoryStr.append("REPLACE INTO ").append(tableInventories).append(" (")
+					.append(tableInventoriesColumnUUID).append(", ").append(tableInventoriesColumnInventory)
+					.append(", ").append(tableInventoriesColumnEnderchest).append(") VALUES (?, ?, ?)");
+			getInventoryStr.append("SELECT Inventory, Enderchest, FROM ").append(tableInventories)
+					.append(" WHERE UUID = ? LIMIT 1");
+
+			insertInventory = connection.getPreparedStatement(insertInventoryStr.toString());
+			getInventory = connection.getPreparedStatement(getInventoryStr.toString());
+
+			InventorySync.getLogger().debug("Prepared statements");
+		} catch (SQLException e) {
+			InventorySync.getLogger().error("Could not prepare statements!", e);
+		}
+	}
+
+	private String getPlayerString(Player player) {
+		return player.getName() + " (" + player.getUniqueId().toString() + ')';
 	}
 }

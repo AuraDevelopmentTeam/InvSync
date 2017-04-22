@@ -2,6 +2,8 @@ package world.jnc.invsync;
 
 import java.nio.file.Path;
 import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
@@ -50,6 +52,7 @@ public class InventorySync {
 	private Config config;
 	@NonNull
 	private DataSource dataSource;
+	private List<Object> eventListeners = new LinkedList<>();
 
 	public static Logger getLogger() {
 		return instance.logger;
@@ -90,16 +93,20 @@ public class InventorySync {
 
 		dataSource = new DataSource();
 
-		Sponge.getEventManager().registerListeners(this, new PlayerEvents(dataSource));
+		addEventListener(new PlayerEvents(dataSource));
 		logger.debug("Registered events");
 
 		logger.info("Loaded successfully!");
 	}
 
+	public void postInit(GamePostInitializationEvent event) {
+		// Nothing
+	}
+
 	public void close(GameStoppingEvent event) {
 		logger.info("Shutting down " + NAME + " Version " + VERSION);
 
-		Sponge.getEventManager().unregisterPluginListeners(this);
+		removeEventListeners();
 		logger.debug("Unregistered events");
 
 		dataSource = null;
@@ -109,8 +116,6 @@ public class InventorySync {
 		logger.debug("Unloaded config");
 
 		logger.info("Unloaded successfully!");
-
-		logger = null;
 	}
 
 	@Listener
@@ -119,18 +124,32 @@ public class InventorySync {
 
 		// Unregistering everything
 		GameStoppingEvent gameStoppingEvent = SpongeEventFactory.createGameStoppingEvent(cause);
-		Sponge.getEventManager().post(gameStoppingEvent);
+		close(gameStoppingEvent);
 
 		// Starting over
 		GamePreInitializationEvent gamePreInitializationEvent = SpongeEventFactory
 				.createGamePreInitializationEvent(cause);
-		Sponge.getEventManager().post(gamePreInitializationEvent);
+		preInit(gamePreInitializationEvent);
 		GameInitializationEvent gameInitializationEvent = SpongeEventFactory.createGameInitializationEvent(cause);
-		Sponge.getEventManager().post(gameInitializationEvent);
+		init(gameInitializationEvent);
 		GamePostInitializationEvent gamePostInitializationEvent = SpongeEventFactory
 				.createGamePostInitializationEvent(cause);
-		Sponge.getEventManager().post(gamePostInitializationEvent);
+		postInit(gamePostInitializationEvent);
 
 		logger.info("Reloaded successfully!");
+	}
+
+	private void addEventListener(Object listener) {
+		eventListeners.add(listener);
+
+		Sponge.getEventManager().registerListeners(this, listener);
+	}
+
+	private void removeEventListeners() {
+		for (Object listener : eventListeners) {
+			Sponge.getEventManager().unregisterListeners(listener);
+		}
+
+		eventListeners.clear();
 	}
 }

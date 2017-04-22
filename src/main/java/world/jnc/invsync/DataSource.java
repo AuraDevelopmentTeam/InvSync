@@ -27,7 +27,7 @@ public class DataSource {
 	@NonNull
 	private PreparedStatement insertInventory;
 	@NonNull
-	private PreparedStatement getInventory;
+	private PreparedStatement loadInventory;
 
 	private static byte[] getBytesFromUUID(UUID uuid) {
 		ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
@@ -73,6 +73,7 @@ public class DataSource {
 			insertInventory.setBytes(3, enderChestData);
 
 			insertInventory.executeUpdate();
+			insertInventory.clearParameters();
 		} catch (SQLException e) {
 			InventorySync.getLogger().error("Could not save invetory for player " + playerName, e);
 		}
@@ -84,10 +85,11 @@ public class DataSource {
 		try {
 			InventorySync.getLogger().debug("Loading inventory for player " + playerName);
 
-			getInventory.setBytes(1, getBytesFromUUID(player.getUniqueId()));
+			loadInventory.setBytes(1, getBytesFromUUID(player.getUniqueId()));
 
 			@Cleanup
-			ResultSet result = getInventory.executeQuery();
+			ResultSet result = loadInventory.executeQuery();
+			loadInventory.clearParameters();
 
 			if (result.next())
 				return Optional.of(Pair.of(result.getBytes(tableInventoriesColumnInventory),
@@ -107,8 +109,8 @@ public class DataSource {
 			insertInventory.close();
 		}
 
-		if (getInventory != null) {
-			getInventory.close();
+		if (loadInventory != null) {
+			loadInventory.close();
 		}
 
 		super.finalize();
@@ -159,7 +161,7 @@ public class DataSource {
 					.append(" WHERE UUID = ? LIMIT 1");
 
 			insertInventory = connection.getPreparedStatement(insertInventoryStr.toString());
-			getInventory = connection.getPreparedStatement(getInventoryStr.toString());
+			loadInventory = connection.getPreparedStatement(getInventoryStr.toString());
 
 			InventorySync.getLogger().debug("Prepared statements");
 		} catch (SQLException e) {

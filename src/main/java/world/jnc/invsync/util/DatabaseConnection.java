@@ -16,6 +16,7 @@ import org.spongepowered.api.service.sql.SqlService;
 
 import lombok.Cleanup;
 import lombok.Getter;
+import world.jnc.invsync.InventorySync;
 
 public class DatabaseConnection {
 	public static final int DEFAULT_MYSQL_PORT = 3306;
@@ -23,6 +24,7 @@ public class DatabaseConnection {
 
 	@Getter
 	protected Connection connection;
+	protected String connectionURLStr;
 
 	protected static DataSource getDataSource(String jdbcUrl) throws SQLException {
 		if (sql == null) {
@@ -63,11 +65,12 @@ public class DatabaseConnection {
 			throws SQLException {
 		StringBuilder connectionURL = new StringBuilder();
 
-		connectionURL.append("jdbc:mysq://").append(urlEncode(host)).append(':').append(port).append('/')
+		// TODO fix special chars not working!
+		connectionURL.append("jdbc:mysql://").append(urlEncode(host)).append(':').append(port).append('/')
 				.append(urlEncode(database)).append("?user=").append(urlEncode(user)).append("&password=")
 				.append(urlEncode(password));
 
-		connection = getDataSource(connectionURL.toString()).getConnection();
+		connect(connectionURL);
 	}
 
 	/**
@@ -82,7 +85,16 @@ public class DatabaseConnection {
 
 		connectionURL.append("jdbc:h2:").append(databaseFile.toAbsolutePath());
 
-		connection = getDataSource(connectionURL.toString()).getConnection();
+		connect(connectionURL);
+	}
+
+	private void connect(StringBuilder connectionURL) throws SQLException {
+		connectionURLStr = connectionURL.toString();
+
+		InventorySync.getLogger()
+				.debug(connectionURL.insert(0, "Connecting to: ").toString().replaceFirst("(password=).*$", "$1*****"));
+
+		connection = getDataSource(connectionURLStr).getConnection();
 	}
 
 	public boolean isConnectionActive() {
@@ -111,6 +123,20 @@ public class DatabaseConnection {
 		Statement statement = getStatement();
 
 		return statement.executeQuery(query);
+	}
+
+	public boolean executeStatement(String query) throws SQLException {
+		@Cleanup
+		Statement statement = getStatement();
+
+		return statement.execute(query);
+	}
+
+	public int executeUpdate(String query) throws SQLException {
+		@Cleanup
+		Statement statement = getStatement();
+
+		return statement.executeUpdate(query);
 	}
 
 	@Override

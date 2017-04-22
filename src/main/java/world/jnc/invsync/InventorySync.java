@@ -1,6 +1,7 @@
 package world.jnc.invsync;
 
 import java.nio.file.Path;
+import java.sql.SQLException;
 
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
@@ -43,6 +44,8 @@ public class InventorySync {
 	private Path configDir;
 	@NonNull
 	private Config config;
+	@NonNull
+	private DataSource dataSource;
 
 	public static Logger getLogger() {
 		return instance.logger;
@@ -60,13 +63,17 @@ public class InventorySync {
 		return instance.config;
 	}
 
+	public static DataSource getDataSource() {
+		return instance.dataSource;
+	}
+
 	@Listener
 	public void preInit(GamePreInitializationEvent event) {
 		instance = this;
 	}
 
 	@Listener
-	public void init(GameInitializationEvent event) {
+	public void init(GameInitializationEvent event) throws SQLException {
 		logger.info("Initializing " + NAME + " Version " + VERSION);
 
 		if (VERSION.contains("SNAPSHOT")) {
@@ -77,6 +84,8 @@ public class InventorySync {
 		config = new Config(this, configFile, configDir);
 		config.load();
 
+		dataSource = new DataSource();
+
 		Sponge.getEventManager().registerListeners(this, new PlayerEvents());
 		logger.debug("Registered events");
 
@@ -84,8 +93,9 @@ public class InventorySync {
 	}
 
 	@Listener
-	public void reload(GameReloadEvent event) {
+	public void reload(GameReloadEvent event) throws SQLException {
 		config.load();
+		dataSource = new DataSource();
 
 		// TODO update more stuff
 

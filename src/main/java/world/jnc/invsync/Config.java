@@ -96,28 +96,28 @@ public class Config {
 	@UtilityClass
 	public static class Values {
 		@Getter
-		protected static String storageEngine;
+		private static String storageEngine;
 
 		@UtilityClass
 		public static class H2 {
 			@Getter
-			protected static Path databaseFile;
+			private static Path databaseFile;
 		}
 
 		@UtilityClass
 		public static class MySQL {
 			@Getter
-			protected static String host;
+			private static String host;
 			@Getter
-			protected static int port;
+			private static int port;
 			@Getter
-			protected static String database;
+			private static String database;
 			@Getter
-			protected static String user;
+			private static String user;
 			@Getter
-			protected static String password;
+			private static String password;
 			@Getter
-			protected static String tablePrefix;
+			private static String tablePrefix;
 		}
 	}
 }

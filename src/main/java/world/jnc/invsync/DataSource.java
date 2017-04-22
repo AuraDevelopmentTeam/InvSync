@@ -87,7 +87,7 @@ public class DataSource {
 			getInventory.setBytes(1, getBytesFromUUID(player.getUniqueId()));
 
 			@Cleanup
-			ResultSet result = insertInventory.executeQuery();
+			ResultSet result = getInventory.executeQuery();
 
 			if (result.next())
 				return Optional.of(Pair.of(result.getBytes(tableInventoriesColumnInventory),
@@ -95,7 +95,7 @@ public class DataSource {
 			else
 				return Optional.empty();
 		} catch (SQLException e) {
-			InventorySync.getLogger().error("Could not save invetory for player " + playerName, e);
+			InventorySync.getLogger().error("Could not load invetory for player " + playerName, e);
 
 			return Optional.empty();
 		}

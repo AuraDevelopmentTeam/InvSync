@@ -52,7 +52,7 @@ public class InventorySync {
 	private Config config;
 	@NonNull
 	private DataSource dataSource;
-	private List<Object> eventListeners = new LinkedList<>();
+	private List<AutoCloseable> eventListeners = new LinkedList<>();
 
 	public static Logger getLogger() {
 		return instance.logger;
@@ -103,28 +103,13 @@ public class InventorySync {
 		// Nothing
 	}
 
-	public void close(GameStoppingEvent event) {
-		logger.info("Shutting down " + NAME + " Version " + VERSION);
-
-		removeEventListeners();
-		logger.debug("Unregistered events");
-
-		dataSource = null;
-		logger.debug("Closed database connection");
-
-		config = null;
-		logger.debug("Unloaded config");
-
-		logger.info("Unloaded successfully!");
-	}
-
 	@Listener
-	public void reload(GameReloadEvent event) throws SQLException {
+	public void reload(GameReloadEvent event) throws Exception {
 		Cause cause = Cause.source(this).build();
 
 		// Unregistering everything
 		GameStoppingEvent gameStoppingEvent = SpongeEventFactory.createGameStoppingEvent(cause);
-		close(gameStoppingEvent);
+		stop(gameStoppingEvent);
 
 		// Starting over
 		GamePreInitializationEvent gamePreInitializationEvent = SpongeEventFactory
@@ -139,15 +124,33 @@ public class InventorySync {
 		logger.info("Reloaded successfully!");
 	}
 
-	private void addEventListener(Object listener) {
+	@Listener
+	public void stop(GameStoppingEvent event) throws Exception {
+		logger.info("Shutting down " + NAME + " Version " + VERSION);
+
+		removeEventListeners();
+		logger.debug("Unregistered events");
+
+		dataSource = null;
+		logger.debug("Closed database connection");
+
+		config = null;
+		logger.debug("Unloaded config");
+
+		logger.info("Unloaded successfully!");
+	}
+
+	private void addEventListener(AutoCloseable listener) {
 		eventListeners.add(listener);
 
 		Sponge.getEventManager().registerListeners(this, listener);
 	}
 
-	private void removeEventListeners() {
-		for (Object listener : eventListeners) {
+	private void removeEventListeners() throws Exception {
+		for (AutoCloseable listener : eventListeners) {
 			Sponge.getEventManager().unregisterListeners(listener);
+
+			listener.close();
 		}
 
 		eventListeners.clear();

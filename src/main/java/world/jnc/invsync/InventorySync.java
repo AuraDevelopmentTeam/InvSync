@@ -8,9 +8,13 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.SpongeEventFactory;
+import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
+import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
+import org.spongepowered.api.event.game.state.GameStoppingEvent;
 import org.spongepowered.api.plugin.Plugin;
 
 import com.google.inject.Inject;
@@ -92,12 +96,40 @@ public class InventorySync {
 		logger.info("Loaded successfully!");
 	}
 
+	public void close(GameStoppingEvent event) {
+		logger.info("Shutting down " + NAME + " Version " + VERSION);
+
+		Sponge.getEventManager().unregisterPluginListeners(this);
+		logger.debug("Unregistered events");
+
+		dataSource = null;
+		logger.debug("Closed database connection");
+
+		config = null;
+		logger.debug("Unloaded config");
+
+		logger.info("Unloaded successfully!");
+
+		logger = null;
+	}
+
 	@Listener
 	public void reload(GameReloadEvent event) throws SQLException {
-		config.load();
-		dataSource = new DataSource();
+		Cause cause = Cause.source(this).build();
 
-		// TODO update more stuff
+		// Unregistering everything
+		GameStoppingEvent gameStoppingEvent = SpongeEventFactory.createGameStoppingEvent(cause);
+		Sponge.getEventManager().post(gameStoppingEvent);
+
+		// Starting over
+		GamePreInitializationEvent gamePreInitializationEvent = SpongeEventFactory
+				.createGamePreInitializationEvent(cause);
+		Sponge.getEventManager().post(gamePreInitializationEvent);
+		GameInitializationEvent gameInitializationEvent = SpongeEventFactory.createGameInitializationEvent(cause);
+		Sponge.getEventManager().post(gameInitializationEvent);
+		GamePostInitializationEvent gamePostInitializationEvent = SpongeEventFactory
+				.createGamePostInitializationEvent(cause);
+		Sponge.getEventManager().post(gamePostInitializationEvent);
 
 		logger.info("Reloaded successfully!");
 	}

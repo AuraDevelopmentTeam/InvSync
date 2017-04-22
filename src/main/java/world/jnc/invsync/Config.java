@@ -27,10 +27,6 @@ public class Config {
 	@NonNull
 	@Getter
 	private final Path configDir;
-	@NonNull
-	private ConfigurationLoader<CommentedConfigurationNode> loader;
-	@NonNull
-	private ConfigurationNode rootNode;
 
 	public Config(InventorySync instance, Path configFile, Path configDir) {
 		this.instance = instance;
@@ -49,7 +45,11 @@ public class Config {
 			}
 		}
 
-		loader = HoconConfigurationLoader.builder().setPath(configFile).build();
+		@NonNull
+		ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder().setPath(configFile)
+				.build();
+		@NonNull
+		ConfigurationNode rootNode;
 
 		try {
 			rootNode = loader.load();

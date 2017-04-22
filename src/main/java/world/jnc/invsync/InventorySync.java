@@ -90,7 +90,7 @@ public class InventorySync {
 
 		dataSource = new DataSource();
 
-		Sponge.getEventManager().registerListeners(this, new PlayerEvents());
+		Sponge.getEventManager().registerListeners(this, new PlayerEvents(dataSource));
 		logger.debug("Registered events");
 
 		logger.info("Loaded successfully!");

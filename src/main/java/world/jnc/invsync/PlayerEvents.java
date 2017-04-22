@@ -8,10 +8,14 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.item.inventory.Inventory;
 
+import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import world.jnc.invsync.util.InventorySerializer;
 
+@AllArgsConstructor
 public class PlayerEvents {
+	private DataSource dataSource;
+	
 	@Listener
 	public void onPlayerJoin(ClientConnectionEvent.Join event)
 			throws IOException, ClassNotFoundException, DataFormatException {

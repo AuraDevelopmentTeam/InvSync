@@ -138,8 +138,8 @@ public class DataSource {
 			createTable.append("CREATE TABLE IF NOT EXISTS ").append(tableInventories).append(" (")
 					.append(tableInventoriesColumnUUID).append(" BINARY(16) NOT NULL, ")
 					.append(tableInventoriesColumnInventory).append(" MEDIUMBLOB NOT NULL, ")
-					.append(tableInventoriesColumnEnderchest)
-					.append(" MEDIUMBLOB NOT NULL, PRIMARY KEY (UUID)) DEFAULT CHARSET=utf8");
+					.append(tableInventoriesColumnEnderchest).append(" MEDIUMBLOB NOT NULL, PRIMARY KEY ("
+							+ tableInventoriesColumnUUID + ")) DEFAULT CHARSET=utf8");
 
 			connection.executeStatement(createTable.toString());
 
@@ -157,8 +157,10 @@ public class DataSource {
 			insertInventoryStr.append("REPLACE INTO ").append(tableInventories).append(" (")
 					.append(tableInventoriesColumnUUID).append(", ").append(tableInventoriesColumnInventory)
 					.append(", ").append(tableInventoriesColumnEnderchest).append(") VALUES (?, ?, ?)");
-			getInventoryStr.append("SELECT Inventory, Enderchest, FROM ").append(tableInventories)
-					.append(" WHERE UUID = ? LIMIT 1");
+			getInventoryStr
+					.append("SELECT " + tableInventoriesColumnInventory + ", " + tableInventoriesColumnEnderchest
+							+ " FROM ")
+					.append(tableInventories).append(" WHERE " + tableInventoriesColumnUUID + " = ? LIMIT 1");
 
 			insertInventory = connection.getPreparedStatement(insertInventoryStr.toString());
 			loadInventory = connection.getPreparedStatement(getInventoryStr.toString());

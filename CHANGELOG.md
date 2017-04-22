@@ -1,3 +1,10 @@
+0.3.0-alpha
+-----------
+
+- Added config
+- Added reload functionality
+- Fixed serialization for enchantments
+
 0.2.0-alpha
 -----------
 

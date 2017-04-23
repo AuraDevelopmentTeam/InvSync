@@ -94,6 +94,7 @@ public class InventorySerializer {
 
 	private static Optional<String> serializeItemStack(ItemStack item) {
 		try {
+			@Cleanup
 			StringWriter sink = new StringWriter();
 			HoconConfigurationLoader loader = HoconConfigurationLoader.builder().setSink(() -> new BufferedWriter(sink))
 					.build();
@@ -108,6 +109,7 @@ public class InventorySerializer {
 
 	private static Optional<ItemStack> deserializeItemStack(String json) {
 		try {
+			@Cleanup
 			StringReader source = new StringReader(json);
 			HoconConfigurationLoader loader = HoconConfigurationLoader.builder()
 					.setSource(() -> new BufferedReader(source)).build();

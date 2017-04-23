@@ -33,12 +33,18 @@ public class PlayerEvents implements AutoCloseable {
 		@NonNull
 		Player player = event.getTargetEntity();
 		UUID uuid = player.getUniqueId();
-		waitingPlayers.add(uuid);
+
+		synchronized (waitingPlayers) {
+			waitingPlayers.add(uuid);
+		}
 
 		Task.builder().execute(() -> {
 			try {
 				loadPlayer(player);
-				waitingPlayers.remove(uuid);
+
+				synchronized (waitingPlayers) {
+					waitingPlayers.remove(uuid);
+				}
 			} catch (ClassNotFoundException | IOException | DataFormatException e) {
 				InventorySync.getLogger().warn("Loading player " + DataSource.getPlayerString(player) + " failed!", e);
 			}
@@ -52,8 +58,10 @@ public class PlayerEvents implements AutoCloseable {
 
 	@Listener
 	public void onItemPickUp(ChangeInventoryEvent.Pickup event, @First Player player) {
-		if(waitingPlayers.contains(player.getUniqueId())) {
-			event.setCancelled(true);
+		synchronized (waitingPlayers) {
+			if (waitingPlayers.contains(player.getUniqueId())) {
+				event.setCancelled(true);
+			}
 		}
 	}
 

@@ -1,3 +1,11 @@
+0.3.16-beta
+-----------
+
+- Fixed [#2](https://github.com/BrainStone/InvSync/issues/2) (Issue related to Bungeecord)
+- No item pickup while waiting for synchronization
+- Storing inventories to database when server stops
+- Internal improvements
+
 0.3.8-beta
 ----------
 

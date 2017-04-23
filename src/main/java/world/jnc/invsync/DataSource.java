@@ -7,7 +7,9 @@ import java.sql.SQLException;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 
 import lombok.Cleanup;
@@ -111,7 +113,10 @@ public class DataSource {
 			if (result.next())
 				// TODO Transform the string from gamemode into an actual
 				// gamemode
-				return Optional.of(PlayerData.of(GameModes.SURVIVAL, result.getInt(tableInventoriesColumnExperience),
+				return Optional.of(PlayerData.of(
+						Sponge.getRegistry().getType(GameMode.class, result.getString(tableInventoriesColumnGamemode))
+								.orElse(GameModes.SURVIVAL),
+						result.getInt(tableInventoriesColumnExperience),
 						result.getBytes(tableInventoriesColumnInventory),
 						result.getBytes(tableInventoriesColumnEnderchest)));
 			else

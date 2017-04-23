@@ -1,7 +1,12 @@
+0.3.18-beta
+-----------
+
+- Fixed [#3](https://github.com/BrainStone/InvSync/issues/3): Special chars in the MySQL password do not work
+
 0.3.16-beta
 -----------
 
-- Fixed [#2](https://github.com/BrainStone/InvSync/issues/2) (Issue related to Bungeecord)
+- Fixed [#2](https://github.com/BrainStone/InvSync/issues/2): When switching servers by bungeecord, the inventory gets loaded from the database before the new data is written 
 - No item pickup while waiting for synchronization
 - Storing inventories to database when server stops
 - Internal improvements

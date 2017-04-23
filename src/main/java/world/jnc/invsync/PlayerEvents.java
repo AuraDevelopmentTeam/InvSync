@@ -10,6 +10,7 @@ import java.util.zip.DataFormatException;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.data.manipulator.mutable.entity.ExperienceHolderData;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.filter.cause.First;
@@ -90,8 +91,10 @@ public class PlayerEvents implements AutoCloseable {
 
 		if (result.isPresent()) {
 			PlayerData playerData = result.get();
+			ExperienceHolderData experience = player.get(ExperienceHolderData.class).get();
+			experience.totalExperience().set(playerData.getExperience());
 
-			player.offer(Keys.TOTAL_EXPERIENCE, playerData.getExperience());
+			player.offer(experience);
 			InventorySerializer.deserializeInventory(playerData.getInventory(), inventory);
 			InventorySerializer.deserializeInventory(playerData.getEnderChest(), enderInventory);
 		} else {
@@ -106,7 +109,8 @@ public class PlayerEvents implements AutoCloseable {
 		Inventory inventory = player.getInventory();
 		@NonNull
 		Inventory enderInventory = player.getEnderChestInventory();
-		PlayerData data = PlayerData.of(player.get(Keys.GAME_MODE).get(), player.get(Keys.TOTAL_EXPERIENCE).get(),
+		PlayerData data = PlayerData.of(player.get(Keys.GAME_MODE).get(),
+				player.get(ExperienceHolderData.class).get().totalExperience().get(),
 				InventorySerializer.serializeInventory(inventory),
 				InventorySerializer.serializeInventory(enderInventory));
 

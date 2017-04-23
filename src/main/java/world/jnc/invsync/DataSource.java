@@ -29,6 +29,10 @@ public class DataSource {
 	@NonNull
 	private PreparedStatement loadInventory;
 
+	public static String getPlayerString(Player player) {
+		return player.getName() + " (" + player.getUniqueId().toString() + ')';
+	}
+
 	private static byte[] getBytesFromUUID(UUID uuid) {
 		ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
 		bb.putLong(uuid.getMostSignificantBits());
@@ -169,9 +173,5 @@ public class DataSource {
 		} catch (SQLException e) {
 			InventorySync.getLogger().error("Could not prepare statements!", e);
 		}
-	}
-
-	private String getPlayerString(Player player) {
-		return player.getName() + " (" + player.getUniqueId().toString() + ')';
 	}
 }

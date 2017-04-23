@@ -1,7 +1,11 @@
 package world.jnc.invsync;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.DataFormatException;
 
 import org.spongepowered.api.Sponge;
@@ -9,20 +13,34 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.item.inventory.Inventory;
+import org.spongepowered.api.scheduler.Task;
 
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import world.jnc.invsync.util.InventorySerializer;
 import world.jnc.invsync.util.Pair;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class PlayerEvents implements AutoCloseable {
-	private DataSource dataSource;
+	private final DataSource dataSource;
+	private List<UUID> waitingPlayers = new LinkedList<>();
 
 	@Listener
 	public void onPlayerJoin(ClientConnectionEvent.Join event)
 			throws IOException, ClassNotFoundException, DataFormatException {
-		loadPlayer(event.getTargetEntity());
+		@NonNull
+		Player player = event.getTargetEntity();
+		UUID uuid = player.getUniqueId();
+		waitingPlayers.add(uuid);
+
+		Task.builder().execute(() -> {
+			try {
+				loadPlayer(player);
+				waitingPlayers.remove(uuid);
+			} catch (ClassNotFoundException | IOException | DataFormatException e) {
+				InventorySync.getLogger().warn("Loading player " + DataSource.getPlayerString(player) + " failed!", e);
+			}
+		}).delay(1, TimeUnit.SECONDS).submit(InventorySync.getInstance());
 	}
 
 	@Listener

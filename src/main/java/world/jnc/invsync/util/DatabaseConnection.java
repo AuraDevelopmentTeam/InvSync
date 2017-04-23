@@ -1,7 +1,5 @@
 package world.jnc.invsync.util;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -34,17 +32,6 @@ public class DatabaseConnection {
 		return sql.getDataSource(jdbcUrl);
 	}
 
-	protected static String urlEncode(String toEncode) {
-		try {
-			return URLEncoder.encode(toEncode, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			// Won't happen anyways!
-			e.printStackTrace();
-
-			return null;
-		}
-	}
-
 	/**
 	 * Opens a MySQL database connection.
 	 *
@@ -65,10 +52,8 @@ public class DatabaseConnection {
 			throws SQLException {
 		StringBuilder connectionURL = new StringBuilder();
 
-		// TODO fix special chars not working!
-		connectionURL.append("jdbc:mysql://").append(urlEncode(host)).append(':').append(port).append('/')
-				.append(urlEncode(database)).append("?user=").append(urlEncode(user)).append("&password=")
-				.append(urlEncode(password));
+		connectionURL.append("jdbc:mysql://").append(user).append(':').append(password).append('@').append(host)
+				.append(':').append(port).append('/').append(database);
 
 		connect(connectionURL);
 	}
@@ -91,8 +76,8 @@ public class DatabaseConnection {
 	private void connect(StringBuilder connectionURL) throws SQLException {
 		connectionURLStr = connectionURL.toString();
 
-		InventorySync.getLogger()
-				.debug(connectionURL.insert(0, "Connecting to: ").toString().replaceFirst("(password=).*$", "$1*****"));
+		connectionURL.insert(0, "Connecting to: ");
+		InventorySync.getLogger().debug(connectionURL.toString().replaceFirst(":[^:]*@", ":*****@"));
 
 		connection = getDataSource(connectionURLStr).getConnection();
 	}

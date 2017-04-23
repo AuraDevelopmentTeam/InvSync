@@ -11,6 +11,8 @@ import java.util.zip.DataFormatException;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.filter.cause.First;
+import org.spongepowered.api.event.item.inventory.ChangeInventoryEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.scheduler.Task;
@@ -46,6 +48,13 @@ public class PlayerEvents implements AutoCloseable {
 	@Listener
 	public void onPlayerLeave(ClientConnectionEvent.Disconnect event) throws IOException, DataFormatException {
 		savePlayer(event.getTargetEntity());
+	}
+
+	@Listener
+	public void onItemPickUp(ChangeInventoryEvent.Pickup event, @First Player player) {
+		if(waitingPlayers.contains(player.getUniqueId())) {
+			event.setCancelled(true);
+		}
 	}
 
 	public void saveAllPlayers() throws IOException, DataFormatException {

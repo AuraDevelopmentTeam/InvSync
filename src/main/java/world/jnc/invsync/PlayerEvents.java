@@ -9,6 +9,7 @@ import java.util.function.Consumer;
 import java.util.zip.DataFormatException;
 
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.filter.cause.First;
@@ -20,7 +21,7 @@ import org.spongepowered.api.scheduler.Task;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import world.jnc.invsync.util.InventorySerializer;
-import world.jnc.invsync.util.Pair;
+import world.jnc.invsync.util.PlayerData;
 
 @RequiredArgsConstructor
 public class PlayerEvents implements AutoCloseable {
@@ -48,9 +49,9 @@ public class PlayerEvents implements AutoCloseable {
 		@NonNull
 		Player player = event.getTargetEntity();
 		UUID uuid = player.getUniqueId();
-		
+
 		savePlayer(player);
-		
+
 		synchronized (waitingPlayers) {
 			if (waitingPlayers.containsKey(uuid)) {
 				waitingPlayers.remove(uuid).cancel();
@@ -85,14 +86,14 @@ public class PlayerEvents implements AutoCloseable {
 		Inventory inventory = player.getInventory();
 		@NonNull
 		Inventory enderInventory = player.getEnderChestInventory();
-
-		Optional<Pair<byte[], byte[]>> result = dataSource.loadInventory(player);
+		Optional<PlayerData> result = dataSource.loadInventory(player);
 
 		if (result.isPresent()) {
-			Pair<byte[], byte[]> resultPair = result.get();
+			PlayerData playerData = result.get();
 
-			InventorySerializer.deserializeInventory(resultPair.getLeft(), inventory);
-			InventorySerializer.deserializeInventory(resultPair.getRight(), enderInventory);
+			player.offer(Keys.TOTAL_EXPERIENCE, playerData.getExperience());
+			InventorySerializer.deserializeInventory(playerData.getInventory(), inventory);
+			InventorySerializer.deserializeInventory(playerData.getEnderChest(), enderInventory);
 		} else {
 			savePlayer(player);
 		}
@@ -105,9 +106,11 @@ public class PlayerEvents implements AutoCloseable {
 		Inventory inventory = player.getInventory();
 		@NonNull
 		Inventory enderInventory = player.getEnderChestInventory();
-
-		dataSource.saveInventory(player, InventorySerializer.serializeInventory(inventory),
+		PlayerData data = PlayerData.of(player.get(Keys.GAME_MODE).get(), player.get(Keys.TOTAL_EXPERIENCE).get(),
+				InventorySerializer.serializeInventory(inventory),
 				InventorySerializer.serializeInventory(enderInventory));
+
+		dataSource.saveInventory(player, data);
 	}
 
 	private class WaitingForOtherServerToFinish implements Consumer<Task> {
@@ -121,9 +124,8 @@ public class PlayerEvents implements AutoCloseable {
 
 		@Override
 		public void accept(Task task) {
-			if (dataSource.isActive(player) && (endTime > System.currentTimeMillis())) {
+			if (dataSource.isActive(player) && (endTime > System.currentTimeMillis()))
 				return;
-			}
 
 			try {
 				loadPlayer(player);

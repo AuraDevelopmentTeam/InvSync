@@ -58,7 +58,7 @@ public class Config {
 
 			return;
 		}
-		
+
 		ConfigurationNode global = rootNode.getNode("global");
 		Values.Global.maxWait = global.getNode("maxWait").getInt(500);
 

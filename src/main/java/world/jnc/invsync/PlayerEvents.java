@@ -48,7 +48,7 @@ public class PlayerEvents implements AutoCloseable {
 			} catch (ClassNotFoundException | IOException | DataFormatException e) {
 				InventorySync.getLogger().warn("Loading player " + DataSource.getPlayerString(player) + " failed!", e);
 			}
-		}).delay(1, TimeUnit.SECONDS).submit(InventorySync.getInstance());
+		}).delay(100, TimeUnit.MILLISECONDS).submit(InventorySync.getInstance());
 	}
 
 	@Listener

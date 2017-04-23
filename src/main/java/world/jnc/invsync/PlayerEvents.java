@@ -1,11 +1,11 @@
 package world.jnc.invsync;
 
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.zip.DataFormatException;
 
 import org.spongepowered.api.Sponge;
@@ -25,7 +25,7 @@ import world.jnc.invsync.util.Pair;
 @RequiredArgsConstructor
 public class PlayerEvents implements AutoCloseable {
 	private final DataSource dataSource;
-	private List<UUID> waitingPlayers = new LinkedList<>();
+	private Map<UUID, Task> waitingPlayers = new HashMap<>();
 
 	@Listener
 	public void onPlayerJoin(ClientConnectionEvent.Join event)
@@ -35,31 +35,33 @@ public class PlayerEvents implements AutoCloseable {
 		UUID uuid = player.getUniqueId();
 
 		synchronized (waitingPlayers) {
-			waitingPlayers.add(uuid);
+			Task task = Task.builder()
+					.execute(new WaitingForOtherServerToFinish(player, Config.Values.Global.getMaxWait()))
+					.intervalTicks(1).submit(InventorySync.getInstance());
+
+			waitingPlayers.put(uuid, task);
 		}
-
-		Task.builder().execute(() -> {
-			try {
-				loadPlayer(player);
-
-				synchronized (waitingPlayers) {
-					waitingPlayers.remove(uuid);
-				}
-			} catch (ClassNotFoundException | IOException | DataFormatException e) {
-				InventorySync.getLogger().warn("Loading player " + DataSource.getPlayerString(player) + " failed!", e);
-			}
-		}).delay(100, TimeUnit.MILLISECONDS).submit(InventorySync.getInstance());
 	}
 
 	@Listener
 	public void onPlayerLeave(ClientConnectionEvent.Disconnect event) throws IOException, DataFormatException {
-		savePlayer(event.getTargetEntity());
+		@NonNull
+		Player player = event.getTargetEntity();
+		UUID uuid = player.getUniqueId();
+		
+		savePlayer(player);
+		
+		synchronized (waitingPlayers) {
+			if (waitingPlayers.containsKey(uuid)) {
+				waitingPlayers.remove(uuid).cancel();
+			}
+		}
 	}
 
 	@Listener
 	public void onItemPickUp(ChangeInventoryEvent.Pickup event, @First Player player) {
 		synchronized (waitingPlayers) {
-			if (waitingPlayers.contains(player.getUniqueId())) {
+			if (waitingPlayers.containsKey(player.getUniqueId())) {
 				event.setCancelled(true);
 			}
 		}
@@ -91,7 +93,11 @@ public class PlayerEvents implements AutoCloseable {
 
 			InventorySerializer.deserializeInventory(resultPair.getLeft(), inventory);
 			InventorySerializer.deserializeInventory(resultPair.getRight(), enderInventory);
+		} else {
+			savePlayer(player);
 		}
+
+		dataSource.setActive(player);
 	}
 
 	private void savePlayer(@NonNull Player player) throws IOException, DataFormatException {
@@ -102,5 +108,35 @@ public class PlayerEvents implements AutoCloseable {
 
 		dataSource.saveInventory(player, InventorySerializer.serializeInventory(inventory),
 				InventorySerializer.serializeInventory(enderInventory));
+	}
+
+	private class WaitingForOtherServerToFinish implements Consumer<Task> {
+		private final Player player;
+		private final long endTime;
+
+		public WaitingForOtherServerToFinish(Player player, int maxWait) {
+			this.player = player;
+			endTime = System.currentTimeMillis() + maxWait;
+		}
+
+		@Override
+		public void accept(Task task) {
+			if (dataSource.isActive(player) && (endTime > System.currentTimeMillis())) {
+				return;
+			}
+
+			try {
+				loadPlayer(player);
+
+				synchronized (waitingPlayers) {
+					waitingPlayers.remove(player.getUniqueId());
+				}
+
+				task.cancel();
+			} catch (ClassNotFoundException | IOException | DataFormatException e) {
+				InventorySync.getLogger().warn("Loading player " + DataSource.getPlayerString(player) + " failed!", e);
+			}
+		}
+
 	}
 }

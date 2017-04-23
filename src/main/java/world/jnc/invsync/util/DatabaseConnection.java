@@ -100,6 +100,8 @@ public class DatabaseConnection {
 	}
 
 	public PreparedStatement getPreparedStatement(String statement) throws SQLException {
+		InventorySync.getLogger().debug("Preparing statement: " + statement);
+
 		return connection.prepareStatement(statement);
 	}
 

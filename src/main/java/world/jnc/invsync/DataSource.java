@@ -42,18 +42,18 @@ public class DataSource {
 	}
 
 	public DataSource() throws SQLException {
-		if ("h2".equals(Config.Values.getStorageEngine())) {
+		if ("h2".equals(Config.Values.Storage.getStorageEngine())) {
 			h2 = true;
 			mysql = false;
 
-			connection = new DatabaseConnection(Config.Values.H2.getDatabaseFile());
-		} else if ("mysql".equals(Config.Values.getStorageEngine())) {
+			connection = new DatabaseConnection(Config.Values.Storage.H2.getDatabaseFile());
+		} else if ("mysql".equals(Config.Values.Storage.getStorageEngine())) {
 			h2 = false;
 			mysql = true;
 
-			connection = new DatabaseConnection(Config.Values.MySQL.getHost(), Config.Values.MySQL.getPort(),
-					Config.Values.MySQL.getDatabase(), Config.Values.MySQL.getUser(),
-					Config.Values.MySQL.getPassword());
+			connection = new DatabaseConnection(Config.Values.Storage.MySQL.getHost(),
+					Config.Values.Storage.MySQL.getPort(), Config.Values.Storage.MySQL.getDatabase(),
+					Config.Values.Storage.MySQL.getUser(), Config.Values.Storage.MySQL.getPassword());
 		} else
 			throw new IllegalArgumentException("Invalid storage Engine!");
 
@@ -124,7 +124,7 @@ public class DataSource {
 		String name;
 
 		if (mysql) {
-			name = Config.Values.MySQL.getTablePrefix() + baseName;
+			name = Config.Values.Storage.MySQL.getTablePrefix() + baseName;
 		} else if (h2) {
 			name = baseName;
 		} else

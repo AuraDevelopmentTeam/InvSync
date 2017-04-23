@@ -58,36 +58,40 @@ public class Config {
 
 			return;
 		}
+		
+		ConfigurationNode global = rootNode.getNode("global");
+		Values.Global.maxWait = global.getNode("maxWait").getInt(500);
 
 		ConfigurationNode storage = rootNode.getNode("storage");
-		Values.storageEngine = storage.getNode("storageEngine").getString(validStorageEngines[0]);
+		Values.Storage.storageEngine = storage.getNode("storageEngine").getString(validStorageEngines[0]);
 
-		if (!Arrays.asList(validStorageEngines).contains(Values.storageEngine)) {
-			InventorySync.getLogger().warn("Invalid storage engine in config: \"" + Values.storageEngine
+		if (!Arrays.asList(validStorageEngines).contains(Values.Storage.storageEngine)) {
+			InventorySync.getLogger().warn("Invalid storage engine in config: \"" + Values.Storage.storageEngine
 					+ "\"! Defaulting to \"" + validStorageEngines[0] + "\"!");
 
-			Values.storageEngine = validStorageEngines[0];
+			Values.Storage.storageEngine = validStorageEngines[0];
 		}
 
 		ConfigurationNode h2 = storage.getNode("h2");
-		Values.H2.databaseFile = configDir.resolve(h2.getNode("databaseFile").getString("inventoryStorage.db"));
+		Values.Storage.H2.databaseFile = configDir.resolve(h2.getNode("databaseFile").getString("inventoryStorage.db"));
 
 		ConfigurationNode mySQL = storage.getNode("MySQL");
-		Values.MySQL.host = mySQL.getNode("host").getString("localhost");
-		Values.MySQL.port = mySQL.getNode("port").getInt(DatabaseConnection.DEFAULT_MYSQL_PORT);
-		Values.MySQL.database = mySQL.getNode("database").getString("invsync");
-		Values.MySQL.user = mySQL.getNode("user").getString("invsync");
-		Values.MySQL.password = mySQL.getNode("password").getString("sup3rS3cur3Pa55w0rd!");
-		Values.MySQL.tablePrefix = mySQL.getNode("tablePrefix").getString("invsync_");
+		Values.Storage.MySQL.host = mySQL.getNode("host").getString("localhost");
+		Values.Storage.MySQL.port = mySQL.getNode("port").getInt(DatabaseConnection.DEFAULT_MYSQL_PORT);
+		Values.Storage.MySQL.database = mySQL.getNode("database").getString("invsync");
+		Values.Storage.MySQL.user = mySQL.getNode("user").getString("invsync");
+		Values.Storage.MySQL.password = mySQL.getNode("password").getString("sup3rS3cur3Pa55w0rd!");
+		Values.Storage.MySQL.tablePrefix = mySQL.getNode("tablePrefix").getString("invsync_");
 
-		if (Values.MySQL.port < 1) {
-			InventorySync.getLogger().warn("MySQL port too low: " + Values.MySQL.port + "! Defaulting to 1!");
+		if (Values.Storage.MySQL.port < 1) {
+			InventorySync.getLogger().warn("MySQL port too low: " + Values.Storage.MySQL.port + "! Defaulting to 1!");
 
-			Values.MySQL.port = 1;
-		} else if (Values.MySQL.port > 65535) {
-			InventorySync.getLogger().warn("MySQL port too high: " + Values.MySQL.port + "! Defaulting to 65535!");
+			Values.Storage.MySQL.port = 1;
+		} else if (Values.Storage.MySQL.port > 65535) {
+			InventorySync.getLogger()
+					.warn("MySQL port too high: " + Values.Storage.MySQL.port + "! Defaulting to 65535!");
 
-			Values.MySQL.port = 65535;
+			Values.Storage.MySQL.port = 65535;
 		}
 
 		InventorySync.getLogger().debug("Loaded config");
@@ -95,29 +99,38 @@ public class Config {
 
 	@UtilityClass
 	public static class Values {
-		@Getter
-		private static String storageEngine;
-
 		@UtilityClass
-		public static class H2 {
+		public static class Global {
 			@Getter
-			private static Path databaseFile;
+			private static int maxWait;
 		}
 
 		@UtilityClass
-		public static class MySQL {
+		public static class Storage {
 			@Getter
-			private static String host;
-			@Getter
-			private static int port;
-			@Getter
-			private static String database;
-			@Getter
-			private static String user;
-			@Getter
-			private static String password;
-			@Getter
-			private static String tablePrefix;
+			private static String storageEngine;
+
+			@UtilityClass
+			public static class H2 {
+				@Getter
+				private static Path databaseFile;
+			}
+
+			@UtilityClass
+			public static class MySQL {
+				@Getter
+				private static String host;
+				@Getter
+				private static int port;
+				@Getter
+				private static String database;
+				@Getter
+				private static String user;
+				@Getter
+				private static String password;
+				@Getter
+				private static String tablePrefix;
+			}
 		}
 	}
 }

@@ -41,8 +41,8 @@ public class CompressionUtils {
 		outputStream.close();
 		byte[] output = outputStream.toByteArray();
 
-		logger.debug(MSG_ORIGINAL + data.length);
-		logger.debug(MSG_COMPRESSED + output.length);
+		logger.trace(MSG_ORIGINAL + data.length);
+		logger.trace(MSG_COMPRESSED + output.length);
 
 		return output;
 	}
@@ -63,8 +63,8 @@ public class CompressionUtils {
 		outputStream.close();
 		byte[] output = outputStream.toByteArray();
 
-		logger.debug(MSG_ORIGINAL + data.length);
-		logger.debug(MSG_DECOMPRESSED + output.length);
+		logger.trace(MSG_ORIGINAL + data.length);
+		logger.trace(MSG_DECOMPRESSED + output.length);
 
 		return output;
 	}

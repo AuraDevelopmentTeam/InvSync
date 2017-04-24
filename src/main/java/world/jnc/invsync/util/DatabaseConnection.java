@@ -83,8 +83,7 @@ public class DatabaseConnection {
 	}
 
 	private void reconnect() throws SQLException {
-		InventorySync.getLogger()
-				.debug("Reconnecting to: " + connectionURLStr.toString().replaceFirst(":[^:]*@", ":*****@"));
+		InventorySync.getLogger().debug("Reconnecting to: " + connectionURLStr.replaceFirst(":[^:]*@", ":*****@"));
 
 		connection = getDataSource(connectionURLStr).getConnection();
 	}

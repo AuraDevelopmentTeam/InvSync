@@ -91,6 +91,7 @@ public class PlayerEvents implements AutoCloseable {
 		if (result.isPresent()) {
 			PlayerData playerData = result.get();
 
+			player.offer(Keys.GAME_MODE, playerData.getGameMode());
 			player.offer(Keys.TOTAL_EXPERIENCE, playerData.getExperience());
 			InventorySerializer.deserializeInventory(playerData.getInventory(), inventory);
 			InventorySerializer.deserializeInventory(playerData.getEnderChest(), enderInventory);

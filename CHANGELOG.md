@@ -1,7 +1,13 @@
+0.4.6-beta
+----------
+
+- Fixed [#5](https://github.com/BrainStone/InvSync/issues/5): Database connection sometimes times out and should be reconnected (Really this time)
+- Internal improvements
+
 0.4.2-beta
 ----------
 
-- Fixed [#5](https://github.com/BrainStone/InvSync/issues/5): Database connection sometimes times out and should be reconnected
+- Fixed [#5](https://github.com/BrainStone/InvSync/issues/5): Database connection sometimes times out and should be reconnected (Not really fixed)
 
 0.4.0-beta
 ----------

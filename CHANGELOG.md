@@ -1,3 +1,8 @@
+0.5.4
+-----
+
+- Added config option for individual parts to synchronize
+
 0.5.0-beta
 ----------
 

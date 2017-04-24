@@ -1,4 +1,4 @@
-package world.jnc.invsync;
+package world.jnc.invsync.config;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -14,6 +14,7 @@ import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
+import world.jnc.invsync.InventorySync;
 import world.jnc.invsync.util.database.DatabaseConnection;
 
 public class Config {
@@ -61,7 +62,7 @@ public class Config {
 
 		ConfigurationNode global = rootNode.getNode("global");
 		Values.Global.maxWait = global.getNode("maxWait").getInt(1000);
-		
+
 		ConfigurationNode synchronize = rootNode.getNode("synchronize");
 		Values.Synchronize.enableInventory = synchronize.getNode("enableInventory").getBoolean(true);
 		Values.Synchronize.enableEnderChest = synchronize.getNode("enableEnderChest").getBoolean(true);
@@ -110,7 +111,7 @@ public class Config {
 			@Getter
 			private static int maxWait;
 		}
-		
+
 		@UtilityClass
 		public static class Synchronize {
 			@Getter

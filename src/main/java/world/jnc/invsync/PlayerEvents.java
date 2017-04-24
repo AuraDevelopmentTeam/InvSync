@@ -18,6 +18,7 @@ import org.spongepowered.api.scheduler.Task;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import world.jnc.invsync.config.Config;
 import world.jnc.invsync.util.InventorySerializer;
 
 @RequiredArgsConstructor

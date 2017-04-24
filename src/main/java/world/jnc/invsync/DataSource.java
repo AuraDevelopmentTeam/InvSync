@@ -11,6 +11,7 @@ import org.spongepowered.api.entity.living.player.Player;
 
 import lombok.Cleanup;
 import lombok.NonNull;
+import world.jnc.invsync.config.Config;
 import world.jnc.invsync.util.database.DatabaseConnection;
 import world.jnc.invsync.util.database.H2DatabaseConnection;
 import world.jnc.invsync.util.database.MysqlDatabaseConnection;

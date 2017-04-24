@@ -23,6 +23,7 @@ import com.google.inject.Inject;
 
 import lombok.Getter;
 import lombok.NonNull;
+import world.jnc.invsync.config.Config;
 
 @Plugin(id = InventorySync.ID, name = InventorySync.NAME, version = InventorySync.VERSION, description = InventorySync.DESCRIPTION, authors = {
 		InventorySync.AUTHOR })

@@ -30,7 +30,7 @@ import org.spongepowered.api.item.inventory.ItemStack;
 
 import lombok.Cleanup;
 import lombok.experimental.UtilityClass;
-import world.jnc.invsync.Config;
+import world.jnc.invsync.config.Config;
 
 @UtilityClass
 public class InventorySerializer {

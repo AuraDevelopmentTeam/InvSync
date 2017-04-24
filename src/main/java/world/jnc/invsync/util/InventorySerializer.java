@@ -30,12 +30,13 @@ import org.spongepowered.api.item.inventory.ItemStack;
 
 import lombok.Cleanup;
 import lombok.experimental.UtilityClass;
+import world.jnc.invsync.Config;
 
 @UtilityClass
 public class InventorySerializer {
 	private static final DataQuery INVENTORY = DataQuery.of("inventory");
 	private static final DataQuery ENDER_CHEST = DataQuery.of("enderChest");
-	private static final DataQuery GAME_MODE = DataQuery.of("gamemode");
+	private static final DataQuery GAME_MODE = DataQuery.of("gameMode");
 	private static final DataQuery EXPERIENCE = DataQuery.of("experience");
 	private static final DataQuery SLOT = DataQuery.of("slot");
 	private static final DataQuery STACK = DataQuery.of("stack");
@@ -46,10 +47,18 @@ public class InventorySerializer {
 	public static byte[] serializePlayer(Player player) throws IOException {
 		DataContainer container = new MemoryDataContainer();
 
-		container.set(INVENTORY, serializeInventory(player.getInventory()));
-		container.set(ENDER_CHEST, serializeInventory(player.getEnderChestInventory()));
-		container.set(GAME_MODE, player.get(KEY_GAME_MODE).get());
-		container.set(EXPERIENCE, player.get(KEY_EXPERIENCE).get());
+		if (Config.Values.Synchronize.getEnableInventory()) {
+			container.set(INVENTORY, serializeInventory(player.getInventory()));
+		}
+		if (Config.Values.Synchronize.getEnableEnderChest()) {
+			container.set(ENDER_CHEST, serializeInventory(player.getEnderChestInventory()));
+		}
+		if (Config.Values.Synchronize.getEnableGameMode()) {
+			container.set(GAME_MODE, player.get(KEY_GAME_MODE).get());
+		}
+		if (Config.Values.Synchronize.getEnableExperience()) {
+			container.set(EXPERIENCE, player.get(KEY_EXPERIENCE).get());
+		}
 
 		@Cleanup
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -79,16 +88,16 @@ public class InventorySerializer {
 		Optional<String> gameMode = container.getString(GAME_MODE);
 		Optional<Integer> experience = container.getInt(EXPERIENCE);
 
-		if (inventory.isPresent()) {
+		if (inventory.isPresent() && Config.Values.Synchronize.getEnableInventory()) {
 			deserializeInventory(inventory.get(), player.getInventory());
 		}
-		if (enderChest.isPresent()) {
+		if (enderChest.isPresent() && Config.Values.Synchronize.getEnableEnderChest()) {
 			deserializeInventory(enderChest.get(), player.getEnderChestInventory());
 		}
-		if (gameMode.isPresent()) {
+		if (gameMode.isPresent() && Config.Values.Synchronize.getEnableGameMode()) {
 			player.offer(KEY_GAME_MODE, getGameMode(gameMode.get()));
 		}
-		if (experience.isPresent()) {
+		if (experience.isPresent() && Config.Values.Synchronize.getEnableExperience()) {
 			player.offer(KEY_EXPERIENCE, experience.get());
 		}
 	}

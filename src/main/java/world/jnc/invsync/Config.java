@@ -60,7 +60,13 @@ public class Config {
 		}
 
 		ConfigurationNode global = rootNode.getNode("global");
-		Values.Global.maxWait = global.getNode("maxWait").getInt(500);
+		Values.Global.maxWait = global.getNode("maxWait").getInt(1000);
+		
+		ConfigurationNode synchronize = rootNode.getNode("synchronize");
+		Values.Synchronize.enableInventory = synchronize.getNode("enableInventory").getBoolean(true);
+		Values.Synchronize.enableEnderChest = synchronize.getNode("enableEnderChest").getBoolean(true);
+		Values.Synchronize.enableGameMode = synchronize.getNode("enableGameMode").getBoolean(true);
+		Values.Synchronize.enableExperience = synchronize.getNode("enableExperience").getBoolean(true);
 
 		ConfigurationNode storage = rootNode.getNode("storage");
 		Values.Storage.storageEngine = storage.getNode("storageEngine").getString(validStorageEngines[0]);
@@ -103,6 +109,18 @@ public class Config {
 		public static class Global {
 			@Getter
 			private static int maxWait;
+		}
+		
+		@UtilityClass
+		public static class Synchronize {
+			@Getter
+			private static boolean enableInventory;
+			@Getter
+			private static boolean enableEnderChest;
+			@Getter
+			private static boolean enableGameMode;
+			@Getter
+			private static boolean enableExperience;
 		}
 
 		@UtilityClass

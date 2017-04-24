@@ -1,3 +1,10 @@
+0.5.0-beta
+----------
+
+- Fixed [#6](https://github.com/BrainStone/InvSync/issues/6): Serialize inventories to NBT
+- Data in database is now way more portable
+- Fixed [#7](https://github.com/BrainStone/InvSync/issues/7): Only one instance of the plugin can work with a H2 database
+
 0.4.6-beta
 ----------
 

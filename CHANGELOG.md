@@ -1,3 +1,9 @@
+0.4.0-beta
+----------
+
+- Gamemode and Experience are now synced too (experience is bugged atm)
+- Waiting for other server to finish instead of waiting a fixed amount of time. Makes it more secure!
+
 0.3.18-beta
 -----------
 

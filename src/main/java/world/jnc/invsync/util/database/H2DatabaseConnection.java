@@ -4,6 +4,8 @@ import java.nio.file.Path;
 import java.sql.SQLException;
 
 public class H2DatabaseConnection extends DatabaseConnection {
+	private static final String URLFormat = "jdbc:h2:%s;AUTO_SERVER=TRUE";
+	
 	/**
 	 * Opens a h2 database connection.
 	 *
@@ -12,6 +14,6 @@ public class H2DatabaseConnection extends DatabaseConnection {
 	 * @throws SQLException
 	 */
 	public H2DatabaseConnection(Path databaseFile) throws SQLException {
-		super("jdbc:h2:" + databaseFile.toAbsolutePath());
+		super(String.format(URLFormat, databaseFile.toAbsolutePath()));
 	}
 }

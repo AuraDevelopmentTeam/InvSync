@@ -3,6 +3,8 @@ package world.jnc.invsync.util.database;
 import java.sql.SQLException;
 
 public class MysqlDatabaseConnection extends DatabaseConnection {
+	private static final String URLFormat = "jdbc:mysql://%s:%s@%s:%d/%s";
+
 	/**
 	 * Opens a MySQL database connection.
 	 *
@@ -21,6 +23,6 @@ public class MysqlDatabaseConnection extends DatabaseConnection {
 	 */
 	public MysqlDatabaseConnection(String host, int port, String database, String user, String password)
 			throws SQLException {
-		super("jdbc:mysql://" + user + ':' + password + '@' + host + ':' + port + '/' + database);
+		super(String.format(URLFormat, user, password, host, port, database));
 	}
 }

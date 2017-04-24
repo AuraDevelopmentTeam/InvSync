@@ -30,7 +30,7 @@ public abstract class DatabaseConnection {
 
 		return sql.getDataSource(jdbcUrl);
 	}
-	
+
 	protected DatabaseConnection(String connectionURL) throws SQLException {
 		connect(connectionURL);
 	}
@@ -59,10 +59,18 @@ public abstract class DatabaseConnection {
 		}
 	}
 
-	public void verifyConnection() throws SQLException {
+	public boolean verifyConnection() {
 		if (!isConnectionActive()) {
-			reconnect();
+			try {
+				reconnect();
+			} catch (SQLException e) {
+				InventorySync.getLogger().error("Reconnecting failed!", e);
+			}
+
+			return false;
 		}
+
+		return true;
 	}
 
 	public Statement getStatement() throws SQLException {

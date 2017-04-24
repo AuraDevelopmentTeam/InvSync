@@ -82,6 +82,10 @@ public class DataSource {
 	}
 
 	public void saveInventory(Player player, PlayerData data) {
+		if (!connection.verifyConnection()) {
+			prepareStatements();
+		}
+
 		String playerName = getPlayerString(player);
 
 		try {
@@ -101,6 +105,10 @@ public class DataSource {
 	}
 
 	public Optional<PlayerData> loadInventory(Player player) {
+		if (!connection.verifyConnection()) {
+			prepareStatements();
+		}
+
 		String playerName = getPlayerString(player);
 
 		try {
@@ -131,6 +139,10 @@ public class DataSource {
 	}
 
 	public void setActive(Player player) {
+		if (!connection.verifyConnection()) {
+			prepareStatements();
+		}
+
 		String playerName = getPlayerString(player);
 
 		try {
@@ -146,6 +158,10 @@ public class DataSource {
 	}
 
 	public boolean isActive(Player player) {
+		if (!connection.verifyConnection()) {
+			prepareStatements();
+		}
+
 		try {
 			isActive.setBytes(1, getBytesFromUUID(player.getUniqueId()));
 

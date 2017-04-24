@@ -35,21 +35,21 @@ import lombok.experimental.UtilityClass;
 public class InventorySerializer {
 	private static final DataQuery INVENTORY = DataQuery.of("inventory");
 	private static final DataQuery ENDER_CHEST = DataQuery.of("enderChest");
-	private static final DataQuery GAMEMODE = DataQuery.of("gamemode");
+	private static final DataQuery GAME_MODE = DataQuery.of("gamemode");
 	private static final DataQuery EXPERIENCE = DataQuery.of("experience");
 	private static final DataQuery SLOT = DataQuery.of("slot");
 	private static final DataQuery STACK = DataQuery.of("stack");
 
-	private static final Key<Value<GameMode>> GAME_MODE = Keys.GAME_MODE;
-	private static final Key<MutableBoundedValue<Integer>> TOTAL_EXPERIENCE = Keys.TOTAL_EXPERIENCE;
+	private static final Key<Value<GameMode>> KEY_GAME_MODE = Keys.GAME_MODE;
+	private static final Key<MutableBoundedValue<Integer>> KEY_EXPERIENCE = Keys.TOTAL_EXPERIENCE;
 
 	public static byte[] serializePlayer(Player player) throws IOException {
 		DataContainer container = new MemoryDataContainer();
 
 		container.set(INVENTORY, serializeInventory(player.getInventory()));
 		container.set(ENDER_CHEST, serializeInventory(player.getEnderChestInventory()));
-		container.set(GAMEMODE, player.get(GAME_MODE).get());
-		container.set(EXPERIENCE, player.get(TOTAL_EXPERIENCE).get());
+		container.set(GAME_MODE, player.get(KEY_GAME_MODE).get());
+		container.set(EXPERIENCE, player.get(KEY_EXPERIENCE).get());
 
 		@Cleanup
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -76,7 +76,7 @@ public class InventorySerializer {
 
 		Optional<List<DataView>> inventory = container.getViewList(INVENTORY);
 		Optional<List<DataView>> enderChest = container.getViewList(ENDER_CHEST);
-		Optional<String> gameMode = container.getString(GAMEMODE);
+		Optional<String> gameMode = container.getString(GAME_MODE);
 		Optional<Integer> experience = container.getInt(EXPERIENCE);
 
 		if (inventory.isPresent()) {
@@ -86,10 +86,10 @@ public class InventorySerializer {
 			deserializeInventory(enderChest.get(), player.getEnderChestInventory());
 		}
 		if (gameMode.isPresent()) {
-			player.offer(GAME_MODE, getGameMode(gameMode.get()));
+			player.offer(KEY_GAME_MODE, getGameMode(gameMode.get()));
 		}
 		if (experience.isPresent()) {
-			player.offer(TOTAL_EXPERIENCE, experience.get());
+			player.offer(KEY_EXPERIENCE, experience.get());
 		}
 	}
 

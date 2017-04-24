@@ -7,14 +7,10 @@ import java.sql.SQLException;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.entity.living.player.gamemode.GameMode;
-import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 
 import lombok.Cleanup;
 import lombok.NonNull;
-import world.jnc.invsync.util.PlayerData;
 import world.jnc.invsync.util.database.DatabaseConnection;
 import world.jnc.invsync.util.database.H2DatabaseConnection;
 import world.jnc.invsync.util.database.MysqlDatabaseConnection;
@@ -27,10 +23,7 @@ public class DataSource {
 	private final String tableInventories;
 	private final String tableInventoriesColumnUUID;
 	private final String tableInventoriesColumnActive;
-	private final String tableInventoriesColumnGamemode;
-	private final String tableInventoriesColumnExperience;
-	private final String tableInventoriesColumnInventory;
-	private final String tableInventoriesColumnEnderchest;
+	private final String tableInventoriesColumnData;
 
 	@NonNull
 	private PreparedStatement insertInventory;
@@ -71,17 +64,14 @@ public class DataSource {
 
 		tableInventories = getTableName("inventories");
 		tableInventoriesColumnUUID = "UUID";
-		tableInventoriesColumnGamemode = "Gamemode";
-		tableInventoriesColumnExperience = "Experience";
 		tableInventoriesColumnActive = "Active";
-		tableInventoriesColumnInventory = "Inventory";
-		tableInventoriesColumnEnderchest = "Enderchest";
+		tableInventoriesColumnData = "Data";
 
 		prepareTable();
 		prepareStatements();
 	}
 
-	public void saveInventory(Player player, PlayerData data) {
+	public void saveInventory(Player player, byte[] data) {
 		if (!connection.verifyConnection()) {
 			prepareStatements();
 		}
@@ -92,10 +82,7 @@ public class DataSource {
 			InventorySync.getLogger().debug("Saving inventory for player " + playerName);
 
 			insertInventory.setBytes(1, getBytesFromUUID(player.getUniqueId()));
-			insertInventory.setString(2, data.getGameMode().getId());
-			insertInventory.setInt(3, data.getExperience());
-			insertInventory.setBytes(4, data.getInventory());
-			insertInventory.setBytes(5, data.getEnderChest());
+			insertInventory.setBytes(2, data);
 
 			insertInventory.executeUpdate();
 			insertInventory.clearParameters();
@@ -104,7 +91,7 @@ public class DataSource {
 		}
 	}
 
-	public Optional<PlayerData> loadInventory(Player player) {
+	public Optional<byte[]> loadInventory(Player player) {
 		if (!connection.verifyConnection()) {
 			prepareStatements();
 		}
@@ -121,14 +108,7 @@ public class DataSource {
 			loadInventory.clearParameters();
 
 			if (result.next())
-				// TODO Transform the string from gamemode into an actual
-				// gamemode
-				return Optional.of(PlayerData.of(
-						Sponge.getRegistry().getType(GameMode.class, result.getString(tableInventoriesColumnGamemode))
-								.orElse(GameModes.SURVIVAL),
-						result.getInt(tableInventoriesColumnExperience),
-						result.getBytes(tableInventoriesColumnInventory),
-						result.getBytes(tableInventoriesColumnEnderchest)));
+				return Optional.of(result.getBytes(tableInventoriesColumnData));
 			else
 				return Optional.empty();
 		} catch (SQLException e) {
@@ -214,12 +194,9 @@ public class DataSource {
 
 			createTable.append("CREATE TABLE IF NOT EXISTS ").append(tableInventories).append(" (")
 					.append(tableInventoriesColumnUUID).append(" BINARY(16) NOT NULL, ")
-					.append(tableInventoriesColumnActive).append(" BOOL NOT NULL, ")
-					.append(tableInventoriesColumnGamemode).append(" TINYTEXT NOT NULL, ")
-					.append(tableInventoriesColumnExperience).append(" INT NOT NULL, ")
-					.append(tableInventoriesColumnInventory).append(" MEDIUMBLOB NOT NULL, ")
-					.append(tableInventoriesColumnEnderchest).append(" MEDIUMBLOB NOT NULL, PRIMARY KEY ("
-							+ tableInventoriesColumnUUID + ")) DEFAULT CHARSET=utf8");
+					.append(tableInventoriesColumnActive).append(" BOOL NOT NULL, ").append(tableInventoriesColumnData)
+					.append(" MEDIUMBLOB NOT NULL, PRIMARY KEY (").append(tableInventoriesColumnUUID)
+					.append(")) DEFAULT CHARSET=utf8");
 
 			connection.executeStatement(createTable.toString());
 
@@ -238,13 +215,10 @@ public class DataSource {
 
 			insertInventoryStr.append("REPLACE INTO ").append(tableInventories).append(" (")
 					.append(tableInventoriesColumnUUID).append(", ").append(tableInventoriesColumnActive).append(", ")
-					.append(tableInventoriesColumnGamemode).append(", ").append(tableInventoriesColumnExperience)
-					.append(", ").append(tableInventoriesColumnInventory).append(", ")
-					.append(tableInventoriesColumnEnderchest).append(") VALUES (?, FALSE, ?, ?, ?, ?)");
-			getInventoryStr.append("SELECT ").append(tableInventoriesColumnGamemode).append(", ")
-					.append(tableInventoriesColumnExperience).append(", ").append(tableInventoriesColumnInventory)
-					.append(", ").append(tableInventoriesColumnEnderchest).append(" FROM ").append(tableInventories)
-					.append(" WHERE ").append(tableInventoriesColumnUUID).append(" = ? LIMIT 1");
+					.append(tableInventoriesColumnData).append(") VALUES (?, FALSE, ?)");
+			getInventoryStr.append("SELECT ").append(tableInventoriesColumnData).append(" FROM ")
+					.append(tableInventories).append(" WHERE ").append(tableInventoriesColumnUUID)
+					.append(" = ? LIMIT 1");
 			setActiveStr.append("UPDATE ").append(tableInventories).append(" SET ").append(tableInventoriesColumnActive)
 					.append(" = TRUE WHERE ").append(tableInventoriesColumnUUID).append(" = ? LIMIT 1");
 			isActiveStr.append("SELECT ").append(tableInventoriesColumnActive).append(" FROM ").append(tableInventories)

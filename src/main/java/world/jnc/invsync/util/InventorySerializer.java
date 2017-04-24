@@ -1,40 +1,101 @@
 package world.jnc.invsync.util;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.EOFException;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.zip.DataFormatException;
+import java.util.zip.Deflater;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
-import org.spongepowered.api.data.persistence.DataTranslator;
-import org.spongepowered.api.data.persistence.DataTranslators;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.data.DataContainer;
+import org.spongepowered.api.data.DataQuery;
+import org.spongepowered.api.data.DataView;
+import org.spongepowered.api.data.MemoryDataContainer;
+import org.spongepowered.api.data.key.Key;
+import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.data.persistence.DataFormats;
+import org.spongepowered.api.data.value.mutable.MutableBoundedValue;
+import org.spongepowered.api.data.value.mutable.Value;
+import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.gamemode.GameMode;
+import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 
 import lombok.Cleanup;
 import lombok.experimental.UtilityClass;
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
-import world.jnc.invsync.InventorySync;
 
 @UtilityClass
 public class InventorySerializer {
-	private static final DataTranslator<ConfigurationNode> CONFIGURATION_NODE = DataTranslators.CONFIGURATION_NODE;
+	private static final DataQuery INVENTORY = DataQuery.of("inventory");
+	private static final DataQuery ENDER_CHEST = DataQuery.of("enderChest");
+	private static final DataQuery GAMEMODE = DataQuery.of("gamemode");
+	private static final DataQuery EXPERIENCE = DataQuery.of("experience");
+	private static final DataQuery SLOT = DataQuery.of("slot");
+	private static final DataQuery STACK = DataQuery.of("stack");
 
-	public static byte[] serializeInventory(Inventory inventory) throws IOException, DataFormatException {
+	private static final Key<Value<GameMode>> GAME_MODE = Keys.GAME_MODE;
+	private static final Key<MutableBoundedValue<Integer>> TOTAL_EXPERIENCE = Keys.TOTAL_EXPERIENCE;
+
+	public static byte[] serializePlayer(Player player) throws IOException {
+		DataContainer container = new MemoryDataContainer();
+
+		container.set(INVENTORY, serializeInventory(player.getInventory()));
+		container.set(ENDER_CHEST, serializeInventory(player.getEnderChestInventory()));
+		container.set(GAMEMODE, player.get(GAME_MODE).get());
+		container.set(EXPERIENCE, player.get(TOTAL_EXPERIENCE).get());
+
 		@Cleanup
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		@Cleanup
-		ObjectOutputStream objOut = new ObjectOutputStream(out);
+		GZIPOutputStream zipOut = new GZIPOutputStream(out) {
+			{
+				def.setLevel(Deflater.BEST_COMPRESSION);
+			}
+		};
+
+		DataFormats.NBT.writeTo(zipOut, container);
+
+		zipOut.close();
+		return out.toByteArray();
+	}
+
+	public static void deserializePlayer(Player player, byte[] data) throws IOException {
+		@Cleanup
+		ByteArrayInputStream in = new ByteArrayInputStream(data);
+		@Cleanup
+		GZIPInputStream zipIn = new GZIPInputStream(in);
+
+		DataContainer container = DataFormats.NBT.readFrom(zipIn);
+
+		Optional<List<DataView>> inventory = container.getViewList(INVENTORY);
+		Optional<List<DataView>> enderChest = container.getViewList(ENDER_CHEST);
+		Optional<String> gameMode = container.getString(GAMEMODE);
+		Optional<Integer> experience = container.getInt(EXPERIENCE);
+
+		if (inventory.isPresent()) {
+			deserializeInventory(inventory.get(), player.getInventory());
+		}
+		if (enderChest.isPresent()) {
+			deserializeInventory(enderChest.get(), player.getEnderChestInventory());
+		}
+		if (gameMode.isPresent()) {
+			player.offer(GAME_MODE, getGameMode(gameMode.get()));
+		}
+		if (experience.isPresent()) {
+			player.offer(TOTAL_EXPERIENCE, experience.get());
+		}
+	}
+
+	private static List<DataView> serializeInventory(Inventory inventory) {
+		DataContainer container;
+		List<DataView> slots = new LinkedList<>();
 
 		int i = 0;
 		Optional<ItemStack> stack;
@@ -43,40 +104,30 @@ public class InventorySerializer {
 			stack = inv.peek();
 
 			if (stack.isPresent()) {
-				try {
-					objOut.writeInt(i);
-					objOut.writeObject(serializeItemStack(stack.get()).get());
-				} catch (IOException e) {
-					InventorySync.getLogger().error("Error while serializing inventory", e);
-				}
+				container = new MemoryDataContainer();
+
+				container.set(SLOT, i);
+				container.set(STACK, serializeItemStack(stack.get()));
+
+				slots.add(container);
 			}
 
 			i++;
 		}
 
-		objOut.close();
-
-		return CompressionUtils.compress(out.toByteArray());
+		return slots;
 	}
 
-	public static void deserializeInventory(byte[] data, Inventory inventory)
-			throws IOException, ClassNotFoundException, DataFormatException {
-		@Cleanup
-		ObjectInputStream objIn = new ObjectInputStream(new ByteArrayInputStream(CompressionUtils.decompress(data)));
-
+	private static void deserializeInventory(List<DataView> slots, Inventory inventory) {
 		Map<Integer, ItemStack> stacks = new HashMap<>();
 		int i;
 		ItemStack stack;
 
-		while (true) {
-			try {
-				i = objIn.readInt();
-				stack = deserializeItemStack((String) objIn.readObject()).get();
+		for (DataView slot : slots) {
+			i = slot.getInt(SLOT).get();
+			stack = deserializeItemStack(slot.getView(STACK).get());
 
-				stacks.put(i, stack);
-			} catch (EOFException e) {
-				break;
-			}
+			stacks.put(i, stack);
 		}
 
 		i = 0;
@@ -92,32 +143,15 @@ public class InventorySerializer {
 		}
 	}
 
-	private static Optional<String> serializeItemStack(ItemStack item) {
-		try {
-			@Cleanup
-			StringWriter sink = new StringWriter();
-			HoconConfigurationLoader loader = HoconConfigurationLoader.builder().setSink(() -> new BufferedWriter(sink))
-					.build();
-			ConfigurationNode node = CONFIGURATION_NODE.translate(item.toContainer());
-			loader.save(node);
-			return Optional.of(sink.toString());
-		} catch (Exception e) {
-			e.printStackTrace();
-			return Optional.empty();
-		}
+	private static DataView serializeItemStack(ItemStack item) {
+		return item.toContainer();
 	}
 
-	private static Optional<ItemStack> deserializeItemStack(String json) {
-		try {
-			@Cleanup
-			StringReader source = new StringReader(json);
-			HoconConfigurationLoader loader = HoconConfigurationLoader.builder()
-					.setSource(() -> new BufferedReader(source)).build();
-			ConfigurationNode node = loader.load();
-			return Optional.of(ItemStack.builder().fromContainer(CONFIGURATION_NODE.translate(node)).build());
-		} catch (Exception e) {
-			e.printStackTrace();
-			return Optional.empty();
-		}
+	private static ItemStack deserializeItemStack(DataView data) {
+		return ItemStack.builder().fromContainer(data).build();
+	}
+
+	private static GameMode getGameMode(String gameMode) {
+		return Sponge.getRegistry().getType(GameMode.class, gameMode).orElse(GameModes.SURVIVAL);
 	}
 }

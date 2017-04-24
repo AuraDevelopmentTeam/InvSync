@@ -9,19 +9,16 @@ import java.util.function.Consumer;
 import java.util.zip.DataFormatException;
 
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.item.inventory.ChangeInventoryEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
-import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.scheduler.Task;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import world.jnc.invsync.util.InventorySerializer;
-import world.jnc.invsync.util.PlayerData;
 
 @RequiredArgsConstructor
 public class PlayerEvents implements AutoCloseable {
@@ -45,7 +42,7 @@ public class PlayerEvents implements AutoCloseable {
 	}
 
 	@Listener
-	public void onPlayerLeave(ClientConnectionEvent.Disconnect event) throws IOException, DataFormatException {
+	public void onPlayerLeave(ClientConnectionEvent.Disconnect event) throws IOException {
 		@NonNull
 		Player player = event.getTargetEntity();
 		UUID uuid = player.getUniqueId();
@@ -82,19 +79,10 @@ public class PlayerEvents implements AutoCloseable {
 	}
 
 	private void loadPlayer(@NonNull Player player) throws ClassNotFoundException, IOException, DataFormatException {
-		@NonNull
-		Inventory inventory = player.getInventory();
-		@NonNull
-		Inventory enderInventory = player.getEnderChestInventory();
-		Optional<PlayerData> result = dataSource.loadInventory(player);
+		Optional<byte[]> result = dataSource.loadInventory(player);
 
 		if (result.isPresent()) {
-			PlayerData playerData = result.get();
-
-			player.offer(Keys.GAME_MODE, playerData.getGameMode());
-			player.offer(Keys.TOTAL_EXPERIENCE, playerData.getExperience());
-			InventorySerializer.deserializeInventory(playerData.getInventory(), inventory);
-			InventorySerializer.deserializeInventory(playerData.getEnderChest(), enderInventory);
+			InventorySerializer.deserializePlayer(player, result.get());
 		} else {
 			savePlayer(player);
 		}
@@ -102,16 +90,8 @@ public class PlayerEvents implements AutoCloseable {
 		dataSource.setActive(player);
 	}
 
-	private void savePlayer(@NonNull Player player) throws IOException, DataFormatException {
-		@NonNull
-		Inventory inventory = player.getInventory();
-		@NonNull
-		Inventory enderInventory = player.getEnderChestInventory();
-		PlayerData data = PlayerData.of(player.get(Keys.GAME_MODE).get(), player.get(Keys.TOTAL_EXPERIENCE).get(),
-				InventorySerializer.serializeInventory(inventory),
-				InventorySerializer.serializeInventory(enderInventory));
-
-		dataSource.saveInventory(player, data);
+	private void savePlayer(@NonNull Player player) throws IOException {
+		dataSource.saveInventory(player, InventorySerializer.serializePlayer(player));
 	}
 
 	private class WaitingForOtherServerToFinish implements Consumer<Task> {

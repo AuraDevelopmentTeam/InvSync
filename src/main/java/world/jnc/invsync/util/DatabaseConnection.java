@@ -82,6 +82,13 @@ public class DatabaseConnection {
 		connection = getDataSource(connectionURLStr).getConnection();
 	}
 
+	private void reconnect() throws SQLException {
+		InventorySync.getLogger()
+				.debug("Reconnecting to: " + connectionURLStr.toString().replaceFirst(":[^:]*@", ":*****@"));
+
+		connection = getDataSource(connectionURLStr).getConnection();
+	}
+
 	public boolean isConnectionActive() {
 		try {
 			return (connection != null) && connection.isValid(0);
@@ -89,6 +96,12 @@ public class DatabaseConnection {
 			e.printStackTrace();
 
 			return false;
+		}
+	}
+
+	public void verifyConnection() throws SQLException {
+		if (!isConnectionActive()) {
+			reconnect();
 		}
 	}
 

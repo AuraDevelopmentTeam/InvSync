@@ -1,6 +1,5 @@
-package world.jnc.invsync.util;
+package world.jnc.invsync.util.database;
 
-import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,13 +15,13 @@ import lombok.Cleanup;
 import lombok.Getter;
 import world.jnc.invsync.InventorySync;
 
-public class DatabaseConnection {
+public abstract class DatabaseConnection {
 	public static final int DEFAULT_MYSQL_PORT = 3306;
 	protected static SqlService sql;
 
 	@Getter
 	protected Connection connection;
-	protected String connectionURLStr;
+	protected String connectionURL;
 
 	protected static DataSource getDataSource(String jdbcUrl) throws SQLException {
 		if (sql == null) {
@@ -31,61 +30,23 @@ public class DatabaseConnection {
 
 		return sql.getDataSource(jdbcUrl);
 	}
-
-	/**
-	 * Opens a MySQL database connection.
-	 *
-	 * @param host
-	 *            Host to connect to
-	 * @param port
-	 *            Port of the host. Default 3306. See
-	 *            {@link DatabaseConnection#DEFAULT_MYSQL_PORT}
-	 * @param database
-	 *            The database to connect to
-	 * @param user
-	 *            User for the connection
-	 * @param password
-	 *            Password for the user
-	 * @throws SQLException
-	 */
-	public DatabaseConnection(String host, int port, String database, String user, String password)
-			throws SQLException {
-		StringBuilder connectionURL = new StringBuilder();
-
-		connectionURL.append("jdbc:mysql://").append(user).append(':').append(password).append('@').append(host)
-				.append(':').append(port).append('/').append(database);
-
+	
+	protected DatabaseConnection(String connectionURL) throws SQLException {
 		connect(connectionURL);
 	}
 
-	/**
-	 * Opens a h2 database connection.
-	 *
-	 * @param databaseFile
-	 *            storage of the database file
-	 * @throws SQLException
-	 */
-	public DatabaseConnection(Path databaseFile) throws SQLException {
-		StringBuilder connectionURL = new StringBuilder();
+	private void connect(String connectionURL) throws SQLException {
+		this.connectionURL = connectionURL;
 
-		connectionURL.append("jdbc:h2:").append(databaseFile.toAbsolutePath());
+		InventorySync.getLogger().debug("Connecting to: " + connectionURL.replaceFirst(":[^:]*@", ":*****@"));
 
-		connect(connectionURL);
-	}
-
-	private void connect(StringBuilder connectionURL) throws SQLException {
-		connectionURLStr = connectionURL.toString();
-
-		connectionURL.insert(0, "Connecting to: ");
-		InventorySync.getLogger().debug(connectionURL.toString().replaceFirst(":[^:]*@", ":*****@"));
-
-		connection = getDataSource(connectionURLStr).getConnection();
+		connection = getDataSource(connectionURL).getConnection();
 	}
 
 	private void reconnect() throws SQLException {
-		InventorySync.getLogger().debug("Reconnecting to: " + connectionURLStr.replaceFirst(":[^:]*@", ":*****@"));
+		InventorySync.getLogger().debug("Reconnecting to: " + connectionURL.replaceFirst(":[^:]*@", ":*****@"));
 
-		connection = getDataSource(connectionURLStr).getConnection();
+		connection = getDataSource(connectionURL).getConnection();
 	}
 
 	public boolean isConnectionActive() {

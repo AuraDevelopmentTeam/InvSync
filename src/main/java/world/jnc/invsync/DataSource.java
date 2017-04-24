@@ -14,8 +14,10 @@ import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 
 import lombok.Cleanup;
 import lombok.NonNull;
-import world.jnc.invsync.util.DatabaseConnection;
 import world.jnc.invsync.util.PlayerData;
+import world.jnc.invsync.util.database.DatabaseConnection;
+import world.jnc.invsync.util.database.H2DatabaseConnection;
+import world.jnc.invsync.util.database.MysqlDatabaseConnection;
 
 public class DataSource {
 	private final DatabaseConnection connection;
@@ -56,12 +58,12 @@ public class DataSource {
 			h2 = true;
 			mysql = false;
 
-			connection = new DatabaseConnection(Config.Values.Storage.H2.getDatabaseFile());
+			connection = new H2DatabaseConnection(Config.Values.Storage.H2.getDatabaseFile());
 		} else if ("mysql".equals(Config.Values.Storage.getStorageEngine())) {
 			h2 = false;
 			mysql = true;
 
-			connection = new DatabaseConnection(Config.Values.Storage.MySQL.getHost(),
+			connection = new MysqlDatabaseConnection(Config.Values.Storage.MySQL.getHost(),
 					Config.Values.Storage.MySQL.getPort(), Config.Values.Storage.MySQL.getDatabase(),
 					Config.Values.Storage.MySQL.getUser(), Config.Values.Storage.MySQL.getPassword());
 		} else

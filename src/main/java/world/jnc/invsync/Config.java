@@ -14,7 +14,7 @@ import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
-import world.jnc.invsync.util.DatabaseConnection;
+import world.jnc.invsync.util.database.DatabaseConnection;
 
 public class Config {
 	public static final String[] validStorageEngines = new String[] { "h2", "mysql" };

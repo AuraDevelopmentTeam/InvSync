@@ -24,6 +24,8 @@ build:
   - ./gradlew assemble -Psigning.keyId="$keyId" -Psigning.password="$password" -Psigning.secretKeyRingFile="$secretKeyRingFile"
   - cp $ORIG_ARTIFACTS .
   when: on_success
+  except:
+    - tags
   artifacts:
     name: "InvSync-$(cat $CACHE_DIR/.version)"
     paths:
@@ -32,6 +34,7 @@ build:
 deploy:
   stage: deploy
   script:
+  - ./gradlew clean
   - ./gradlew uploadArchives -Psigning.keyId="$keyId" -Psigning.password="$password" -Psigning.secretKeyRingFile="$secretKeyRingFile"
   when: on_success
   only:

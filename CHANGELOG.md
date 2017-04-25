@@ -1,3 +1,10 @@
+0.5.14
+------
+
+- Added health to synchronization
+- Added hunger to synchronization
+- Internal improvements
+
 0.5.10
 ------
 

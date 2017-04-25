@@ -53,7 +53,14 @@ So all you have to do to include the mod is add these lines *(in the appropriate
 * Build: Run [gradle] in the repository root: `gradlew[.bat] build`
 * If obscure Gradle issues are found try running `gradlew clean` and `gradlew cleanCache`
 
-## Jar Signing
+## Signing
+
+### PGP Signing
+
+All files will be signed with PGP.
+The public key to verify it can be found in `keys/publicKey.asc`. The signatures of the files will also be found in the maven.
+
+### Jar Signing
 
 All jars from all official download sources will be signed. The signature will always have a SHA-1 hash of `2238d4a92d81ab407741a2fdb741cebddfeacba6` and you
 are free to verify it.

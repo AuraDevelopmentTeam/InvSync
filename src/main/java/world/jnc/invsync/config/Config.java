@@ -68,6 +68,8 @@ public class Config {
 		Values.Synchronize.enableEnderChest = synchronize.getNode("enableEnderChest").getBoolean(true);
 		Values.Synchronize.enableGameMode = synchronize.getNode("enableGameMode").getBoolean(true);
 		Values.Synchronize.enableExperience = synchronize.getNode("enableExperience").getBoolean(true);
+		Values.Synchronize.enableHealth = synchronize.getNode("enableHealth").getBoolean(true);
+		Values.Synchronize.enableHunger = synchronize.getNode("enableHunger").getBoolean(true);
 
 		ConfigurationNode storage = rootNode.getNode("storage");
 		Values.Storage.storageEngine = storage.getNode("storageEngine").getString(validStorageEngines[0]);
@@ -122,6 +124,10 @@ public class Config {
 			private static boolean enableGameMode;
 			@Getter
 			private static boolean enableExperience;
+			@Getter
+			private static boolean enableHealth;
+			@Getter
+			private static boolean enableHunger;
 		}
 
 		@UtilityClass

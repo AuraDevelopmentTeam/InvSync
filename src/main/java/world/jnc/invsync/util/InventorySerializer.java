@@ -38,11 +38,17 @@ public class InventorySerializer {
 	private static final DataQuery ENDER_CHEST = DataQuery.of("enderChest");
 	private static final DataQuery GAME_MODE = DataQuery.of("gameMode");
 	private static final DataQuery EXPERIENCE = DataQuery.of("experience");
+	private static final DataQuery HEALTH = DataQuery.of("health");
+	private static final DataQuery FOOD_LEVEL = DataQuery.of("foodLevel");
+	private static final DataQuery SATURATION = DataQuery.of("saturation");
 	private static final DataQuery SLOT = DataQuery.of("slot");
 	private static final DataQuery STACK = DataQuery.of("stack");
 
 	private static final Key<Value<GameMode>> KEY_GAME_MODE = Keys.GAME_MODE;
 	private static final Key<MutableBoundedValue<Integer>> KEY_EXPERIENCE = Keys.TOTAL_EXPERIENCE;
+	private static final Key<MutableBoundedValue<Double>> KEY_HEALTH = Keys.HEALTH;
+	private static final Key<MutableBoundedValue<Integer>> KEY_FOOD_LEVEL = Keys.FOOD_LEVEL;
+	private static final Key<MutableBoundedValue<Double>> KEY_SATURATION = Keys.SATURATION;
 
 	public static byte[] serializePlayer(Player player) throws IOException {
 		DataContainer container = new MemoryDataContainer();
@@ -58,6 +64,13 @@ public class InventorySerializer {
 		}
 		if (Config.Values.Synchronize.getEnableExperience()) {
 			container.set(EXPERIENCE, player.get(KEY_EXPERIENCE).get());
+		}
+		if (Config.Values.Synchronize.getEnableHealth()) {
+			container.set(HEALTH, player.get(KEY_HEALTH).get());
+		}
+		if (Config.Values.Synchronize.getEnableHunger()) {
+			container.set(FOOD_LEVEL, player.get(KEY_FOOD_LEVEL).get());
+			container.set(SATURATION, player.get(KEY_SATURATION).get());
 		}
 
 		@Cleanup
@@ -87,6 +100,9 @@ public class InventorySerializer {
 		Optional<List<DataView>> enderChest = container.getViewList(ENDER_CHEST);
 		Optional<String> gameMode = container.getString(GAME_MODE);
 		Optional<Integer> experience = container.getInt(EXPERIENCE);
+		Optional<Double> health = container.getDouble(HEALTH);
+		Optional<Integer> foodLevel = container.getInt(FOOD_LEVEL);
+		Optional<Double> saturation = container.getDouble(SATURATION);
 
 		if (inventory.isPresent() && Config.Values.Synchronize.getEnableInventory()) {
 			deserializeInventory(inventory.get(), player.getInventory());
@@ -99,6 +115,13 @@ public class InventorySerializer {
 		}
 		if (experience.isPresent() && Config.Values.Synchronize.getEnableExperience()) {
 			player.offer(KEY_EXPERIENCE, experience.get());
+		}
+		if (health.isPresent() && Config.Values.Synchronize.getEnableHealth()) {
+			player.offer(KEY_HEALTH, health.get());
+		}
+		if (foodLevel.isPresent() && saturation.isPresent() && Config.Values.Synchronize.getEnableHunger()) {
+			player.offer(KEY_FOOD_LEVEL, foodLevel.get());
+			player.offer(KEY_SATURATION, saturation.get());
 		}
 	}
 

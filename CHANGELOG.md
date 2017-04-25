@@ -1,5 +1,5 @@
-0.5.9
------
+0.5.10
+------
 
 - Files are now additionally signed with PGP (For real this time!)
 

@@ -11,6 +11,7 @@ apply plugin: "java"
 apply plugin: "eclipse"
 apply plugin: "maven"
 apply plugin: "maven-publish"
+apply plugin: "signing"
 
 def getChangelog() {
     Pattern pattern = Pattern.compile("^.+?\n-+\n\n((?:- .+?\n)+)");
@@ -180,6 +181,12 @@ task sourceJar (type: Jar, dependsOn: processSources) {
 artifacts {
     archives jar
     archives sourceJar
+}
+
+signing {
+    required { project.hasProperty("signing.keyId") && project.hasProperty("signing.password") && project.hasProperty("signing.secretKeyRingFile") }
+
+    sign configurations.archives
 }
 
 uploadArchives {

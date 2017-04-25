@@ -32,7 +32,7 @@ build:
 deploy:
   stage: deploy
   script:
-  - ./gradlew uploadArchives
+  - ./gradlew uploadArchives -Psigning.keyId="$keyId" -Psigning.keyId="$password" -Psigning.keyId="$secretKeyRingFile"
   when: on_success
   only:
   - tags

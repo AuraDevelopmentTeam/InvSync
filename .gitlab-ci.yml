@@ -2,8 +2,8 @@ variables:
   CACHE_DIR: "$CI_PROJECT_DIR/build"
   CACHE_DIR2: "$CI_PROJECT_DIR/.gradle"
   
-  ORIG_ARTIFACTS: "$CI_PROJECT_DIR/build/libs/InvSync-*.jar"
-  ARTIFACTS: "$CI_PROJECT_DIR/InvSync-*.jar"
+  ORIG_ARTIFACTS: "$CI_PROJECT_DIR/build/libs/InvSync-*.jar*"
+  ARTIFACTS: "$CI_PROJECT_DIR/InvSync-*.jar*"
 
 cache:
  paths:
@@ -21,7 +21,7 @@ build:
   stage: build
   script:
   - ./gradlew clean
-  - ./gradlew assemble
+  - ./gradlew assemble -Psigning.keyId="$keyId" -Psigning.keyId="$password" -Psigning.keyId="$secretKeyRingFile"
   - cp $ORIG_ARTIFACTS .
   when: on_success
   artifacts:

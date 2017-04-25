@@ -21,7 +21,7 @@ build:
   stage: build
   script:
   - ./gradlew clean
-  - ./gradlew assemble -Psigning.keyId="$keyId" -Psigning.keyId="$password" -Psigning.keyId="$secretKeyRingFile"
+  - ./gradlew assemble -Psigning.keyId="$keyId" -Psigning.password="$password" -Psigning.secretKeyRingFile="$secretKeyRingFile"
   - cp $ORIG_ARTIFACTS .
   when: on_success
   artifacts:
@@ -32,7 +32,7 @@ build:
 deploy:
   stage: deploy
   script:
-  - ./gradlew uploadArchives -Psigning.keyId="$keyId" -Psigning.keyId="$password" -Psigning.keyId="$secretKeyRingFile"
+  - ./gradlew uploadArchives -Psigning.keyId="$keyId" -Psigning.password="$password" -Psigning.secretKeyRingFile="$secretKeyRingFile"
   when: on_success
   only:
   - tags

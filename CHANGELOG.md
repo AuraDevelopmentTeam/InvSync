@@ -1,7 +1,12 @@
+0.5.9
+-----
+
+- Files are now additionally signed with PGP (For real this time!)
+
 0.5.7
 -----
 
-- Files are now additionally signed with PGP
+- Files are now additionally signed with PGP (Not working! See next release)
 
 0.5.4
 -----

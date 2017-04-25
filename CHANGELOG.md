@@ -1,3 +1,8 @@
+0.5.7
+-----
+
+- Files are now additionally signed with PGP
+
 0.5.4
 -----
 

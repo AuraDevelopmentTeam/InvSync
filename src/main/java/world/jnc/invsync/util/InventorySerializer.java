@@ -30,6 +30,7 @@ import org.spongepowered.api.item.inventory.ItemStack;
 
 import lombok.Cleanup;
 import lombok.experimental.UtilityClass;
+import world.jnc.invsync.InventorySync;
 import world.jnc.invsync.config.Config;
 
 @UtilityClass
@@ -71,6 +72,14 @@ public class InventorySerializer {
 		if (Config.Values.Synchronize.getEnableHunger()) {
 			container.set(FOOD_LEVEL, player.get(KEY_FOOD_LEVEL).get());
 			container.set(SATURATION, player.get(KEY_SATURATION).get());
+		}
+		if (Config.Values.Global.getDebug()) {
+			@Cleanup
+			ByteArrayOutputStream debug = new ByteArrayOutputStream();
+
+			DataFormats.JSON.writeTo(debug, container);
+
+			InventorySync.getLogger().info(debug.toString());
 		}
 
 		@Cleanup

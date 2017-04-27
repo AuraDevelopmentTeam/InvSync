@@ -132,6 +132,14 @@ public class InventorySerializer {
 			player.offer(KEY_FOOD_LEVEL, foodLevel.get());
 			player.offer(KEY_SATURATION, saturation.get());
 		}
+		if (Config.Values.Global.getDebug()) {
+			@Cleanup
+			ByteArrayOutputStream debug = new ByteArrayOutputStream();
+
+			DataFormats.JSON.writeTo(debug, container);
+
+			InventorySync.getLogger().info(debug.toString());
+		}
 	}
 
 	private static List<DataView> serializeInventory(Inventory inventory) {

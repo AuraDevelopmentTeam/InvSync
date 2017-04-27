@@ -1,3 +1,10 @@
+0.5.19-beta
+-----------
+
+- Now Synchronizing Achievements (Fixes [#9](https://github.com/BrainStone/InvSync/issues/9))
+- Not perfect as achievements get announced
+- Added hidden debug setting
+
 0.5.14
 ------
 

@@ -21,12 +21,16 @@ import org.spongepowered.api.data.key.Key;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.persistence.DataFormats;
 import org.spongepowered.api.data.value.mutable.MutableBoundedValue;
+import org.spongepowered.api.data.value.mutable.SetValue;
 import org.spongepowered.api.data.value.mutable.Value;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.statistic.achievement.Achievement;
+
+import com.google.common.collect.Sets;
 
 import lombok.Cleanup;
 import lombok.experimental.UtilityClass;
@@ -42,6 +46,7 @@ public class InventorySerializer {
 	private static final DataQuery HEALTH = DataQuery.of("health");
 	private static final DataQuery FOOD_LEVEL = DataQuery.of("foodLevel");
 	private static final DataQuery SATURATION = DataQuery.of("saturation");
+	private static final DataQuery ACHIEVEMENTS = DataQuery.of("achievements");
 	private static final DataQuery SLOT = DataQuery.of("slot");
 	private static final DataQuery STACK = DataQuery.of("stack");
 
@@ -50,6 +55,7 @@ public class InventorySerializer {
 	private static final Key<MutableBoundedValue<Double>> KEY_HEALTH = Keys.HEALTH;
 	private static final Key<MutableBoundedValue<Integer>> KEY_FOOD_LEVEL = Keys.FOOD_LEVEL;
 	private static final Key<MutableBoundedValue<Double>> KEY_SATURATION = Keys.SATURATION;
+	private static final Key<SetValue<Achievement>> KEY_ACHIEVEMENTS = Keys.ACHIEVEMENTS;
 
 	public static byte[] serializePlayer(Player player) throws IOException {
 		DataContainer container = new MemoryDataContainer();
@@ -73,6 +79,10 @@ public class InventorySerializer {
 			container.set(FOOD_LEVEL, player.get(KEY_FOOD_LEVEL).get());
 			container.set(SATURATION, player.get(KEY_SATURATION).get());
 		}
+		if (Config.Values.Synchronize.getEnableAchievements()) {
+			container.set(ACHIEVEMENTS, player.get(KEY_ACHIEVEMENTS).get());
+		}
+
 		if (Config.Values.Global.getDebug()) {
 			@Cleanup
 			ByteArrayOutputStream debug = new ByteArrayOutputStream();
@@ -112,6 +122,7 @@ public class InventorySerializer {
 		Optional<Double> health = container.getDouble(HEALTH);
 		Optional<Integer> foodLevel = container.getInt(FOOD_LEVEL);
 		Optional<Double> saturation = container.getDouble(SATURATION);
+		Optional<List<Achievement>> achievements = container.getCatalogTypeList(ACHIEVEMENTS, Achievement.class);
 
 		if (inventory.isPresent() && Config.Values.Synchronize.getEnableInventory()) {
 			deserializeInventory(inventory.get(), player.getInventory());
@@ -132,6 +143,10 @@ public class InventorySerializer {
 			player.offer(KEY_FOOD_LEVEL, foodLevel.get());
 			player.offer(KEY_SATURATION, saturation.get());
 		}
+		if (achievements.isPresent() && Config.Values.Synchronize.getEnableAchievements()) {
+			player.offer(KEY_ACHIEVEMENTS, Sets.newHashSet(achievements.get()));
+		}
+
 		if (Config.Values.Global.getDebug()) {
 			@Cleanup
 			ByteArrayOutputStream debug = new ByteArrayOutputStream();

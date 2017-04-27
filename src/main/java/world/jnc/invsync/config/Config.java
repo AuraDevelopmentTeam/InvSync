@@ -72,6 +72,7 @@ public class Config {
 		Values.Synchronize.enableHealth = synchronize.getNode("enableHealth").getBoolean(true);
 		Values.Synchronize.enableHunger = synchronize.getNode("enableHunger").getBoolean(true);
 		Values.Synchronize.enableAchievements = synchronize.getNode("enableAchievements").getBoolean(true);
+		Values.Synchronize.enablePotionEffects = synchronize.getNode("enablePotionEffects").getBoolean(true);
 
 		ConfigurationNode storage = rootNode.getNode("storage");
 		Values.Storage.storageEngine = storage.getNode("storageEngine").getString(validStorageEngines[0]);
@@ -135,6 +136,8 @@ public class Config {
 			private static boolean enableHunger;
 			@Getter
 			private static boolean enableAchievements;
+			@Getter
+			private static boolean enablePotionEffects;
 		}
 
 		@UtilityClass

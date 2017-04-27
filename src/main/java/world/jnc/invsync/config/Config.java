@@ -61,6 +61,7 @@ public class Config {
 		}
 
 		ConfigurationNode global = rootNode.getNode("global");
+		Values.Global.debug = global.getNode("debug").getBoolean(false);
 		Values.Global.maxWait = global.getNode("maxWait").getInt(1000);
 
 		ConfigurationNode synchronize = rootNode.getNode("synchronize");
@@ -110,6 +111,9 @@ public class Config {
 	public static class Values {
 		@UtilityClass
 		public static class Global {
+			/** Hidden config value! Will not appear in default config. */
+			@Getter
+			private static boolean debug;
 			@Getter
 			private static int maxWait;
 		}

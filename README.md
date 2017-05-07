@@ -53,6 +53,16 @@ So all you have to do to include the mod is add these lines *(in the appropriate
 * Build: Run [gradle] in the repository root: `gradlew[.bat] build`
 * If obscure Gradle issues are found try running `gradlew clean` and `gradlew cleanCache`
 
+## Development builds
+
+Between each offical release there are several bleeding edge development builds, which you can also use. But be aware that they might contain unfinished
+features and therefore won't work properly.
+
+You can find the builds here: https://gitlab.brainstonemod.com/BrainStone/InvSync/pipelines
+
+On the right is a download symbol, click that a dropdown will open. Select "build". Then you'll download a zip file containing all atrifacts including the
+plugin jar.
+
 ## Signing
 
 ### PGP Signing

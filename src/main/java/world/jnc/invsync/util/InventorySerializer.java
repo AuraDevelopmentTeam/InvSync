@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -79,7 +80,10 @@ public class InventorySerializer {
 			container.set(SATURATION, player.get(KEY_SATURATION).get());
 		}
 		if (Config.Values.Synchronize.getEnablePotionEffects()) {
-			container.set(POTION_EFFECTS, player.get(KEY_POTION_EFFECTS).orElse(Collections.emptyList()));
+			List<DataView> potions = player.get(KEY_POTION_EFFECTS).orElse(Collections.emptyList()).stream()
+					.map(potion -> potion.toContainer()).collect(Collectors.toList());
+
+			container.set(POTION_EFFECTS, potions);
 		}
 
 		if (Config.Values.Global.getDebug()) {
@@ -121,7 +125,7 @@ public class InventorySerializer {
 		Optional<Double> health = container.getDouble(HEALTH);
 		Optional<Integer> foodLevel = container.getInt(FOOD_LEVEL);
 		Optional<Double> saturation = container.getDouble(SATURATION);
-		Optional<List<PotionEffect>> potionEffects = container.getSerializableList(POTION_EFFECTS, PotionEffect.class);
+		Optional<List<DataView>> potionEffects = container.getViewList(POTION_EFFECTS);
 
 		if (inventory.isPresent() && Config.Values.Synchronize.getEnableInventory()) {
 			deserializeInventory(inventory.get(), player.getInventory());
@@ -143,12 +147,25 @@ public class InventorySerializer {
 			player.offer(KEY_SATURATION, saturation.get());
 		}
 		if (potionEffects.isPresent() && Config.Values.Synchronize.getEnablePotionEffects()) {
-			player.offer(KEY_POTION_EFFECTS, potionEffects.get());
+			List<PotionEffect> effects = potionEffects.get().stream()
+					.map(potion -> PotionEffect.builder().build(potion)).filter(potion -> potion.isPresent())
+					.map(potion -> potion.get()).collect(Collectors.toList());
+
+			player.offer(KEY_POTION_EFFECTS, effects);
 		}
 
 		if (Config.Values.Global.getDebug()) {
-			InventorySync.getLogger().info("" + potionEffects.isPresent());
-			InventorySync.getLogger().info("" + container.get(POTION_EFFECTS).get().getClass());
+			try {
+				InventorySync.getLogger().info("" + potionEffects.isPresent());
+				InventorySync.getLogger().info("" + container.get(POTION_EFFECTS).get().getClass());
+				InventorySync.getLogger().info("" + (container.get(POTION_EFFECTS).get() instanceof List<?>));
+				InventorySync.getLogger().info("" + container.getList(POTION_EFFECTS).get().getClass());
+				InventorySync.getLogger().info("" + container.getList(POTION_EFFECTS).get().get(0).getClass());
+				InventorySync.getLogger()
+						.info("" + container.getObjectList(POTION_EFFECTS, PotionEffect.class).get().getClass());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 
 			@Cleanup
 			ByteArrayOutputStream debug = new ByteArrayOutputStream();

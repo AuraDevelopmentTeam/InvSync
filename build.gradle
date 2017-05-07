@@ -46,7 +46,7 @@ def getVersionName() {
             def versions = tmp[0].split("\\.");
             versions[2] = String.valueOf(versions[2].toInteger() + tmp[1].toInteger());
             
-            version = versions.join(".");
+            version = versions.join(".") + "-development";
             
             if (tmp.length == 4)
                 version += "-" + tmp[3];

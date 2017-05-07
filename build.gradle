@@ -76,6 +76,7 @@ def signJar(archivePath) {
 }
 
 def MainDirResources = fileTree(dir: file("."), includes: ["README.md", "LICENSE", "CHANGELOG.md"])
+def commonManifest = { attributes "Implementation-Title": "Inventory Sync", "Implementation-Version": version }
 group = "world.jnc.invsync"
 version = getVersionName()
 
@@ -163,6 +164,8 @@ task processSources (type: Sync) {
 }
 
 jar {
+    manifest commonManifest
+
     doLast {
         signJar(jar.archivePath)
     }
@@ -170,6 +173,7 @@ jar {
 
 task sourceJar (type: Jar, dependsOn: processSources) {
     classifier = "sources"
+    manifest commonManifest
     from processSources.outputs
     from MainDirResources
 

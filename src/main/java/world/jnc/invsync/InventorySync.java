@@ -88,6 +88,10 @@ public class InventorySync {
 			logger.warn("WARNING! This is a snapshot version!");
 			logger.warn("Use at your own risk!");
 		}
+		if (VERSION.contains("development")) {
+			logger.info("This is a unreleased development version!");
+			logger.info("Things might not work properly!");
+		}
 
 		config = new Config(this, configFile, configDir);
 		config.load();

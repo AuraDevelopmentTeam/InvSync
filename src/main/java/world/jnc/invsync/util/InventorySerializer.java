@@ -3,6 +3,7 @@ package world.jnc.invsync.util;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,9 +21,11 @@ import org.spongepowered.api.data.MemoryDataContainer;
 import org.spongepowered.api.data.key.Key;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.persistence.DataFormats;
+import org.spongepowered.api.data.value.mutable.ListValue;
 import org.spongepowered.api.data.value.mutable.MutableBoundedValue;
 import org.spongepowered.api.data.value.mutable.SetValue;
 import org.spongepowered.api.data.value.mutable.Value;
+import org.spongepowered.api.effect.potion.PotionEffect;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.entity.living.player.gamemode.GameModes;
@@ -47,6 +50,7 @@ public class InventorySerializer {
 	private static final DataQuery FOOD_LEVEL = DataQuery.of("foodLevel");
 	private static final DataQuery SATURATION = DataQuery.of("saturation");
 	private static final DataQuery ACHIEVEMENTS = DataQuery.of("achievements");
+	private static final DataQuery POTION_EFFECTS = DataQuery.of("potionEffects");
 	private static final DataQuery SLOT = DataQuery.of("slot");
 	private static final DataQuery STACK = DataQuery.of("stack");
 
@@ -56,6 +60,7 @@ public class InventorySerializer {
 	private static final Key<MutableBoundedValue<Integer>> KEY_FOOD_LEVEL = Keys.FOOD_LEVEL;
 	private static final Key<MutableBoundedValue<Double>> KEY_SATURATION = Keys.SATURATION;
 	private static final Key<SetValue<Achievement>> KEY_ACHIEVEMENTS = Keys.ACHIEVEMENTS;
+	private static final Key<ListValue<PotionEffect>> KEY_POTION_EFFECTS = Keys.POTION_EFFECTS;
 
 	public static byte[] serializePlayer(Player player) throws IOException {
 		DataContainer container = new MemoryDataContainer();
@@ -81,6 +86,9 @@ public class InventorySerializer {
 		}
 		if (Config.Values.Synchronize.getEnableAchievements()) {
 			container.set(ACHIEVEMENTS, player.get(KEY_ACHIEVEMENTS).get());
+		}
+		if (Config.Values.Synchronize.getEnablePotionEffects()) {
+			container.set(POTION_EFFECTS, player.get(KEY_POTION_EFFECTS).orElse(Collections.emptyList()));
 		}
 
 		if (Config.Values.Global.getDebug()) {
@@ -123,6 +131,7 @@ public class InventorySerializer {
 		Optional<Integer> foodLevel = container.getInt(FOOD_LEVEL);
 		Optional<Double> saturation = container.getDouble(SATURATION);
 		Optional<List<Achievement>> achievements = container.getCatalogTypeList(ACHIEVEMENTS, Achievement.class);
+		Optional<List<PotionEffect>> potionEffects = container.getSerializableList(POTION_EFFECTS, PotionEffect.class);
 
 		if (inventory.isPresent() && Config.Values.Synchronize.getEnableInventory()) {
 			deserializeInventory(inventory.get(), player.getInventory());
@@ -146,8 +155,14 @@ public class InventorySerializer {
 		if (achievements.isPresent() && Config.Values.Synchronize.getEnableAchievements()) {
 			player.offer(KEY_ACHIEVEMENTS, Sets.newHashSet(achievements.get()));
 		}
+		if (potionEffects.isPresent() && Config.Values.Synchronize.getEnablePotionEffects()) {
+			player.offer(KEY_POTION_EFFECTS, potionEffects.get());
+		}
 
 		if (Config.Values.Global.getDebug()) {
+			InventorySync.getLogger().info("" + potionEffects.isPresent());
+			InventorySync.getLogger().info("" + container.get(POTION_EFFECTS).get().getClass());
+
 			@Cleanup
 			ByteArrayOutputStream debug = new ByteArrayOutputStream();
 

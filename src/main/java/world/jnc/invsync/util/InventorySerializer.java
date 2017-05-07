@@ -147,9 +147,6 @@ public class InventorySerializer {
 		}
 
 		if (Config.Values.Global.getDebug()) {
-			InventorySync.getLogger().info("" + potionEffects.isPresent());
-			InventorySync.getLogger().info("" + container.get(POTION_EFFECTS).get().getClass());
-
 			@Cleanup
 			ByteArrayOutputStream debug = new ByteArrayOutputStream();
 

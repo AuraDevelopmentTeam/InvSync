@@ -1,3 +1,10 @@
+0.5.32
+------
+
+- Removed Synchronizing Achievements because it's working by default (Fixes [#10](https://github.com/BrainStone/InvSync/issues/10) and [#11](https://github.com/BrainStone/InvSync/issues/11))
+- Synchronizing PotionEffects (Not working because of a bug in Sponge. See: [#12](https://github.com/BrainStone/InvSync/issues/12))
+- Added Manifest to jar
+
 0.5.19-beta
 -----------
 

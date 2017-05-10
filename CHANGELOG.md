@@ -1,3 +1,9 @@
+0.5.37
+------
+
+- Synchronizing experience is now using a different method (Fixes [#4](https://github.com/BrainStone/InvSync/issues/4))
+- No longer using deprecated class
+
 0.5.32
 ------
 

@@ -35,7 +35,7 @@ public class PlayerEvents implements AutoCloseable {
 
 		synchronized (waitingPlayers) {
 			Task task = Task.builder()
-					.execute(new WaitingForOtherServerToFinish(player, Config.Values.Global.getMaxWait()))
+					.execute(new WaitingForPreviousServerToFinish(player, Config.Values.Global.getMaxWait()))
 					.intervalTicks(1).submit(InventorySync.getInstance());
 
 			waitingPlayers.put(uuid, task);
@@ -95,21 +95,29 @@ public class PlayerEvents implements AutoCloseable {
 		dataSource.saveInventory(player, InventorySerializer.serializePlayer(player));
 	}
 
-	private class WaitingForOtherServerToFinish implements Consumer<Task> {
+	private class WaitingForPreviousServerToFinish implements Consumer<Task> {
 		private final Player player;
 		private final long endTime;
 
-		public WaitingForOtherServerToFinish(Player player, int maxWait) {
+		public WaitingForPreviousServerToFinish(Player player, int maxWait) {
 			this.player = player;
 			endTime = System.currentTimeMillis() + maxWait;
 		}
 
 		@Override
 		public void accept(Task task) {
-			if (dataSource.isActive(player) && (endTime > System.currentTimeMillis()))
+			boolean timeOk = endTime > System.currentTimeMillis();
+
+			if (dataSource.isActive(player) && timeOk)
 				return;
 
 			try {
+				if (!timeOk) {
+					InventorySync.getLogger().warn("Loading player " + DataSource.getPlayerString(player)
+							+ " failed because the previous server did not finish writing the data in time. Will synchronize anyway!");
+					InventorySync.getLogger().info("Try increasing global.maxWait in the config");
+				}
+
 				loadPlayer(player);
 
 				synchronized (waitingPlayers) {

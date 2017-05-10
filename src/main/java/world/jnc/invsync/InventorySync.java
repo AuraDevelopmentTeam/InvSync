@@ -25,13 +25,14 @@ import lombok.Getter;
 import lombok.NonNull;
 import world.jnc.invsync.config.Config;
 
-@Plugin(id = InventorySync.ID, name = InventorySync.NAME, version = InventorySync.VERSION, description = InventorySync.DESCRIPTION, authors = {
+@Plugin(id = InventorySync.ID, name = InventorySync.NAME, version = InventorySync.VERSION, description = InventorySync.DESCRIPTION, url = InventorySync.URL, authors = {
 		InventorySync.AUTHOR })
 public class InventorySync {
 	public static final String ID = "invsync";
 	public static final String NAME = "Inventory Sync";
 	public static final String VERSION = "@version@";
 	public static final String DESCRIPTION = "This plugin synchronizes the player inventory with a database";
+	public static final String URL = "https://github.com/BrainStone/InvSync";
 	public static final String AUTHOR = "The_BrainStone";
 
 	@NonNull

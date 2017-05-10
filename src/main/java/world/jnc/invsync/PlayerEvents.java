@@ -59,6 +59,9 @@ public class PlayerEvents implements AutoCloseable {
 
 	@Listener
 	public void onItemPickUp(ChangeInventoryEvent.Pickup event, @First Player player) {
+		if (!Config.Values.Synchronize.getEnableInventory())
+			return;
+
 		synchronized (waitingPlayers) {
 			if (waitingPlayers.containsKey(player.getUniqueId())) {
 				event.setCancelled(true);

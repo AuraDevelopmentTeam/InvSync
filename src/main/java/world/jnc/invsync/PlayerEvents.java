@@ -9,10 +9,16 @@ import java.util.function.Consumer;
 import java.util.zip.DataFormatException;
 
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.data.property.item.FoodRestorationProperty;
+import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.entity.ChangeEntityExperienceEvent;
+import org.spongepowered.api.event.entity.DamageEntityEvent;
+import org.spongepowered.api.event.entity.living.humanoid.ChangeGameModeEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.item.inventory.ChangeInventoryEvent;
+import org.spongepowered.api.event.item.inventory.UseItemStackEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.scheduler.Task;
 
@@ -58,8 +64,64 @@ public class PlayerEvents implements AutoCloseable {
 	}
 
 	@Listener
-	public void onItemPickUp(ChangeInventoryEvent.Pickup event, @First Player player) {
+	public void onPlayerItemPickUp(ChangeInventoryEvent.Pickup event, @First Player player) {
 		if (!Config.Values.Synchronize.getEnableInventory())
+			return;
+
+		synchronized (waitingPlayers) {
+			if (waitingPlayers.containsKey(player.getUniqueId())) {
+				event.setCancelled(true);
+			}
+		}
+	}
+
+	@Listener
+	public void onPlayerExperiencePickUp(ChangeEntityExperienceEvent event, @First Player player) {
+		if (!Config.Values.Synchronize.getEnableExperience())
+			return;
+
+		synchronized (waitingPlayers) {
+			if (waitingPlayers.containsKey(player.getUniqueId())) {
+				event.setCancelled(true);
+			}
+		}
+	}
+
+	@Listener
+	public void onPlayerEat(UseItemStackEvent.Finish event, @First Player player) {
+		if (!Config.Values.Synchronize.getEnableHunger())
+			return;
+
+		if (!event.getItemStackInUse().getProperty(FoodRestorationProperty.class).isPresent())
+			return;
+
+		synchronized (waitingPlayers) {
+			if (waitingPlayers.containsKey(player.getUniqueId())) {
+				event.setCancelled(true);
+			}
+		}
+	}
+
+	@Listener
+	public void onPlayerDamage(DamageEntityEvent event) {
+		if (!Config.Values.Synchronize.getEnableHealth())
+			return;
+
+		Entity player = event.getTargetEntity();
+
+		if (!(player instanceof Player))
+			return;
+
+		synchronized (waitingPlayers) {
+			if (waitingPlayers.containsKey(player.getUniqueId())) {
+				event.setCancelled(true);
+			}
+		}
+	}
+
+	@Listener
+	public void onPlayerChangeGamemode(ChangeGameModeEvent event, @First Player player) {
+		if (!Config.Values.Synchronize.getEnableGameMode())
 			return;
 
 		synchronized (waitingPlayers) {

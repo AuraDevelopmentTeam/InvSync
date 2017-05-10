@@ -17,7 +17,6 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataView;
-import org.spongepowered.api.data.MemoryDataContainer;
 import org.spongepowered.api.data.key.Key;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.persistence.DataFormats;
@@ -59,7 +58,7 @@ public class InventorySerializer {
 	private static final Key<ListValue<PotionEffect>> KEY_POTION_EFFECTS = Keys.POTION_EFFECTS;
 
 	public static byte[] serializePlayer(Player player) throws IOException {
-		DataContainer container = new MemoryDataContainer();
+		DataContainer container = DataContainer.createNew();
 
 		if (Config.Values.Synchronize.getEnableInventory()) {
 			container.set(INVENTORY, serializeInventory(player.getInventory()));
@@ -173,7 +172,7 @@ public class InventorySerializer {
 			stack = inv.peek();
 
 			if (stack.isPresent()) {
-				container = new MemoryDataContainer();
+				container = DataContainer.createNew();
 
 				container.set(SLOT, i);
 				container.set(STACK, serializeItemStack(stack.get()));

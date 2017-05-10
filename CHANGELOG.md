@@ -1,3 +1,10 @@
+0.5.42
+------
+
+- Added URL to plugin info
+- Improved event prevention (More events and they don't get prevented if the module is disabled)
+- Added warning when previous server took too long
+
 0.5.37
 ------
 

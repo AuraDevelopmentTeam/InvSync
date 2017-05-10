@@ -41,7 +41,8 @@ public class InventorySerializer {
 	private static final DataQuery INVENTORY = DataQuery.of("inventory");
 	private static final DataQuery ENDER_CHEST = DataQuery.of("enderChest");
 	private static final DataQuery GAME_MODE = DataQuery.of("gameMode");
-	private static final DataQuery EXPERIENCE = DataQuery.of("experience");
+	private static final DataQuery EXPERIENCE_LEVEL = DataQuery.of("experience_level");
+	private static final DataQuery EXPERIENCE_SINCE_LEVEL = DataQuery.of("experience_since_level");
 	private static final DataQuery HEALTH = DataQuery.of("health");
 	private static final DataQuery FOOD_LEVEL = DataQuery.of("foodLevel");
 	private static final DataQuery SATURATION = DataQuery.of("saturation");
@@ -50,7 +51,8 @@ public class InventorySerializer {
 	private static final DataQuery STACK = DataQuery.of("stack");
 
 	private static final Key<Value<GameMode>> KEY_GAME_MODE = Keys.GAME_MODE;
-	private static final Key<MutableBoundedValue<Integer>> KEY_EXPERIENCE = Keys.TOTAL_EXPERIENCE;
+	private static final Key<MutableBoundedValue<Integer>> KEY_EXPERIENCE_LEVEL = Keys.EXPERIENCE_LEVEL;
+	private static final Key<MutableBoundedValue<Integer>> KEY_EXPERIENCE_SINCE_LEVEL = Keys.EXPERIENCE_SINCE_LEVEL;
 	private static final Key<MutableBoundedValue<Double>> KEY_HEALTH = Keys.HEALTH;
 	private static final Key<MutableBoundedValue<Integer>> KEY_FOOD_LEVEL = Keys.FOOD_LEVEL;
 	private static final Key<MutableBoundedValue<Double>> KEY_SATURATION = Keys.SATURATION;
@@ -69,7 +71,8 @@ public class InventorySerializer {
 			container.set(GAME_MODE, player.get(KEY_GAME_MODE).get());
 		}
 		if (Config.Values.Synchronize.getEnableExperience()) {
-			container.set(EXPERIENCE, player.get(KEY_EXPERIENCE).get());
+			container.set(EXPERIENCE_LEVEL, player.get(KEY_EXPERIENCE_LEVEL).get());
+			container.set(EXPERIENCE_SINCE_LEVEL, player.get(KEY_EXPERIENCE_SINCE_LEVEL).get());
 		}
 		if (Config.Values.Synchronize.getEnableHealth()) {
 			container.set(HEALTH, player.get(KEY_HEALTH).get());
@@ -117,7 +120,8 @@ public class InventorySerializer {
 		Optional<List<DataView>> inventory = container.getViewList(INVENTORY);
 		Optional<List<DataView>> enderChest = container.getViewList(ENDER_CHEST);
 		Optional<String> gameMode = container.getString(GAME_MODE);
-		Optional<Integer> experience = container.getInt(EXPERIENCE);
+		Optional<Integer> experience_level = container.getInt(EXPERIENCE_LEVEL);
+		Optional<Integer> experience_since_level = container.getInt(EXPERIENCE_SINCE_LEVEL);
 		Optional<Double> health = container.getDouble(HEALTH);
 		Optional<Integer> foodLevel = container.getInt(FOOD_LEVEL);
 		Optional<Double> saturation = container.getDouble(SATURATION);
@@ -132,8 +136,10 @@ public class InventorySerializer {
 		if (gameMode.isPresent() && Config.Values.Synchronize.getEnableGameMode()) {
 			player.offer(KEY_GAME_MODE, getGameMode(gameMode.get()));
 		}
-		if (experience.isPresent() && Config.Values.Synchronize.getEnableExperience()) {
-			player.offer(KEY_EXPERIENCE, experience.get());
+		if (experience_level.isPresent() && experience_since_level.isPresent()
+				&& Config.Values.Synchronize.getEnableExperience()) {
+			player.offer(KEY_EXPERIENCE_LEVEL, experience_level.get());
+			player.offer(KEY_EXPERIENCE_SINCE_LEVEL, experience_since_level.get());
 		}
 		if (health.isPresent() && Config.Values.Synchronize.getEnableHealth()) {
 			player.offer(KEY_HEALTH, health.get());

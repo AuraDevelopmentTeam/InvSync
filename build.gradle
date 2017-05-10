@@ -163,6 +163,10 @@ task processSources (type: Sync) {
     compileJava.dependsOn processSources
 }
 
+compileJava {
+    options.compilerArgs += ["-Xlint:deprecation"]
+}
+
 jar {
     manifest commonManifest
 

@@ -13,7 +13,6 @@ import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataView;
@@ -26,7 +25,6 @@ import org.spongepowered.api.data.value.mutable.Value;
 import org.spongepowered.api.effect.potion.PotionEffect;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
-import org.spongepowered.api.entity.living.player.gamemode.GameModes;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 
@@ -120,7 +118,7 @@ public class InventorySerializer {
 
 		Optional<List<DataView>> inventory = container.getViewList(INVENTORY);
 		Optional<List<DataView>> enderChest = container.getViewList(ENDER_CHEST);
-		Optional<String> gameMode = container.getString(GAME_MODE);
+		Optional<GameMode> gameMode = container.getCatalogType(GAME_MODE, GameMode.class);
 		Optional<Integer> experience_level = container.getInt(EXPERIENCE_LEVEL);
 		Optional<Integer> experience_since_level = container.getInt(EXPERIENCE_SINCE_LEVEL);
 		Optional<Double> health = container.getDouble(HEALTH);
@@ -135,7 +133,7 @@ public class InventorySerializer {
 			deserializeInventory(enderChest.get(), player.getEnderChestInventory());
 		}
 		if (gameMode.isPresent() && Config.Values.Synchronize.getEnableGameMode()) {
-			player.offer(KEY_GAME_MODE, getGameMode(gameMode.get()));
+			player.offer(KEY_GAME_MODE, gameMode.get());
 		}
 		if (experience_level.isPresent() && experience_since_level.isPresent()
 				&& Config.Values.Synchronize.getEnableExperience()) {
@@ -221,9 +219,5 @@ public class InventorySerializer {
 
 	private static ItemStack deserializeItemStack(DataView data) {
 		return ItemStack.builder().fromContainer(data).build();
-	}
-
-	private static GameMode getGameMode(String gameMode) {
-		return Sponge.getRegistry().getType(GameMode.class, gameMode).orElse(GameModes.SURVIVAL);
 	}
 }

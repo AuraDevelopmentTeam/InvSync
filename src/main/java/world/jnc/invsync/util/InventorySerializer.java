@@ -13,6 +13,7 @@ import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import org.slf4j.Logger;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataView;
@@ -152,12 +153,24 @@ public class InventorySerializer {
 		}
 
 		if (Config.Values.Global.getDebug()) {
+			Logger logger = InventorySync.getLogger();
+
+			logger.info("inventory.isPresent(): " + inventory.isPresent());
+			logger.info("enderChest.isPresent(): " + enderChest.isPresent());
+			logger.info("gameMode.isPresent(): " + gameMode.isPresent());
+			logger.info("experience_level.isPresent(): " + experience_level.isPresent());
+			logger.info("experience_since_level.isPresent(): " + experience_since_level.isPresent());
+			logger.info("health.isPresent(): " + health.isPresent());
+			logger.info("foodLevel.isPresent(): " + foodLevel.isPresent());
+			logger.info("saturation.isPresent(): " + saturation.isPresent());
+			logger.info("potionEffects.isPresent(): " + potionEffects.isPresent());
+
 			@Cleanup
 			ByteArrayOutputStream debug = new ByteArrayOutputStream();
 
 			DataFormats.JSON.writeTo(debug, container);
 
-			InventorySync.getLogger().info(debug.toString());
+			logger.info(debug.toString());
 		}
 	}
 

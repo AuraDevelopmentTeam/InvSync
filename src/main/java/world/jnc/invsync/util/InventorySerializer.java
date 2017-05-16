@@ -165,12 +165,18 @@ public class InventorySerializer {
 			logger.info("saturation.isPresent(): " + saturation.isPresent());
 			logger.info("potionEffects.isPresent(): " + potionEffects.isPresent());
 
-			@Cleanup
-			ByteArrayOutputStream debug = new ByteArrayOutputStream();
+			try {
+				@Cleanup
+				ByteArrayOutputStream debug = new ByteArrayOutputStream();
 
-			DataFormats.JSON.writeTo(debug, container);
+				DataFormats.JSON.writeTo(debug, container);
 
-			logger.info(debug.toString());
+				logger.info(debug.toString());
+			} catch (NoSuchFieldError e) {
+				// Just a brief message to the user. This happens in API version
+				// 5.x.x
+				logger.info("You do not use API version 6.x.x or above. Dumping the container data is not available!");
+			}
 		}
 	}
 

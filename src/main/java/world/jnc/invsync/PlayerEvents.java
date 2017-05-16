@@ -184,14 +184,14 @@ public class PlayerEvents implements AutoCloseable {
 				}
 
 				loadPlayer(player);
-
+			} catch (ClassNotFoundException | IOException | DataFormatException e) {
+				InventorySync.getLogger().warn("Loading player " + DataSource.getPlayerString(player) + " failed!", e);
+			} finally {
 				synchronized (waitingPlayers) {
 					waitingPlayers.remove(player.getUniqueId());
 				}
 
 				task.cancel();
-			} catch (ClassNotFoundException | IOException | DataFormatException e) {
-				InventorySync.getLogger().warn("Loading player " + DataSource.getPlayerString(player) + " failed!", e);
 			}
 		}
 

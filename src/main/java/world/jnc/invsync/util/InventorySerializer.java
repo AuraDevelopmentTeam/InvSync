@@ -17,7 +17,6 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataView;
-import org.spongepowered.api.data.MemoryDataContainer;
 import org.spongepowered.api.data.key.Key;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.persistence.DataFormats;
@@ -59,7 +58,9 @@ public class InventorySerializer {
 	private static final Key<ListValue<PotionEffect>> KEY_POTION_EFFECTS = Keys.POTION_EFFECTS;
 
 	public static byte[] serializePlayer(Player player) throws IOException {
-		DataContainer container = new MemoryDataContainer();
+		// TODO: Remove MemoryDataContainer when API 5.x.x is no longer in use
+		@SuppressWarnings("deprecation")
+		DataContainer container = new org.spongepowered.api.data.MemoryDataContainer();
 
 		if (Config.Values.Synchronize.getEnableInventory()) {
 			container.set(INVENTORY, serializeInventory(player.getInventory()));
@@ -162,6 +163,8 @@ public class InventorySerializer {
 		}
 	}
 
+	// TODO: Remove MemoryDataContainer when API 5.x.x is no longer in use
+	@SuppressWarnings("deprecation")
 	private static List<DataView> serializeInventory(Inventory inventory) {
 		DataContainer container;
 		List<DataView> slots = new LinkedList<>();
@@ -173,7 +176,7 @@ public class InventorySerializer {
 			stack = inv.peek();
 
 			if (stack.isPresent()) {
-				container = new MemoryDataContainer();
+				container = new org.spongepowered.api.data.MemoryDataContainer();
 
 				container.set(SLOT, i);
 				container.set(STACK, serializeItemStack(stack.get()));

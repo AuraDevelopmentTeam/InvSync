@@ -28,6 +28,8 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.entity.Hotbar;
+import org.spongepowered.api.item.inventory.entity.PlayerInventory;
 
 import lombok.Cleanup;
 import lombok.experimental.UtilityClass;
@@ -37,6 +39,7 @@ import world.jnc.invsync.config.Config;
 @UtilityClass
 public class InventorySerializer {
 	private static final DataQuery INVENTORY = DataQuery.of("inventory");
+	private static final DataQuery SELECTED_SLOT = DataQuery.of("selectedSlot");
 	private static final DataQuery ENDER_CHEST = DataQuery.of("enderChest");
 	private static final DataQuery GAME_MODE = DataQuery.of("gameMode");
 	private static final DataQuery EXPERIENCE_LEVEL = DataQuery.of("experience_level");
@@ -63,6 +66,7 @@ public class InventorySerializer {
 
 		if (Config.Values.Synchronize.getEnableInventory()) {
 			container.set(INVENTORY, serializeInventory(player.getInventory()));
+			container.set(SELECTED_SLOT, getHotbar(player).getSelectedSlotIndex());
 		}
 		if (Config.Values.Synchronize.getEnableEnderChest()) {
 			container.set(ENDER_CHEST, serializeInventory(player.getEnderChestInventory()));
@@ -118,6 +122,7 @@ public class InventorySerializer {
 		DataContainer container = DataFormats.NBT.readFrom(zipIn);
 
 		Optional<List<DataView>> inventory = container.getViewList(INVENTORY);
+		Optional<Integer> selectedSlot = container.getInt(SELECTED_SLOT);
 		Optional<List<DataView>> enderChest = container.getViewList(ENDER_CHEST);
 		Optional<GameMode> gameMode = container.getCatalogType(GAME_MODE, GameMode.class);
 		Optional<Integer> experience_level = container.getInt(EXPERIENCE_LEVEL);
@@ -129,6 +134,10 @@ public class InventorySerializer {
 
 		if (inventory.isPresent() && Config.Values.Synchronize.getEnableInventory()) {
 			deserializeInventory(inventory.get(), player.getInventory());
+
+			if (selectedSlot.isPresent()) {
+				getHotbar(player).setSelectedSlotIndex(selectedSlot.get());
+			}
 		}
 		if (enderChest.isPresent() && Config.Values.Synchronize.getEnableEnderChest()) {
 			deserializeInventory(enderChest.get(), player.getEnderChestInventory());
@@ -156,6 +165,7 @@ public class InventorySerializer {
 			Logger logger = InventorySync.getLogger();
 
 			logger.info("inventory.isPresent(): " + inventory.isPresent());
+			logger.info("selectedSlot.isPresent(): " + selectedSlot.isPresent());
 			logger.info("enderChest.isPresent(): " + enderChest.isPresent());
 			logger.info("gameMode.isPresent(): " + gameMode.isPresent());
 			logger.info("experience_level.isPresent(): " + experience_level.isPresent());
@@ -238,5 +248,9 @@ public class InventorySerializer {
 
 	private static ItemStack deserializeItemStack(DataView data) {
 		return ItemStack.builder().fromContainer(data).build();
+	}
+
+	private static Hotbar getHotbar(Player player) {
+		return ((PlayerInventory) player.getInventory()).getHotbar();
 	}
 }

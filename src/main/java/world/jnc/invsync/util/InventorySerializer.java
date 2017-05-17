@@ -119,6 +119,9 @@ public class InventorySerializer {
 		@Cleanup
 		GZIPInputStream zipIn = new GZIPInputStream(in);
 
+		// TODO: Use Cause once SpongeCommon#1355 is fixed
+		// Cause cause =
+		// Cause.builder().owner(InventorySync.getInstance()).build();
 		DataContainer container = DataFormats.NBT.readFrom(zipIn);
 
 		Optional<List<DataView>> inventory = container.getViewList(INVENTORY);

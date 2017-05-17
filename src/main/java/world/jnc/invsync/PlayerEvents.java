@@ -121,6 +121,7 @@ public class PlayerEvents implements AutoCloseable {
 
 	@Listener
 	public void onPlayerChangeGamemode(ChangeGameModeEvent event, @First Player player) {
+		// TODO: Use Cause once SpongeCommon#1355 is fixed
 		if (!Config.Values.Synchronize.getEnableGameMode())
 			return;
 
@@ -183,14 +184,14 @@ public class PlayerEvents implements AutoCloseable {
 					InventorySync.getLogger().info("Try increasing global.maxWait in the config");
 				}
 
-				loadPlayer(player);
-			} catch (ClassNotFoundException | IOException | DataFormatException e) {
-				InventorySync.getLogger().warn("Loading player " + DataSource.getPlayerString(player) + " failed!", e);
-			} finally {
 				synchronized (waitingPlayers) {
 					waitingPlayers.remove(player.getUniqueId());
 				}
 
+				loadPlayer(player);
+			} catch (ClassNotFoundException | IOException | DataFormatException e) {
+				InventorySync.getLogger().warn("Loading player " + DataSource.getPlayerString(player) + " failed!", e);
+			} finally {
 				task.cancel();
 			}
 		}

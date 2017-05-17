@@ -85,7 +85,7 @@ are free to verify it.
 ## Copyright and License
 
 ### Copyright
-Copyright 2017 [Yannick Schinko](https://github.com/BrainStone). All rights reserved
+Copyright 2017 [Yannick Schinko](https://github.com/BrainStone).
 
 ### License
 InvSync is licensed under the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.html)

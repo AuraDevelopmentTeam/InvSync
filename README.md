@@ -3,7 +3,14 @@
 [![Build Status](https://gitlab.brainstonemod.com/BrainStone/InvSync/badges/master/build.svg)](https://gitlab.brainstonemod.com/BrainStone/InvSync/commits/master)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/09e53d10121c46d693e2cb251fd12bf0)](https://www.codacy.com/app/BrainStone/InvSync?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=BrainStone/InvSync&amp;utm_campaign=Badge_Grade)
 
-This plugin synchronizes the player inventory with a database 
+This plugin synchronizes the player inventory with a database
+
+## Downloads
+
+You can download all builds from either:
+
+- Ore: https://ore.spongepowered.org/BrainStone/Inventory-Sync
+- Personal Maven: https://maven.jnc.world/world/jnc/invsync/InvSync/
 
 ## [Issue Reporting](https://github.com/BrainStone/InvSync/issues)
 

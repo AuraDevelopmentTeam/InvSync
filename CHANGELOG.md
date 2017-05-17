@@ -1,3 +1,12 @@
+0.5.51
+------
+
+- Made plugin work with API version 5.x.x again
+- Fixed console spam on error during synchronization (Fixes [#16](https://github.com/BrainStone/InvSync/issues/16))
+- Improved and made game mode synchronizing work again (Fixes [#15](https://github.com/BrainStone/InvSync/issues/15))
+- Improved debugging
+- Synchronizing selected slot as well to make transition even smoother!
+
 0.5.42
 ------
 

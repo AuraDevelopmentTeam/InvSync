@@ -24,6 +24,7 @@ import com.google.inject.Inject;
 import lombok.Getter;
 import lombok.NonNull;
 import world.jnc.invsync.config.Config;
+import world.jnc.invsync.event.PlayerEvents;
 
 @Plugin(id = InventorySync.ID, name = InventorySync.NAME, version = InventorySync.VERSION, description = InventorySync.DESCRIPTION, url = InventorySync.URL, authors = {
 		InventorySync.AUTHOR })

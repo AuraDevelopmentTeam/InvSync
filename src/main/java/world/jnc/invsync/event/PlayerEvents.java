@@ -1,4 +1,4 @@
-package world.jnc.invsync;
+package world.jnc.invsync.event;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -24,6 +24,8 @@ import org.spongepowered.api.scheduler.Task;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import world.jnc.invsync.DataSource;
+import world.jnc.invsync.InventorySync;
 import world.jnc.invsync.config.Config;
 import world.jnc.invsync.util.InventorySerializer;
 

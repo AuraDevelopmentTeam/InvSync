@@ -55,6 +55,7 @@ public class InventorySync {
 	private Config config;
 	@NonNull
 	private DataSource dataSource;
+	private PermissionRegistry permissionRegistry;
 	private List<AutoCloseable> eventListeners = new LinkedList<>();
 
 	public static Logger getLogger() {
@@ -93,6 +94,11 @@ public class InventorySync {
 		if (VERSION.contains("development")) {
 			logger.info("This is a unreleased development version!");
 			logger.info("Things might not work properly!");
+		}
+
+		if (permissionRegistry == null) {
+			permissionRegistry = new PermissionRegistry(this);
+			logger.debug("Registered permissions");
 		}
 
 		config = new Config(this, configFile, configDir);

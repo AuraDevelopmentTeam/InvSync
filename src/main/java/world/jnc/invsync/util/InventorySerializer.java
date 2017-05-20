@@ -33,7 +33,9 @@ import org.spongepowered.api.item.inventory.entity.PlayerInventory;
 
 import lombok.Cleanup;
 import lombok.experimental.UtilityClass;
+import world.jnc.invsync.DataSource;
 import world.jnc.invsync.InventorySync;
+import world.jnc.invsync.PermissionRegistry;
 import world.jnc.invsync.config.Config;
 
 @UtilityClass
@@ -64,38 +66,59 @@ public class InventorySerializer {
 		@SuppressWarnings("deprecation")
 		DataContainer container = new org.spongepowered.api.data.MemoryDataContainer();
 
-		if (Config.Values.Synchronize.getEnableInventory()) {
+		if (Config.Values.Synchronize.getEnableInventory() && player.hasPermission(PermissionRegistry.SYNC_INVENTORY)) {
 			container.set(INVENTORY, serializeInventory(player.getInventory()));
 			container.set(SELECTED_SLOT, getHotbar(player).getSelectedSlotIndex());
 		}
-		if (Config.Values.Synchronize.getEnableEnderChest()) {
+		if (Config.Values.Synchronize.getEnableEnderChest()
+				&& player.hasPermission(PermissionRegistry.SYNC_ENDER_CHEST)) {
 			container.set(ENDER_CHEST, serializeInventory(player.getEnderChestInventory()));
 		}
-		if (Config.Values.Synchronize.getEnableGameMode()) {
+		if (Config.Values.Synchronize.getEnableGameMode() && player.hasPermission(PermissionRegistry.SYNC_GAME_MODE)) {
 			container.set(GAME_MODE, player.get(KEY_GAME_MODE).get());
 		}
-		if (Config.Values.Synchronize.getEnableExperience()) {
+		if (Config.Values.Synchronize.getEnableExperience()
+				&& player.hasPermission(PermissionRegistry.SYNC_EXPERIENCE)) {
 			container.set(EXPERIENCE_LEVEL, player.get(KEY_EXPERIENCE_LEVEL).get());
 			container.set(EXPERIENCE_SINCE_LEVEL, player.get(KEY_EXPERIENCE_SINCE_LEVEL).get());
 		}
-		if (Config.Values.Synchronize.getEnableHealth()) {
+		if (Config.Values.Synchronize.getEnableHealth() && player.hasPermission(PermissionRegistry.SYNC_HEALTH)) {
 			container.set(HEALTH, player.get(KEY_HEALTH).get());
 		}
-		if (Config.Values.Synchronize.getEnableHunger()) {
+		if (Config.Values.Synchronize.getEnableHunger() && player.hasPermission(PermissionRegistry.SYNC_HUNGER)) {
 			container.set(FOOD_LEVEL, player.get(KEY_FOOD_LEVEL).get());
 			container.set(SATURATION, player.get(KEY_SATURATION).get());
 		}
-		if (Config.Values.Synchronize.getEnablePotionEffects()) {
+		if (Config.Values.Synchronize.getEnablePotionEffects()
+				&& player.hasPermission(PermissionRegistry.SYNC_POTION_EFFECTS)) {
 			container.set(POTION_EFFECTS, player.get(KEY_POTION_EFFECTS).orElse(Collections.emptyList()));
 		}
 
 		if (Config.Values.Global.getDebug()) {
+			Logger logger = InventorySync.getLogger();
+
+			logger.info("Serializing data of " + DataSource.getPlayerString(player));
+
+			logger.info("Permissions:");
+			logger.info(
+					PermissionRegistry.SYNC_INVENTORY + ": " + player.hasPermission(PermissionRegistry.SYNC_INVENTORY));
+			logger.info(PermissionRegistry.SYNC_ENDER_CHEST + ": "
+					+ player.hasPermission(PermissionRegistry.SYNC_ENDER_CHEST));
+			logger.info(
+					PermissionRegistry.SYNC_GAME_MODE + ": " + player.hasPermission(PermissionRegistry.SYNC_GAME_MODE));
+			logger.info(PermissionRegistry.SYNC_EXPERIENCE + ": "
+					+ player.hasPermission(PermissionRegistry.SYNC_EXPERIENCE));
+			logger.info(PermissionRegistry.SYNC_HEALTH + ": " + player.hasPermission(PermissionRegistry.SYNC_HEALTH));
+			logger.info(PermissionRegistry.SYNC_HUNGER + ": " + player.hasPermission(PermissionRegistry.SYNC_HUNGER));
+			logger.info(PermissionRegistry.SYNC_POTION_EFFECTS + ": "
+					+ player.hasPermission(PermissionRegistry.SYNC_POTION_EFFECTS));
+
 			@Cleanup
 			ByteArrayOutputStream debug = new ByteArrayOutputStream();
 
 			DataFormats.JSON.writeTo(debug, container);
 
-			InventorySync.getLogger().info(debug.toString());
+			logger.info(debug.toString());
 		}
 
 		@Cleanup
@@ -135,38 +158,62 @@ public class InventorySerializer {
 		Optional<Double> saturation = container.getDouble(SATURATION);
 		Optional<List<PotionEffect>> potionEffects = container.getSerializableList(POTION_EFFECTS, PotionEffect.class);
 
-		if (inventory.isPresent() && Config.Values.Synchronize.getEnableInventory()) {
+		if (inventory.isPresent() && Config.Values.Synchronize.getEnableInventory()
+				&& player.hasPermission(PermissionRegistry.SYNC_INVENTORY)) {
 			deserializeInventory(inventory.get(), player.getInventory());
 
 			if (selectedSlot.isPresent()) {
 				getHotbar(player).setSelectedSlotIndex(selectedSlot.get());
 			}
 		}
-		if (enderChest.isPresent() && Config.Values.Synchronize.getEnableEnderChest()) {
+		if (enderChest.isPresent() && Config.Values.Synchronize.getEnableEnderChest()
+				&& player.hasPermission(PermissionRegistry.SYNC_ENDER_CHEST)) {
 			deserializeInventory(enderChest.get(), player.getEnderChestInventory());
 		}
-		if (gameMode.isPresent() && Config.Values.Synchronize.getEnableGameMode()) {
+		if (gameMode.isPresent() && Config.Values.Synchronize.getEnableGameMode()
+				&& player.hasPermission(PermissionRegistry.SYNC_GAME_MODE)) {
 			player.offer(KEY_GAME_MODE, gameMode.get());
 		}
 		if (experience_level.isPresent() && experience_since_level.isPresent()
-				&& Config.Values.Synchronize.getEnableExperience()) {
+				&& Config.Values.Synchronize.getEnableExperience()
+				&& player.hasPermission(PermissionRegistry.SYNC_EXPERIENCE)) {
 			player.offer(KEY_EXPERIENCE_LEVEL, experience_level.get());
 			player.offer(KEY_EXPERIENCE_SINCE_LEVEL, experience_since_level.get());
 		}
-		if (health.isPresent() && Config.Values.Synchronize.getEnableHealth()) {
+		if (health.isPresent() && Config.Values.Synchronize.getEnableHealth()
+				&& player.hasPermission(PermissionRegistry.SYNC_HEALTH)) {
 			player.offer(KEY_HEALTH, health.get());
 		}
-		if (foodLevel.isPresent() && saturation.isPresent() && Config.Values.Synchronize.getEnableHunger()) {
+		if (foodLevel.isPresent() && saturation.isPresent() && Config.Values.Synchronize.getEnableHunger()
+				&& player.hasPermission(PermissionRegistry.SYNC_HUNGER)) {
 			player.offer(KEY_FOOD_LEVEL, foodLevel.get());
 			player.offer(KEY_SATURATION, saturation.get());
 		}
-		if (potionEffects.isPresent() && Config.Values.Synchronize.getEnablePotionEffects()) {
+		if (potionEffects.isPresent() && Config.Values.Synchronize.getEnablePotionEffects()
+				&& player.hasPermission(PermissionRegistry.SYNC_POTION_EFFECTS)) {
 			player.offer(KEY_POTION_EFFECTS, potionEffects.get());
 		}
 
 		if (Config.Values.Global.getDebug()) {
 			Logger logger = InventorySync.getLogger();
 
+			logger.info("Deserializing data of " + DataSource.getPlayerString(player));
+
+			logger.info("Permissions:");
+			logger.info(
+					PermissionRegistry.SYNC_INVENTORY + ": " + player.hasPermission(PermissionRegistry.SYNC_INVENTORY));
+			logger.info(PermissionRegistry.SYNC_ENDER_CHEST + ": "
+					+ player.hasPermission(PermissionRegistry.SYNC_ENDER_CHEST));
+			logger.info(
+					PermissionRegistry.SYNC_GAME_MODE + ": " + player.hasPermission(PermissionRegistry.SYNC_GAME_MODE));
+			logger.info(PermissionRegistry.SYNC_EXPERIENCE + ": "
+					+ player.hasPermission(PermissionRegistry.SYNC_EXPERIENCE));
+			logger.info(PermissionRegistry.SYNC_HEALTH + ": " + player.hasPermission(PermissionRegistry.SYNC_HEALTH));
+			logger.info(PermissionRegistry.SYNC_HUNGER + ": " + player.hasPermission(PermissionRegistry.SYNC_HUNGER));
+			logger.info(PermissionRegistry.SYNC_POTION_EFFECTS + ": "
+					+ player.hasPermission(PermissionRegistry.SYNC_POTION_EFFECTS));
+
+			logger.info("Objects:");
 			logger.info("inventory.isPresent(): " + inventory.isPresent());
 			logger.info("selectedSlot.isPresent(): " + selectedSlot.isPresent());
 			logger.info("enderChest.isPresent(): " + enderChest.isPresent());

@@ -1,3 +1,8 @@
+0.6.0
+-----
+
+- Added individual permissions to allow fine tuning (Closes [#17](https://github.com/BrainStone/InvSync/issues/17))
+
 0.5.51
 ------
 

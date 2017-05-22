@@ -25,6 +25,8 @@ import lombok.Getter;
 import lombok.NonNull;
 import world.jnc.invsync.config.Config;
 import world.jnc.invsync.event.PlayerEvents;
+import world.jnc.invsync.permission.PermissionRegistry;
+import world.jnc.invsync.util.database.DataSource;
 
 @Plugin(id = InventorySync.ID, name = InventorySync.NAME, version = InventorySync.VERSION, description = InventorySync.DESCRIPTION, url = InventorySync.URL, authors = {
 		InventorySync.AUTHOR })

@@ -33,10 +33,10 @@ import org.spongepowered.api.item.inventory.entity.PlayerInventory;
 
 import lombok.Cleanup;
 import lombok.experimental.UtilityClass;
-import world.jnc.invsync.DataSource;
 import world.jnc.invsync.InventorySync;
-import world.jnc.invsync.PermissionRegistry;
 import world.jnc.invsync.config.Config;
+import world.jnc.invsync.permission.PermissionRegistry;
+import world.jnc.invsync.util.database.DataSource;
 
 @UtilityClass
 public class InventorySerializer {

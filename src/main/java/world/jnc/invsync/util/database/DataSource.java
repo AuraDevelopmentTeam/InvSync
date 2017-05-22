@@ -1,4 +1,4 @@
-package world.jnc.invsync;
+package world.jnc.invsync.util.database;
 
 import java.nio.ByteBuffer;
 import java.sql.PreparedStatement;
@@ -11,10 +11,8 @@ import org.spongepowered.api.entity.living.player.Player;
 
 import lombok.Cleanup;
 import lombok.NonNull;
+import world.jnc.invsync.InventorySync;
 import world.jnc.invsync.config.Config;
-import world.jnc.invsync.util.database.DatabaseConnection;
-import world.jnc.invsync.util.database.H2DatabaseConnection;
-import world.jnc.invsync.util.database.MysqlDatabaseConnection;
 
 public class DataSource {
 	private final DatabaseConnection connection;

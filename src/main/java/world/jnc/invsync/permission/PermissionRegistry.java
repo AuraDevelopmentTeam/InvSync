@@ -1,4 +1,4 @@
-package world.jnc.invsync;
+package world.jnc.invsync.permission;
 
 import java.util.Optional;
 
@@ -9,6 +9,7 @@ import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.text.Text;
 
 import lombok.RequiredArgsConstructor;
+import world.jnc.invsync.InventorySync;
 
 @RequiredArgsConstructor
 public class PermissionRegistry {

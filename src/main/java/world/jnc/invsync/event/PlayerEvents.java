@@ -24,10 +24,10 @@ import org.spongepowered.api.scheduler.Task;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import world.jnc.invsync.DataSource;
 import world.jnc.invsync.InventorySync;
 import world.jnc.invsync.config.Config;
 import world.jnc.invsync.util.InventorySerializer;
+import world.jnc.invsync.util.database.DataSource;
 
 @RequiredArgsConstructor
 public class PlayerEvents implements AutoCloseable {

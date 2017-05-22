@@ -46,7 +46,7 @@ public class PermissionRegistry {
 		Optional<Builder> builder = service.newDescriptionBuilder(plugin);
 
 		if (!builder.isPresent())
-			throw new NullPointerException("Permission Builder could not be created!");
+			throw new IllegalStateException("Permission Builder could not be created!");
 
 		return builder.get();
 	}

@@ -1,13 +1,10 @@
-package world.jnc.invsync.util;
+package world.jnc.invsync.util.serializer;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
@@ -26,8 +23,6 @@ import org.spongepowered.api.data.value.mutable.Value;
 import org.spongepowered.api.effect.potion.PotionEffect;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
-import org.spongepowered.api.item.inventory.Inventory;
-import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.entity.Hotbar;
 import org.spongepowered.api.item.inventory.entity.PlayerInventory;
 
@@ -39,7 +34,7 @@ import world.jnc.invsync.permission.PermissionRegistry;
 import world.jnc.invsync.util.database.DataSource;
 
 @UtilityClass
-public class InventorySerializer {
+public class PlayerSerializer {
 	private static final DataQuery INVENTORY = DataQuery.of("inventory");
 	private static final DataQuery SELECTED_SLOT = DataQuery.of("selectedSlot");
 	private static final DataQuery ENDER_CHEST = DataQuery.of("enderChest");
@@ -50,8 +45,6 @@ public class InventorySerializer {
 	private static final DataQuery FOOD_LEVEL = DataQuery.of("foodLevel");
 	private static final DataQuery SATURATION = DataQuery.of("saturation");
 	private static final DataQuery POTION_EFFECTS = DataQuery.of("potionEffects");
-	private static final DataQuery SLOT = DataQuery.of("slot");
-	private static final DataQuery STACK = DataQuery.of("stack");
 
 	private static final Key<Value<GameMode>> KEY_GAME_MODE = Keys.GAME_MODE;
 	private static final Key<MutableBoundedValue<Integer>> KEY_EXPERIENCE_LEVEL = Keys.EXPERIENCE_LEVEL;
@@ -67,12 +60,12 @@ public class InventorySerializer {
 		DataContainer container = new org.spongepowered.api.data.MemoryDataContainer();
 
 		if (Config.Values.Synchronize.getEnableInventory() && player.hasPermission(PermissionRegistry.SYNC_INVENTORY)) {
-			container.set(INVENTORY, serializeInventory(player.getInventory()));
+			container.set(INVENTORY, InventorySerializer.serializeInventory(player.getInventory()));
 			container.set(SELECTED_SLOT, getHotbar(player).getSelectedSlotIndex());
 		}
 		if (Config.Values.Synchronize.getEnableEnderChest()
 				&& player.hasPermission(PermissionRegistry.SYNC_ENDER_CHEST)) {
-			container.set(ENDER_CHEST, serializeInventory(player.getEnderChestInventory()));
+			container.set(ENDER_CHEST, InventorySerializer.serializeInventory(player.getEnderChestInventory()));
 		}
 		if (Config.Values.Synchronize.getEnableGameMode() && player.hasPermission(PermissionRegistry.SYNC_GAME_MODE)) {
 			container.set(GAME_MODE, player.get(KEY_GAME_MODE).get());
@@ -137,7 +130,7 @@ public class InventorySerializer {
 
 		if (inventory.isPresent() && Config.Values.Synchronize.getEnableInventory()
 				&& player.hasPermission(PermissionRegistry.SYNC_INVENTORY)) {
-			deserializeInventory(inventory.get(), player.getInventory());
+			InventorySerializer.deserializeInventory(inventory.get(), player.getInventory());
 
 			if (selectedSlot.isPresent()) {
 				getHotbar(player).setSelectedSlotIndex(selectedSlot.get());
@@ -145,7 +138,7 @@ public class InventorySerializer {
 		}
 		if (enderChest.isPresent() && Config.Values.Synchronize.getEnableEnderChest()
 				&& player.hasPermission(PermissionRegistry.SYNC_ENDER_CHEST)) {
-			deserializeInventory(enderChest.get(), player.getEnderChestInventory());
+			InventorySerializer.deserializeInventory(enderChest.get(), player.getEnderChestInventory());
 		}
 		if (gameMode.isPresent() && Config.Values.Synchronize.getEnableGameMode()
 				&& player.hasPermission(PermissionRegistry.SYNC_GAME_MODE)) {
@@ -188,66 +181,6 @@ public class InventorySerializer {
 			logger.info("saturation.isPresent(): " + saturation.isPresent());
 			logger.info("potionEffects.isPresent(): " + potionEffects.isPresent());
 		}
-	}
-
-	// TODO: Remove MemoryDataContainer when API 5.x.x is no longer in use
-	@SuppressWarnings("deprecation")
-	private static List<DataView> serializeInventory(Inventory inventory) {
-		DataContainer container;
-		List<DataView> slots = new LinkedList<>();
-
-		int i = 0;
-		Optional<ItemStack> stack;
-
-		for (Inventory inv : inventory.slots()) {
-			stack = inv.peek();
-
-			if (stack.isPresent()) {
-				container = new org.spongepowered.api.data.MemoryDataContainer();
-
-				container.set(SLOT, i);
-				container.set(STACK, serializeItemStack(stack.get()));
-
-				slots.add(container);
-			}
-
-			i++;
-		}
-
-		return slots;
-	}
-
-	private static void deserializeInventory(List<DataView> slots, Inventory inventory) {
-		Map<Integer, ItemStack> stacks = new HashMap<>();
-		int i;
-		ItemStack stack;
-
-		for (DataView slot : slots) {
-			i = slot.getInt(SLOT).get();
-			stack = deserializeItemStack(slot.getView(STACK).get());
-
-			stacks.put(i, stack);
-		}
-
-		i = 0;
-
-		for (Inventory slot : inventory.slots()) {
-			if (stacks.containsKey(i)) {
-				slot.set(stacks.get(i));
-			} else {
-				slot.clear();
-			}
-
-			++i;
-		}
-	}
-
-	private static DataView serializeItemStack(ItemStack item) {
-		return item.toContainer();
-	}
-
-	private static ItemStack deserializeItemStack(DataView data) {
-		return ItemStack.builder().fromContainer(data).build();
 	}
 
 	private static Hotbar getHotbar(Player player) {

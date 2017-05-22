@@ -26,8 +26,8 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import world.jnc.invsync.InventorySync;
 import world.jnc.invsync.config.Config;
-import world.jnc.invsync.util.InventorySerializer;
 import world.jnc.invsync.util.database.DataSource;
+import world.jnc.invsync.util.serializer.PlayerSerializer;
 
 @RequiredArgsConstructor
 public class PlayerEvents implements AutoCloseable {
@@ -151,7 +151,7 @@ public class PlayerEvents implements AutoCloseable {
 		Optional<byte[]> result = dataSource.loadInventory(player);
 
 		if (result.isPresent()) {
-			InventorySerializer.deserializePlayer(player, result.get());
+			PlayerSerializer.deserializePlayer(player, result.get());
 		} else {
 			savePlayer(player);
 		}
@@ -160,7 +160,7 @@ public class PlayerEvents implements AutoCloseable {
 	}
 
 	private void savePlayer(@NonNull Player player) throws IOException {
-		dataSource.saveInventory(player, InventorySerializer.serializePlayer(player));
+		dataSource.saveInventory(player, PlayerSerializer.serializePlayer(player));
 	}
 
 	private class WaitingForPreviousServerToFinish implements Consumer<Task> {

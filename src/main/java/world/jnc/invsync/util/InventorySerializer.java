@@ -95,30 +95,7 @@ public class InventorySerializer {
 		}
 
 		if (Config.Values.Global.getDebug()) {
-			Logger logger = InventorySync.getLogger();
-
-			logger.info("Serializing data of " + DataSource.getPlayerString(player));
-
-			logger.info("Permissions:");
-			logger.info(
-					PermissionRegistry.SYNC_INVENTORY + ": " + player.hasPermission(PermissionRegistry.SYNC_INVENTORY));
-			logger.info(PermissionRegistry.SYNC_ENDER_CHEST + ": "
-					+ player.hasPermission(PermissionRegistry.SYNC_ENDER_CHEST));
-			logger.info(
-					PermissionRegistry.SYNC_GAME_MODE + ": " + player.hasPermission(PermissionRegistry.SYNC_GAME_MODE));
-			logger.info(PermissionRegistry.SYNC_EXPERIENCE + ": "
-					+ player.hasPermission(PermissionRegistry.SYNC_EXPERIENCE));
-			logger.info(PermissionRegistry.SYNC_HEALTH + ": " + player.hasPermission(PermissionRegistry.SYNC_HEALTH));
-			logger.info(PermissionRegistry.SYNC_HUNGER + ": " + player.hasPermission(PermissionRegistry.SYNC_HUNGER));
-			logger.info(PermissionRegistry.SYNC_POTION_EFFECTS + ": "
-					+ player.hasPermission(PermissionRegistry.SYNC_POTION_EFFECTS));
-
-			@Cleanup
-			ByteArrayOutputStream debug = new ByteArrayOutputStream();
-
-			DataFormats.JSON.writeTo(debug, container);
-
-			logger.info(debug.toString());
+			printCommonDebugInfo(player, container, true);
 		}
 
 		@Cleanup
@@ -195,23 +172,9 @@ public class InventorySerializer {
 		}
 
 		if (Config.Values.Global.getDebug()) {
+			printCommonDebugInfo(player, container, false);
+
 			Logger logger = InventorySync.getLogger();
-
-			logger.info("Deserializing data of " + DataSource.getPlayerString(player));
-
-			logger.info("Permissions:");
-			logger.info(
-					PermissionRegistry.SYNC_INVENTORY + ": " + player.hasPermission(PermissionRegistry.SYNC_INVENTORY));
-			logger.info(PermissionRegistry.SYNC_ENDER_CHEST + ": "
-					+ player.hasPermission(PermissionRegistry.SYNC_ENDER_CHEST));
-			logger.info(
-					PermissionRegistry.SYNC_GAME_MODE + ": " + player.hasPermission(PermissionRegistry.SYNC_GAME_MODE));
-			logger.info(PermissionRegistry.SYNC_EXPERIENCE + ": "
-					+ player.hasPermission(PermissionRegistry.SYNC_EXPERIENCE));
-			logger.info(PermissionRegistry.SYNC_HEALTH + ": " + player.hasPermission(PermissionRegistry.SYNC_HEALTH));
-			logger.info(PermissionRegistry.SYNC_HUNGER + ": " + player.hasPermission(PermissionRegistry.SYNC_HUNGER));
-			logger.info(PermissionRegistry.SYNC_POTION_EFFECTS + ": "
-					+ player.hasPermission(PermissionRegistry.SYNC_POTION_EFFECTS));
 
 			logger.info("Objects:");
 			logger.info("inventory.isPresent(): " + inventory.isPresent());
@@ -224,19 +187,6 @@ public class InventorySerializer {
 			logger.info("foodLevel.isPresent(): " + foodLevel.isPresent());
 			logger.info("saturation.isPresent(): " + saturation.isPresent());
 			logger.info("potionEffects.isPresent(): " + potionEffects.isPresent());
-
-			try {
-				@Cleanup
-				ByteArrayOutputStream debug = new ByteArrayOutputStream();
-
-				DataFormats.JSON.writeTo(debug, container);
-
-				logger.info(debug.toString());
-			} catch (NoSuchFieldError e) {
-				// Just a brief message to the user. This happens in API version
-				// 5.x.x
-				logger.info("You do not use API version 6.x.x or above. Dumping the container data is not available!");
-			}
 		}
 	}
 
@@ -302,5 +252,41 @@ public class InventorySerializer {
 
 	private static Hotbar getHotbar(Player player) {
 		return ((PlayerInventory) player.getInventory()).getHotbar();
+	}
+
+	private static void printCommonDebugInfo(Player player, DataContainer container, boolean serializing)
+			throws IOException {
+		Logger logger = InventorySync.getLogger();
+
+		if (serializing) {
+			logger.info("Serializing data of " + DataSource.getPlayerString(player));
+		} else {
+			logger.info("Deserializing data of " + DataSource.getPlayerString(player));
+		}
+
+		logger.info("Permissions:");
+		logger.info(PermissionRegistry.SYNC_INVENTORY + ": " + player.hasPermission(PermissionRegistry.SYNC_INVENTORY));
+		logger.info(
+				PermissionRegistry.SYNC_ENDER_CHEST + ": " + player.hasPermission(PermissionRegistry.SYNC_ENDER_CHEST));
+		logger.info(PermissionRegistry.SYNC_GAME_MODE + ": " + player.hasPermission(PermissionRegistry.SYNC_GAME_MODE));
+		logger.info(
+				PermissionRegistry.SYNC_EXPERIENCE + ": " + player.hasPermission(PermissionRegistry.SYNC_EXPERIENCE));
+		logger.info(PermissionRegistry.SYNC_HEALTH + ": " + player.hasPermission(PermissionRegistry.SYNC_HEALTH));
+		logger.info(PermissionRegistry.SYNC_HUNGER + ": " + player.hasPermission(PermissionRegistry.SYNC_HUNGER));
+		logger.info(PermissionRegistry.SYNC_POTION_EFFECTS + ": "
+				+ player.hasPermission(PermissionRegistry.SYNC_POTION_EFFECTS));
+
+		try {
+			@Cleanup
+			ByteArrayOutputStream debug = new ByteArrayOutputStream();
+
+			DataFormats.JSON.writeTo(debug, container);
+
+			logger.info(debug.toString());
+		} catch (NoSuchFieldError e) {
+			// Just a brief message to the user. This happens in API version
+			// 5.x.x
+			logger.info("You do not use API version 6.x.x or above. Dumping the container data is not available!");
+		}
 	}
 }

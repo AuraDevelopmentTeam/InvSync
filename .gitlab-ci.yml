@@ -6,44 +6,29 @@ variables:
   ARTIFACTS: "$CI_PROJECT_DIR/InvSync-*.jar*"
 
 cache:
- paths:
- - $CACHE_DIR
- - $CACHE_DIR2
- key: "$CI_BUILD_REF_NAME"
  untracked: false
 
 stages:
 - build
 - deploy
-- cleanup
   
 build:
   stage: build
   script:
-  - ./gradlew clean
   - ./gradlew assemble -Psigning.keyId="$keyId" -Psigning.password="$password" -Psigning.secretKeyRingFile="$secretKeyRingFile"
   - cp $ORIG_ARTIFACTS .
   when: on_success
   except:
     - tags
   artifacts:
-    name: "InvSync-$(cat $CACHE_DIR/.version)"
+    name: "InvSync-$(cat "$CI_PROJECT_DIR/build/.version")"
     paths:
     - $ARTIFACTS
     
 deploy:
   stage: deploy
   script:
-  - ./gradlew clean
   - ./gradlew uploadArchives -Psigning.keyId="$keyId" -Psigning.password="$password" -Psigning.secretKeyRingFile="$secretKeyRingFile"
   when: on_success
   only:
   - tags
-
-cleanup:
-  stage: cleanup
-  script:
-  - ./gradlew clean
-  - rm -vf $ARTIFACTS
-  - mkdir -p $CACHE_DIR $CACHE_DIR2
-  when: always

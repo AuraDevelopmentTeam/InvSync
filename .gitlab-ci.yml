@@ -1,12 +1,9 @@
 variables:
-  CACHE_DIR: "$CI_PROJECT_DIR/build"
-  CACHE_DIR2: "$CI_PROJECT_DIR/.gradle"
-  
   ORIG_ARTIFACTS: "$CI_PROJECT_DIR/build/libs/InvSync-*.jar*"
   ARTIFACTS: "$CI_PROJECT_DIR/InvSync-*.jar*"
 
 cache:
- untracked: false
+  untracked: false
 
 stages:
 - build
@@ -21,7 +18,7 @@ build:
   except:
     - tags
   artifacts:
-    name: "InvSync-$(cat "$CI_PROJECT_DIR/build/.version")"
+    name: "InvSync-$(cat \"$CI_PROJECT_DIR/build/.version\")"
     paths:
     - $ARTIFACTS
     

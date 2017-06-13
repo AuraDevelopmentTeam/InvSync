@@ -1,3 +1,9 @@
+0.6.9
+-----
+
+- Added bStats metrics
+- Internal restructuring
+
 0.6.0
 -----
 

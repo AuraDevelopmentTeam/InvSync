@@ -10,13 +10,16 @@ import java.util.UUID;
 import org.spongepowered.api.entity.living.player.Player;
 
 import lombok.Cleanup;
+import lombok.Getter;
 import lombok.NonNull;
 import world.jnc.invsync.InventorySync;
 import world.jnc.invsync.config.Config;
 
 public class DataSource {
 	private final DatabaseConnection connection;
+	@Getter
 	private final boolean h2;
+	@Getter
 	private final boolean mysql;
 
 	private final String tableInventories;

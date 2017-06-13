@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.bstats.Metrics;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
@@ -16,6 +17,7 @@ import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
+import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppingEvent;
 import org.spongepowered.api.plugin.Plugin;
 
@@ -27,6 +29,7 @@ import world.jnc.invsync.config.Config;
 import world.jnc.invsync.event.PlayerEvents;
 import world.jnc.invsync.permission.PermissionRegistry;
 import world.jnc.invsync.util.database.DataSource;
+import world.jnc.invsync.util.metrics.FeatureChart;
 
 @Plugin(id = InventorySync.ID, name = InventorySync.NAME, version = InventorySync.VERSION, description = InventorySync.DESCRIPTION, url = InventorySync.URL, authors = {
 		InventorySync.AUTHOR })
@@ -42,6 +45,8 @@ public class InventorySync {
 	@Getter
 	private static InventorySync instance = null;
 
+	@Inject
+	private Metrics metrics;
 	@Inject
 	@NonNull
 	private Logger logger;
@@ -114,8 +119,14 @@ public class InventorySync {
 		logger.info("Loaded successfully!");
 	}
 
+	@Listener
 	public void postInit(GamePostInitializationEvent event) {
 		// Nothing
+	}
+
+	@Listener
+	public void onServerStart(GameStartedServerEvent event) {
+		metrics.addCustomChart(new FeatureChart("features"));
 	}
 
 	@Listener

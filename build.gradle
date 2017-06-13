@@ -5,13 +5,29 @@ import org.apache.tools.ant.filters.ReplaceTokens
 plugins {
     id "org.spongepowered.plugin" version "0.8.1"
     id "io.franzbecker.gradle-lombok" version "1.8"
+    id "com.github.johnrengelman.shadow" version "2.0.0"
 }
 
 apply plugin: "java"
 apply plugin: "eclipse"
+apply plugin: "idea"
 apply plugin: "maven"
 apply plugin: "maven-publish"
 apply plugin: "signing"
+
+eclipse {
+    classpath {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
 
 def getChangelog() {
     Pattern pattern = Pattern.compile("^.+?\n-+\n\n((?:- .+?\n)+)");
@@ -80,6 +96,10 @@ def commonManifest = { attributes "Implementation-Title": "Inventory Sync", "Imp
 group = "world.jnc.invsync"
 version = getVersionName()
 
+configurations {
+    compile.extendsFrom shadow
+}
+
 repositories {
     jcenter()
     mavenCentral()
@@ -87,10 +107,16 @@ repositories {
         name = "sponge"
         url = "https://repo.spongepowered.org/maven"
     }
+    maven {
+        name "bstats-repo"
+        url "http://repo.bstats.org/content/repositories/releases/"
+    }
 }
 
 dependencies {
     compile "org.spongepowered:spongeapi:${sponge_version}"
+    
+    shadow "org.bstats:bstats-sponge:${bStats_version}"
 }
 
 lombok {
@@ -167,12 +193,21 @@ compileJava {
     options.compilerArgs += ["-Xlint:deprecation"]
 }
 
-jar {
+shadowJar {
     manifest commonManifest
-
+    classifier = null
+    version = jar.version
+    configurations = [project.configurations.shadow]
+    
+    project.configurations.shadow.dependencies.each {
+        relocate(it.group, "${project.group}.shadow.${it.group}")
+    }
+    
     doLast {
         signJar(jar.archivePath)
     }
+    
+    shouldRunAfter jar
 }
 
 task sourceJar (type: Jar, dependsOn: processSources) {
@@ -187,7 +222,7 @@ task sourceJar (type: Jar, dependsOn: processSources) {
 }
 
 artifacts {
-    archives jar
+    archives shadowJar
     archives sourceJar
 }
 

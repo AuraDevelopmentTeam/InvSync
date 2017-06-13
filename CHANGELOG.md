@@ -7,14 +7,14 @@
 0.6.0
 -----
 
-- Added individual permissions to allow fine tuning (Closes [#17](https://github.com/BrainStone/InvSync/issues/17))
+- Added individual permissions to allow fine tuning (Closes [#17](https://github.com/AuraDevelopmentTeam/InvSync/issues/17))
 
 0.5.51
 ------
 
 - Made plugin work with API version 5.x.x again
-- Fixed console spam on error during synchronization (Fixes [#16](https://github.com/BrainStone/InvSync/issues/16))
-- Improved and made game mode synchronizing work again (Fixes [#15](https://github.com/BrainStone/InvSync/issues/15))
+- Fixed console spam on error during synchronization (Fixes [#16](https://github.com/AuraDevelopmentTeam/InvSync/issues/16))
+- Improved and made game mode synchronizing work again (Fixes [#15](https://github.com/AuraDevelopmentTeam/InvSync/issues/15))
 - Improved debugging
 - Synchronizing selected slot as well to make transition even smoother!
 
@@ -28,21 +28,21 @@
 0.5.37
 ------
 
-- Synchronizing experience is now using a different method (Fixes [#4](https://github.com/BrainStone/InvSync/issues/4))
+- Synchronizing experience is now using a different method (Fixes [#4](https://github.com/AuraDevelopmentTeam/InvSync/issues/4))
 - No longer using deprecated class
 
 0.5.32
 ------
 
 - Updated to API 7.0.0
-- Removed Synchronizing Achievements because it's working by default (Fixes [#10](https://github.com/BrainStone/InvSync/issues/10) and [#11](https://github.com/BrainStone/InvSync/issues/11))
-- Synchronizing PotionEffects (Not working because of a bug in Sponge. See: [#12](https://github.com/BrainStone/InvSync/issues/12))
+- Removed Synchronizing Achievements because it's working by default (Fixes [#10](https://github.com/AuraDevelopmentTeam/InvSync/issues/10) and [#11](https://github.com/AuraDevelopmentTeam/InvSync/issues/11))
+- Synchronizing PotionEffects (Not working because of a bug in Sponge. See: [#12](https://github.com/AuraDevelopmentTeam/InvSync/issues/12))
 - Added Manifest to jar
 
 0.5.19-beta
 -----------
 
-- Now Synchronizing Achievements (Fixes [#9](https://github.com/BrainStone/InvSync/issues/9))
+- Now Synchronizing Achievements (Fixes [#9](https://github.com/AuraDevelopmentTeam/InvSync/issues/9))
 - Not perfect as achievements get announced
 - Added hidden debug setting
 
@@ -71,20 +71,20 @@
 0.5.0-beta
 ----------
 
-- Fixed [#6](https://github.com/BrainStone/InvSync/issues/6): Serialize inventories to NBT
+- Fixed [#6](https://github.com/AuraDevelopmentTeam/InvSync/issues/6): Serialize inventories to NBT
 - Data in database is now way more portable
-- Fixed [#7](https://github.com/BrainStone/InvSync/issues/7): Only one instance of the plugin can work with a H2 database
+- Fixed [#7](https://github.com/AuraDevelopmentTeam/InvSync/issues/7): Only one instance of the plugin can work with a H2 database
 
 0.4.6-beta
 ----------
 
-- Fixed [#5](https://github.com/BrainStone/InvSync/issues/5): Database connection sometimes times out and should be reconnected (Really this time)
+- Fixed [#5](https://github.com/AuraDevelopmentTeam/InvSync/issues/5): Database connection sometimes times out and should be reconnected (Really this time)
 - Internal improvements
 
 0.4.2-beta
 ----------
 
-- Fixed [#5](https://github.com/BrainStone/InvSync/issues/5): Database connection sometimes times out and should be reconnected (Not really fixed)
+- Fixed [#5](https://github.com/AuraDevelopmentTeam/InvSync/issues/5): Database connection sometimes times out and should be reconnected (Not really fixed)
 
 0.4.0-beta
 ----------
@@ -95,12 +95,12 @@
 0.3.18-beta
 -----------
 
-- Fixed [#3](https://github.com/BrainStone/InvSync/issues/3): Special chars in the MySQL password do not work
+- Fixed [#3](https://github.com/AuraDevelopmentTeam/InvSync/issues/3): Special chars in the MySQL password do not work
 
 0.3.16-beta
 -----------
 
-- Fixed [#2](https://github.com/BrainStone/InvSync/issues/2): When switching servers by bungeecord, the inventory gets loaded from the database before the new data is written 
+- Fixed [#2](https://github.com/AuraDevelopmentTeam/InvSync/issues/2): When switching servers by bungeecord, the inventory gets loaded from the database before the new data is written 
 - No item pickup while waiting for synchronization
 - Storing inventories to database when server stops
 - Internal improvements

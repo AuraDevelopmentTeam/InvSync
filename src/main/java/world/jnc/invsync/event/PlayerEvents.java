@@ -175,6 +175,7 @@ public class PlayerEvents implements AutoCloseable {
 		@Override
 		public void accept(Task task) {
 			boolean timeOk = endTime > System.currentTimeMillis();
+			UUID uuid = player.getUniqueId();
 
 			if (dataSource.isActive(player) && timeOk)
 				return;
@@ -187,13 +188,19 @@ public class PlayerEvents implements AutoCloseable {
 				}
 
 				synchronized (waitingPlayers) {
-					waitingPlayers.remove(player.getUniqueId());
+					waitingPlayers.remove(uuid);
 				}
 
 				loadPlayer(player);
 			} catch (ClassNotFoundException | IOException | DataFormatException e) {
 				InventorySync.getLogger().warn("Loading player " + DataSource.getPlayerString(player) + " failed!", e);
 			} finally {
+				synchronized (waitingPlayers) {
+					if (waitingPlayers.containsKey(uuid)) {
+						waitingPlayers.remove(uuid);
+					}
+				}
+
 				task.cancel();
 			}
 		}

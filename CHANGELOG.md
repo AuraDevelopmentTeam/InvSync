@@ -1,3 +1,8 @@
+0.6.14
+------
+
+- Prevented a very race condition
+
 0.6.9
 -----
 

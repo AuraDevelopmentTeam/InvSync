@@ -130,10 +130,17 @@ public class PlayerSerializer {
 
 		if (inventory.isPresent() && Config.Values.Synchronize.getEnableInventory()
 				&& player.hasPermission(PermissionRegistry.SYNC_INVENTORY)) {
-			InventorySerializer.deserializeInventory(inventory.get(), player.getInventory());
+			boolean fail = InventorySerializer.deserializeInventory(inventory.get(), player.getInventory());
 
 			if (selectedSlot.isPresent()) {
 				getHotbar(player).setSelectedSlotIndex(selectedSlot.get());
+			}
+
+			if (fail) {
+				InventorySync.getLogger().error("Could not load inventory of player "
+						+ DataSource.getPlayerString(player) + " because there where unknown item.");
+				InventorySync.getLogger().warn(
+						"Please make sure you are using the same mods on all servers you are synchronizing with.");
 			}
 		}
 		if (enderChest.isPresent() && Config.Values.Synchronize.getEnableEnderChest()

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.spongepowered.api.data.DataContainer;
@@ -46,10 +47,11 @@ public class InventorySerializer {
 		return slots;
 	}
 
-	public static void deserializeInventory(List<DataView> slots, Inventory inventory) {
+	public static boolean deserializeInventory(List<DataView> slots, Inventory inventory) {
 		Map<Integer, ItemStack> stacks = new HashMap<>();
 		int i;
 		ItemStack stack;
+		boolean fail = false;
 
 		for (DataView slot : slots) {
 			i = slot.getInt(SLOT).get();
@@ -62,13 +64,21 @@ public class InventorySerializer {
 
 		for (Inventory slot : inventory.slots()) {
 			if (stacks.containsKey(i)) {
-				slot.set(stacks.get(i));
+				try {
+					slot.set(stacks.get(i));
+				} catch (NoSuchElementException e) {
+					slot.clear();
+
+					fail = true;
+				}
 			} else {
 				slot.clear();
 			}
 
 			++i;
 		}
+
+		return fail;
 	}
 
 	private static DataView serializeItemStack(ItemStack item) {

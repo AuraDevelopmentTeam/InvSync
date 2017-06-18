@@ -1,3 +1,8 @@
+0.6.17
+------
+
+- Fixed synchronizing crashing when unknow item is being synchronized (Fixes [#18](https://github.com/AuraDevelopmentTeam/InvSync/issues/18))
+
 0.6.14
 ------
 

@@ -14,9 +14,8 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.SpongeEventFactory;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.game.GameReloadEvent;
+import org.spongepowered.api.event.game.state.GameConstructionEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
-import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
-import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppingEvent;
 import org.spongepowered.api.plugin.Plugin;
@@ -84,9 +83,9 @@ public class InventorySync {
 	public static DataSource getDataSource() {
 		return instance.dataSource;
 	}
-
+	
 	@Listener
-	public void preInit(GamePreInitializationEvent event) {
+	public void gameConstruct(GameConstructionEvent event) {
 		instance = this;
 	}
 
@@ -120,11 +119,6 @@ public class InventorySync {
 	}
 
 	@Listener
-	public void postInit(GamePostInitializationEvent event) {
-		// Nothing
-	}
-
-	@Listener
 	public void onServerStart(GameStartedServerEvent event) {
 		metrics.addCustomChart(new FeatureChart("features"));
 	}
@@ -138,14 +132,8 @@ public class InventorySync {
 		stop(gameStoppingEvent);
 
 		// Starting over
-		GamePreInitializationEvent gamePreInitializationEvent = SpongeEventFactory
-				.createGamePreInitializationEvent(cause);
-		preInit(gamePreInitializationEvent);
 		GameInitializationEvent gameInitializationEvent = SpongeEventFactory.createGameInitializationEvent(cause);
 		init(gameInitializationEvent);
-		GamePostInitializationEvent gamePostInitializationEvent = SpongeEventFactory
-				.createGamePostInitializationEvent(cause);
-		postInit(gamePostInitializationEvent);
 
 		logger.info("Reloaded successfully!");
 	}

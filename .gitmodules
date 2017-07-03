@@ -1,0 +1,3 @@
+[submodule "GradleCommon"]
+	path = GradleCommon
+	url = https://github.com/AuraDevelopmentTeam/GradleCommon.git

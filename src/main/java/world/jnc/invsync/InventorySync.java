@@ -33,11 +33,11 @@ import world.jnc.invsync.util.metrics.FeatureChart;
 @Plugin(id = InventorySync.ID, name = InventorySync.NAME, version = InventorySync.VERSION, description = InventorySync.DESCRIPTION, url = InventorySync.URL, authors = {
 		InventorySync.AUTHOR })
 public class InventorySync {
-	public static final String ID = "invsync";
-	public static final String NAME = "Inventory Sync";
-	public static final String VERSION = "@version@";
-	public static final String DESCRIPTION = "This plugin synchronizes the player inventory with a database";
-	public static final String URL = "https://github.com/BrainStone/InvSync";
+	public static final String ID = "@id@";
+    public static final String NAME = "@name@";
+    public static final String VERSION = "@version@";
+    public static final String DESCRIPTION = "@description@";
+	public static final String URL = "https://github.com/AuraDevelopmentTeam/InvSync";
 	public static final String AUTHOR = "The_BrainStone";
 
 	@NonNull

@@ -12,10 +12,11 @@ You can download all builds from either:
 - Ore: https://ore.spongepowered.org/BrainStone/Inventory-Sync
 - Personal Maven: https://maven.jnc.world/world/jnc/invsync/InvSync/
 
-## [Issue Reporting](https://github.com/BrainStone/InvSync/issues)
+## [Issue Reporting](https://github.com/AuraDevelopmentTeam/InvSync/issues)
 
 If you found a bug or even are experiencing a crash please report it so we can fix it. Please check at first if a bug report for the issue already
-[exits](https://github.com/BrainStone/InvSync/issues). If not just create a [new issue](https://github.com/BrainStone/InvSync/issues/new) and fill out the form.
+[exits](https://github.com/AuraDevelopmentTeam/InvSync/issues). If not just create a [new issue](https://github.com/AuraDevelopmentTeam/InvSync/issues/new) and
+fill out the form.
 
 Please include the following:
 
@@ -30,35 +31,54 @@ Please include the following:
 
 *(When creating a new issue please follow the template)*
 
-## [Feature Requests](https://github.com/BrainStone/InvSync/issues)
+## [Feature Requests](https://github.com/AuraDevelopmentTeam/InvSync/issues)
 
-If you want a new feature added, go ahead an open a [new issue](https://github.com/BrainStone/InvSync/issues/new), remove the existing form and describe your
-feature the best you can. The more details you provide the easier it will be implementing it.  
-You can also talk to me on IRC on my channel #BrainStone on esper.net
+If you want a new feature added, go ahead an open a [new issue](https://github.com/AuraDevelopmentTeam/InvSync/issues/new), remove the existing form and
+describe your feature the best you can. The more details you provide the easier it will be implementing it.  
+You can also talk to us on [Discord](https://dicord.me/bungeechat).
 
-## Developing with My Plugin
+## Developing with our Plugin
 
-So you want to use items or blocks from my mod, add support or even develop an addon for my mod then you can easily add it to your development environment! All
-releases beginning from version 1.10.2-4.0.19 get uploaded to my maven repository.  
-So all you have to do to include the mod is add these lines *(in the appropriate places)* to your build.gradle
+So you want to add support or even develop an addon for our plugin then you can easily add it to your development environment! All releases beginning from
+version `0.0.13-alpha` get uploaded to my maven repository. (Replace `{version}` with the appropriate version!) 
+
+### Maven
+
+    <repositories>
+        <repository>
+            <id>AuraDevelopmentTeam/id>
+            <url>https://maven.jnc.world</url>
+        </repository>
+    </repositories>
+    
+    <dependencies>
+        <dependency>
+            <groupId>world.jnc.invsync</groupId>
+            <artifactId>InvSync</artifactId>
+            <version>{version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+### Gradle
 
     repositories {
-        maven { // InvSync
+        maven {
+            name "AuraDevelopmentTeam"
             url "https://maven.jnc.world"
         }
-        // Other repos...
     }
 
     dependencies {
-        compile "world.jnc.invsync:InvSync:<version>"
-        // Other dependencies
+        provided "world.jnc.invsync:InvSync:{version}"
     }
 
 ## Setting up a Workspace/Compiling from Source
 
-* Setup: Run [gradle] in the repository root: `gradlew[.bat] installLombok [eclipse|idea]`
-* Build: Run [gradle] in the repository root: `gradlew[.bat] build`
-* If obscure Gradle issues are found try running `gradlew clean` and `gradlew cleanCache`
+* Clone: Clone the repository like this: `git clone --recursive https://github.com/AuraDevelopmentTeam/InvSync.git`
+* IDE-Setup: Run [gradle] in the repository root: `./gradlew installLombok <eclipse|idea>`
+* Build: Run [gradle] in the repository root: `./gradlew build`. The build will be in `build/libs`
+* If obscure Gradle issues are found try running `./gradlew cleanCache clean`
 
 ## Development builds
 
@@ -82,10 +102,13 @@ The public key to verify it can be found in `keys/publicKey.asc`. The signatures
 All jars from all official download sources will be signed. The signature will always have a SHA-1 hash of `2238d4a92d81ab407741a2fdb741cebddfeacba6` and you
 are free to verify it.
 
-## Copyright and License
+## License
 
-### Copyright
-Copyright 2017 [Yannick Schinko](https://github.com/BrainStone).
-
-### License
 InvSync is licensed under the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.html)
+
+## Random Quote
+
+> There are two ways of constructing a software design; one way is to make it so simple that there are obviously no deficiencies, and the other way is to make
+> it so complicated that there are no obvious deficiencies. The first method is far more difficult.
+>
+> -- <cite>C. A. R. Hoare</cite>

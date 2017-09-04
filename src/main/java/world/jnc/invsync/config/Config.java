@@ -38,7 +38,8 @@ public class Config {
 	public void load() {
 		if (!configFile.toFile().exists()) {
 			try {
-				Sponge.getAssetManager().getAsset(instance, "invsync.conf").get().copyToFile(configFile);
+				Sponge.getAssetManager().getAsset(instance, configFile.getFileName().toString()).get()
+						.copyToFile(configFile);
 			} catch (IOException | NoSuchElementException e) {
 				InventorySync.getLogger().error("Could not load default config!", e);
 

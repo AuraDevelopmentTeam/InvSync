@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataView;
+import org.spongepowered.api.data.DataView.SafetyMode;
 import org.spongepowered.api.data.key.Key;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.persistence.DataFormats;
@@ -55,9 +56,7 @@ public class PlayerSerializer {
 	private static final Key<ListValue<PotionEffect>> KEY_POTION_EFFECTS = Keys.POTION_EFFECTS;
 
 	public static byte[] serializePlayer(Player player) throws IOException {
-		// TODO: Remove MemoryDataContainer when API 5.x.x is no longer in use
-		@SuppressWarnings("deprecation")
-		DataContainer container = new org.spongepowered.api.data.MemoryDataContainer();
+		DataContainer container = DataContainer.createNew(SafetyMode.ALL_DATA_CLONED);
 
 		if (Config.Values.Synchronize.getEnableInventory() && player.hasPermission(PermissionRegistry.SYNC_INVENTORY)) {
 			container.set(INVENTORY, InventorySerializer.serializeInventory(player.getInventory()));

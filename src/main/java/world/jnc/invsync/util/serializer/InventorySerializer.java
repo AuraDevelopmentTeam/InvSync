@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataView;
+import org.spongepowered.api.data.DataView.SafetyMode;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 
@@ -20,8 +21,6 @@ public class InventorySerializer {
 	private static final DataQuery SLOT = DataQuery.of("slot");
 	private static final DataQuery STACK = DataQuery.of("stack");
 
-	// TODO: Remove MemoryDataContainer when API 5.x.x is no longer in use
-	@SuppressWarnings("deprecation")
 	public static List<DataView> serializeInventory(Inventory inventory) {
 		DataContainer container;
 		List<DataView> slots = new LinkedList<>();
@@ -33,7 +32,7 @@ public class InventorySerializer {
 			stack = inv.peek();
 
 			if (stack.isPresent()) {
-				container = new org.spongepowered.api.data.MemoryDataContainer();
+				container = DataContainer.createNew(SafetyMode.ALL_DATA_CLONED);
 
 				container.set(SLOT, i);
 				container.set(STACK, serializeItemStack(stack.get()));

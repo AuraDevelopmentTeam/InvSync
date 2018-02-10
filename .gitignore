@@ -2,8 +2,13 @@
 ## Gradle
 #################
 
-.gradle
-build
+.gradle/
+build/
+gradle-app.setting
+
+# Test reports
+*-TestReport*
+
 
 #################
 ## Eclipse
@@ -34,6 +39,17 @@ local.properties
 
 # PDT-specific
 .buildpath
+
+
+#################
+## IntelliJ
+#################
+
+.idea/
+*.iml
+*.ipr
+*.iws
+
 
 #############
 ## Windows detritus

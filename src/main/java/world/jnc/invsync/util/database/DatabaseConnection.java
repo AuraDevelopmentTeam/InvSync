@@ -5,118 +5,112 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
 import javax.sql.DataSource;
-
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.service.sql.SqlService;
-
 import lombok.Cleanup;
 import lombok.Getter;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.service.sql.SqlService;
 import world.jnc.invsync.InventorySync;
 
 public abstract class DatabaseConnection {
-	public static final int DEFAULT_MYSQL_PORT = 3306;
-	protected static SqlService sql;
+  public static final int DEFAULT_MYSQL_PORT = 3306;
+  protected static SqlService sql;
 
-	@Getter
-	protected Connection connection;
-	protected String connectionURL;
+  @Getter protected Connection connection;
+  protected String connectionURL;
 
-	protected static DataSource getDataSource(String jdbcUrl) throws SQLException {
-		if (sql == null) {
-			sql = Sponge.getServiceManager().provide(SqlService.class).get();
-		}
+  protected static DataSource getDataSource(String jdbcUrl) throws SQLException {
+    if (sql == null) {
+      sql = Sponge.getServiceManager().provide(SqlService.class).get();
+    }
 
-		return sql.getDataSource(jdbcUrl);
-	}
+    return sql.getDataSource(jdbcUrl);
+  }
 
-	protected DatabaseConnection(String connectionURL) throws SQLException {
-		connect(connectionURL);
-	}
+  protected DatabaseConnection(String connectionURL) throws SQLException {
+    connect(connectionURL);
+  }
 
-	private void connect(String connectionURL) throws SQLException {
-		this.connectionURL = connectionURL;
+  private void connect(String connectionURL) throws SQLException {
+    this.connectionURL = connectionURL;
 
-		InventorySync.getLogger().debug("Connecting to: " + connectionURL.replaceFirst(":[^:]*@", ":*****@"));
+    InventorySync.getLogger()
+        .debug("Connecting to: " + connectionURL.replaceFirst(":[^:]*@", ":*****@"));
 
-		connection = getDataSource(connectionURL).getConnection();
-	}
+    connection = getDataSource(connectionURL).getConnection();
+  }
 
-	private void reconnect() throws SQLException {
-		InventorySync.getLogger().debug("Reconnecting to: " + connectionURL.replaceFirst(":[^:]*@", ":*****@"));
+  private void reconnect() throws SQLException {
+    InventorySync.getLogger()
+        .debug("Reconnecting to: " + connectionURL.replaceFirst(":[^:]*@", ":*****@"));
 
-		connection = getDataSource(connectionURL).getConnection();
-	}
+    connection = getDataSource(connectionURL).getConnection();
+  }
 
-	public boolean isConnectionActive() {
-		try {
-			return (connection != null) && connection.isValid(0);
-		} catch (SQLException e) {
-			e.printStackTrace();
+  public boolean isConnectionActive() {
+    try {
+      return (connection != null) && connection.isValid(0);
+    } catch (SQLException e) {
+      e.printStackTrace();
 
-			return false;
-		}
-	}
+      return false;
+    }
+  }
 
-	public boolean verifyConnection() {
-		if (!isConnectionActive()) {
-			try {
-				reconnect();
-			} catch (SQLException e) {
-				InventorySync.getLogger().error("Reconnecting failed!", e);
-			}
+  public boolean verifyConnection() {
+    if (!isConnectionActive()) {
+      try {
+        reconnect();
+      } catch (SQLException e) {
+        InventorySync.getLogger().error("Reconnecting failed!", e);
+      }
 
-			return false;
-		}
+      return false;
+    }
 
-		return true;
-	}
+    return true;
+  }
 
-	public Statement getStatement() throws SQLException {
-		if (!isConnectionActive())
-			throw new SQLException("MySQL-connection is not active!");
+  public Statement getStatement() throws SQLException {
+    if (!isConnectionActive()) throw new SQLException("MySQL-connection is not active!");
 
-		return connection.createStatement();
-	}
+    return connection.createStatement();
+  }
 
-	public PreparedStatement getPreparedStatement(String statement) throws SQLException {
-		InventorySync.getLogger().debug("Preparing statement: " + statement);
+  public PreparedStatement getPreparedStatement(String statement) throws SQLException {
+    InventorySync.getLogger().debug("Preparing statement: " + statement);
 
-		return connection.prepareStatement(statement);
-	}
+    return connection.prepareStatement(statement);
+  }
 
-	public ResultSet executeQuery(String query) throws SQLException {
-		@Cleanup
-		Statement statement = getStatement();
+  public ResultSet executeQuery(String query) throws SQLException {
+    @Cleanup Statement statement = getStatement();
 
-		return statement.executeQuery(query);
-	}
+    return statement.executeQuery(query);
+  }
 
-	public boolean executeStatement(String query) throws SQLException {
-		@Cleanup
-		Statement statement = getStatement();
+  public boolean executeStatement(String query) throws SQLException {
+    @Cleanup Statement statement = getStatement();
 
-		return statement.execute(query);
-	}
+    return statement.execute(query);
+  }
 
-	public int executeUpdate(String query) throws SQLException {
-		@Cleanup
-		Statement statement = getStatement();
+  public int executeUpdate(String query) throws SQLException {
+    @Cleanup Statement statement = getStatement();
 
-		return statement.executeUpdate(query);
-	}
+    return statement.executeUpdate(query);
+  }
 
-	@Override
-	protected void finalize() throws Throwable {
-		try {
-			if ((connection != null) && !connection.isClosed()) {
-				connection.close();
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+  @Override
+  protected void finalize() throws Throwable {
+    try {
+      if ((connection != null) && !connection.isClosed()) {
+        connection.close();
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
 
-		super.finalize();
-	}
+    super.finalize();
+  }
 }

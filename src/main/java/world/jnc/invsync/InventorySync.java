@@ -1,10 +1,12 @@
 package world.jnc.invsync;
 
+import com.google.inject.Inject;
 import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
-
+import lombok.Getter;
+import lombok.NonNull;
 import org.bstats.Metrics;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
@@ -19,154 +21,152 @@ import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppingEvent;
 import org.spongepowered.api.plugin.Plugin;
-
-import com.google.inject.Inject;
-
-import lombok.Getter;
-import lombok.NonNull;
 import world.jnc.invsync.config.Config;
 import world.jnc.invsync.event.PlayerEvents;
 import world.jnc.invsync.permission.PermissionRegistry;
 import world.jnc.invsync.util.database.DataSource;
 import world.jnc.invsync.util.metrics.FeatureChart;
 
-@Plugin(id = InventorySync.ID, name = InventorySync.NAME, version = InventorySync.VERSION, description = InventorySync.DESCRIPTION, url = InventorySync.URL, authors = {
-		InventorySync.AUTHOR })
+@Plugin(
+  id = InventorySync.ID,
+  name = InventorySync.NAME,
+  version = InventorySync.VERSION,
+  description = InventorySync.DESCRIPTION,
+  url = InventorySync.URL,
+  authors = {InventorySync.AUTHOR}
+)
 public class InventorySync {
-	public static final String ID = "@id@";
-    public static final String NAME = "@name@";
-    public static final String VERSION = "@version@";
-    public static final String DESCRIPTION = "@description@";
-	public static final String URL = "https://github.com/AuraDevelopmentTeam/InvSync";
-	public static final String AUTHOR = "The_BrainStone";
+  public static final String ID = "@id@";
+  public static final String NAME = "@name@";
+  public static final String VERSION = "@version@";
+  public static final String DESCRIPTION = "@description@";
+  public static final String URL = "https://github.com/AuraDevelopmentTeam/InvSync";
+  public static final String AUTHOR = "The_BrainStone";
 
-	@NonNull
-	@Getter
-	private static InventorySync instance = null;
+  @NonNull @Getter private static InventorySync instance = null;
 
-	@Inject
-	private Metrics metrics;
-	@Inject
-	@NonNull
-	private Logger logger;
-	@Inject
-	@DefaultConfig(sharedRoot = false)
-	@NonNull
-	private Path configFile;
-	@Inject
-	@ConfigDir(sharedRoot = false)
-	@NonNull
-	private Path configDir;
-	@NonNull
-	private Config config;
-	@NonNull
-	private DataSource dataSource;
-	private PermissionRegistry permissionRegistry;
-	private List<AutoCloseable> eventListeners = new LinkedList<>();
+  @Inject private Metrics metrics;
+  @Inject @NonNull private Logger logger;
 
-	public static Logger getLogger() {
-		return instance.logger;
-	}
+  @Inject
+  @DefaultConfig(sharedRoot = false)
+  @NonNull
+  private Path configFile;
 
-	public static Path getConfigFile() {
-		return instance.configFile;
-	}
+  @Inject
+  @ConfigDir(sharedRoot = false)
+  @NonNull
+  private Path configDir;
 
-	public static Path getConfigDir() {
-		return instance.configDir;
-	}
+  @NonNull private Config config;
+  @NonNull private DataSource dataSource;
+  private PermissionRegistry permissionRegistry;
+  private List<AutoCloseable> eventListeners = new LinkedList<>();
 
-	public static Config getConfig() {
-		return instance.config;
-	}
+  public static Logger getLogger() {
+    return instance.logger;
+  }
 
-	public static DataSource getDataSource() {
-		return instance.dataSource;
-	}
-	
-	@Listener
-	public void gameConstruct(GameConstructionEvent event) {
-		instance = this;
-	}
+  public static Path getConfigFile() {
+    return instance.configFile;
+  }
 
-	@Listener
-	public void init(GameInitializationEvent event) throws SQLException {
-		logger.info("Initializing " + NAME + " Version " + VERSION);
+  public static Path getConfigDir() {
+    return instance.configDir;
+  }
 
-		if (VERSION.contains("SNAPSHOT")) {
-			logger.warn("WARNING! This is a snapshot version!");
-			logger.warn("Use at your own risk!");
-		}
-		if (VERSION.contains("development")) {
-			logger.info("This is a unreleased development version!");
-			logger.info("Things might not work properly!");
-		}
+  public static Config getConfig() {
+    return instance.config;
+  }
 
-		if (permissionRegistry == null) {
-			permissionRegistry = new PermissionRegistry(this);
-			logger.debug("Registered permissions");
-		}
+  public static DataSource getDataSource() {
+    return instance.dataSource;
+  }
 
-		config = new Config(this, configFile, configDir);
-		config.load();
+  @Listener
+  public void gameConstruct(GameConstructionEvent event) {
+    instance = this;
+  }
 
-		dataSource = new DataSource();
+  @Listener
+  public void init(GameInitializationEvent event) throws SQLException {
+    logger.info("Initializing " + NAME + " Version " + VERSION);
 
-		addEventListener(new PlayerEvents(dataSource));
-		logger.debug("Registered events");
+    if (VERSION.contains("SNAPSHOT")) {
+      logger.warn("WARNING! This is a snapshot version!");
+      logger.warn("Use at your own risk!");
+    }
+    if (VERSION.contains("development")) {
+      logger.info("This is a unreleased development version!");
+      logger.info("Things might not work properly!");
+    }
 
-		logger.info("Loaded successfully!");
-	}
+    if (permissionRegistry == null) {
+      permissionRegistry = new PermissionRegistry(this);
+      logger.debug("Registered permissions");
+    }
 
-	@Listener
-	public void onServerStart(GameStartedServerEvent event) {
-		metrics.addCustomChart(new FeatureChart("features"));
-	}
+    config = new Config(this, configFile, configDir);
+    config.load();
 
-	@Listener
-	public void reload(GameReloadEvent event) throws Exception {
-		Cause cause = Cause.source(this).build();
+    dataSource = new DataSource();
 
-		// Unregistering everything
-		GameStoppingEvent gameStoppingEvent = SpongeEventFactory.createGameStoppingEvent(cause);
-		stop(gameStoppingEvent);
+    addEventListener(new PlayerEvents(dataSource));
+    logger.debug("Registered events");
 
-		// Starting over
-		GameInitializationEvent gameInitializationEvent = SpongeEventFactory.createGameInitializationEvent(cause);
-		init(gameInitializationEvent);
+    logger.info("Loaded successfully!");
+  }
 
-		logger.info("Reloaded successfully!");
-	}
+  @Listener
+  public void onServerStart(GameStartedServerEvent event) {
+    metrics.addCustomChart(new FeatureChart("features"));
+  }
 
-	@Listener
-	public void stop(GameStoppingEvent event) throws Exception {
-		logger.info("Shutting down " + NAME + " Version " + VERSION);
+  @Listener
+  public void reload(GameReloadEvent event) throws Exception {
+    Cause cause = Cause.source(this).build();
 
-		removeEventListeners();
-		logger.debug("Unregistered events");
+    // Unregistering everything
+    GameStoppingEvent gameStoppingEvent = SpongeEventFactory.createGameStoppingEvent(cause);
+    stop(gameStoppingEvent);
 
-		dataSource = null;
-		logger.debug("Closed database connection");
+    // Starting over
+    GameInitializationEvent gameInitializationEvent =
+        SpongeEventFactory.createGameInitializationEvent(cause);
+    init(gameInitializationEvent);
 
-		config = null;
-		logger.debug("Unloaded config");
+    logger.info("Reloaded successfully!");
+  }
 
-		logger.info("Unloaded successfully!");
-	}
+  @Listener
+  public void stop(GameStoppingEvent event) throws Exception {
+    logger.info("Shutting down " + NAME + " Version " + VERSION);
 
-	private void addEventListener(AutoCloseable listener) {
-		eventListeners.add(listener);
+    removeEventListeners();
+    logger.debug("Unregistered events");
 
-		Sponge.getEventManager().registerListeners(this, listener);
-	}
+    dataSource = null;
+    logger.debug("Closed database connection");
 
-	private void removeEventListeners() throws Exception {
-		for (AutoCloseable listener : eventListeners) {
-			Sponge.getEventManager().unregisterListeners(listener);
+    config = null;
+    logger.debug("Unloaded config");
 
-			listener.close();
-		}
+    logger.info("Unloaded successfully!");
+  }
 
-		eventListeners.clear();
-	}
+  private void addEventListener(AutoCloseable listener) {
+    eventListeners.add(listener);
+
+    Sponge.getEventManager().registerListeners(this, listener);
+  }
+
+  private void removeEventListeners() throws Exception {
+    for (AutoCloseable listener : eventListeners) {
+      Sponge.getEventManager().unregisterListeners(listener);
+
+      listener.close();
+    }
+
+    eventListeners.clear();
+  }
 }

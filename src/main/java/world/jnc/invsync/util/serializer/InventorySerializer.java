@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-
+import lombok.experimental.UtilityClass;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataView;
@@ -14,77 +14,75 @@ import org.spongepowered.api.data.DataView.SafetyMode;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 
-import lombok.experimental.UtilityClass;
-
 @UtilityClass
 public class InventorySerializer {
-	private static final DataQuery SLOT = DataQuery.of("slot");
-	private static final DataQuery STACK = DataQuery.of("stack");
+  private static final DataQuery SLOT = DataQuery.of("slot");
+  private static final DataQuery STACK = DataQuery.of("stack");
 
-	public static List<DataView> serializeInventory(Inventory inventory) {
-		DataContainer container;
-		List<DataView> slots = new LinkedList<>();
+  public static List<DataView> serializeInventory(Inventory inventory) {
+    DataContainer container;
+    List<DataView> slots = new LinkedList<>();
 
-		int i = 0;
-		Optional<ItemStack> stack;
+    int i = 0;
+    Optional<ItemStack> stack;
 
-		for (Inventory inv : inventory.slots()) {
-			stack = inv.peek();
+    for (Inventory inv : inventory.slots()) {
+      stack = inv.peek();
 
-			if (stack.isPresent()) {
-				container = DataContainer.createNew(SafetyMode.ALL_DATA_CLONED);
+      if (stack.isPresent()) {
+        container = DataContainer.createNew(SafetyMode.ALL_DATA_CLONED);
 
-				container.set(SLOT, i);
-				container.set(STACK, serializeItemStack(stack.get()));
+        container.set(SLOT, i);
+        container.set(STACK, serializeItemStack(stack.get()));
 
-				slots.add(container);
-			}
+        slots.add(container);
+      }
 
-			i++;
-		}
+      i++;
+    }
 
-		return slots;
-	}
+    return slots;
+  }
 
-	public static boolean deserializeInventory(List<DataView> slots, Inventory inventory) {
-		Map<Integer, ItemStack> stacks = new HashMap<>();
-		int i;
-		ItemStack stack;
-		boolean fail = false;
+  public static boolean deserializeInventory(List<DataView> slots, Inventory inventory) {
+    Map<Integer, ItemStack> stacks = new HashMap<>();
+    int i;
+    ItemStack stack;
+    boolean fail = false;
 
-		for (DataView slot : slots) {
-			i = slot.getInt(SLOT).get();
-			stack = deserializeItemStack(slot.getView(STACK).get());
+    for (DataView slot : slots) {
+      i = slot.getInt(SLOT).get();
+      stack = deserializeItemStack(slot.getView(STACK).get());
 
-			stacks.put(i, stack);
-		}
+      stacks.put(i, stack);
+    }
 
-		i = 0;
+    i = 0;
 
-		for (Inventory slot : inventory.slots()) {
-			if (stacks.containsKey(i)) {
-				try {
-					slot.set(stacks.get(i));
-				} catch (NoSuchElementException e) {
-					slot.clear();
+    for (Inventory slot : inventory.slots()) {
+      if (stacks.containsKey(i)) {
+        try {
+          slot.set(stacks.get(i));
+        } catch (NoSuchElementException e) {
+          slot.clear();
 
-					fail = true;
-				}
-			} else {
-				slot.clear();
-			}
+          fail = true;
+        }
+      } else {
+        slot.clear();
+      }
 
-			++i;
-		}
+      ++i;
+    }
 
-		return fail;
-	}
+    return fail;
+  }
 
-	private static DataView serializeItemStack(ItemStack item) {
-		return item.toContainer();
-	}
+  private static DataView serializeItemStack(ItemStack item) {
+    return item.toContainer();
+  }
 
-	private static ItemStack deserializeItemStack(DataView data) {
-		return ItemStack.builder().fromContainer(data).build();
-	}
+  private static ItemStack deserializeItemStack(DataView data) {
+    return ItemStack.builder().fromContainer(data).build();
+  }
 }

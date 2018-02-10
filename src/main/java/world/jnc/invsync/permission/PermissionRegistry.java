@@ -1,6 +1,5 @@
 package world.jnc.invsync.permission;
 
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.service.permission.PermissionDescription;
@@ -60,12 +59,7 @@ public class PermissionRegistry {
   }
 
   private Builder getBuilder() {
-    Optional<Builder> builder = service.newDescriptionBuilder(plugin);
-
-    if (!builder.isPresent())
-      throw new IllegalStateException("Permission Builder could not be created!");
-
-    return builder.get();
+    return service.newDescriptionBuilder(plugin);
   }
 
   private void registerPermission(String permission, String role) {

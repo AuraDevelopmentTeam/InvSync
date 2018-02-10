@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import lombok.Getter;
 import lombok.NonNull;
-import org.bstats.Metrics;
+import org.bstats.sponge.Metrics;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
@@ -15,12 +15,15 @@ import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.SpongeEventFactory;
 import org.spongepowered.api.event.cause.Cause;
+import org.spongepowered.api.event.cause.EventContext;
+import org.spongepowered.api.event.cause.EventContextKeys;
 import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameConstructionEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppingEvent;
 import org.spongepowered.api.plugin.Plugin;
+import org.spongepowered.api.plugin.PluginContainer;
 import world.jnc.invsync.config.Config;
 import world.jnc.invsync.event.PlayerEvents;
 import world.jnc.invsync.permission.PermissionRegistry;
@@ -45,6 +48,7 @@ public class InventorySync {
 
   @NonNull @Getter private static InventorySync instance = null;
 
+  @Inject @NonNull private PluginContainer container;
   @Inject private Metrics metrics;
   @Inject @NonNull private Logger logger;
 
@@ -62,6 +66,10 @@ public class InventorySync {
   @NonNull private DataSource dataSource;
   private PermissionRegistry permissionRegistry;
   private List<AutoCloseable> eventListeners = new LinkedList<>();
+
+  public static PluginContainer getContainer() {
+    return instance.container;
+  }
 
   public static Logger getLogger() {
     return instance.logger;
@@ -124,7 +132,10 @@ public class InventorySync {
 
   @Listener
   public void reload(GameReloadEvent event) throws Exception {
-    Cause cause = Cause.source(this).build();
+    Cause cause =
+        Cause.builder()
+            .append(this)
+            .build(EventContext.builder().add(EventContextKeys.PLUGIN, container).build());
 
     // Unregistering everything
     GameStoppingEvent gameStoppingEvent = SpongeEventFactory.createGameStoppingEvent(cause);

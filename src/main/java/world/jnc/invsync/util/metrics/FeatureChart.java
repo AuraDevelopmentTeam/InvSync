@@ -2,17 +2,12 @@ package world.jnc.invsync.util.metrics;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import org.bstats.Metrics.SimpleBarChart;
+import org.bstats.sponge.Metrics.SimpleBarChart;
 import world.jnc.invsync.InventorySync;
 import world.jnc.invsync.config.Config;
 
 public class FeatureChart extends SimpleBarChart {
-  public FeatureChart(String chartId) {
-    super(chartId);
-  }
-
-  @Override
-  public HashMap<String, Integer> getValues(HashMap<String, Integer> premadeMap) {
+  public static HashMap<String, Integer> getValues() {
     HashMap<String, Integer> sortedMap = new LinkedHashMap<>();
 
     sortedMap.put("MySQL", InventorySync.getDataSource().isMysql() ? 1 : 0);
@@ -29,5 +24,9 @@ public class FeatureChart extends SimpleBarChart {
     sortedMap.put("Servers", 1);
 
     return sortedMap;
+  }
+
+  public FeatureChart(String chartId) {
+    super(chartId, FeatureChart::getValues);
   }
 }

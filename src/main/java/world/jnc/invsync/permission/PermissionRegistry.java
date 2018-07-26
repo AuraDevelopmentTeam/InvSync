@@ -1,5 +1,6 @@
 package world.jnc.invsync.permission;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.service.permission.PermissionDescription;
@@ -66,7 +67,11 @@ public class PermissionRegistry {
     registerPermission(permission, null, role);
   }
 
-  private void registerPermission(String permission, String description, String role) {
-    getBuilder().id(permission).description(Text.of(description)).assign(role, true).register();
+  private void registerPermission(String permission, @Nullable String description, String role) {
+    getBuilder()
+        .id(permission)
+        .description((description == null) ? Text.of() : Text.of(description))
+        .assign(role, true)
+        .register();
   }
 }

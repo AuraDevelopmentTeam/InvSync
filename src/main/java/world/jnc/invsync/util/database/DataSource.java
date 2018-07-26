@@ -1,18 +1,25 @@
 package world.jnc.invsync.util.database;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.nio.ByteBuffer;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 import java.util.UUID;
-import lombok.Cleanup;
 import lombok.Getter;
 import lombok.NonNull;
 import org.spongepowered.api.entity.living.player.Player;
 import world.jnc.invsync.InventorySync;
 import world.jnc.invsync.config.Config;
 
+@SuppressFBWarnings(
+  value = {
+    "SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING",
+    "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE"
+  },
+  justification = "The database name needs to be dynamic in order to allow prefixes"
+)
 public class DataSource {
   private final DatabaseConnection connection;
   @Getter private final boolean h2;
@@ -100,11 +107,12 @@ public class DataSource {
 
       loadInventory.setBytes(1, getBytesFromUUID(player.getUniqueId()));
 
-      @Cleanup ResultSet result = loadInventory.executeQuery();
-      loadInventory.clearParameters();
+      try (ResultSet result = loadInventory.executeQuery()) {
+        loadInventory.clearParameters();
 
-      if (result.next()) return Optional.of(result.getBytes(tableInventoriesColumnData));
-      else return Optional.empty();
+        if (result.next()) return Optional.of(result.getBytes(tableInventoriesColumnData));
+        else return Optional.empty();
+      }
     } catch (SQLException e) {
       InventorySync.getLogger().error("Could not load invetory for player " + playerName, e);
 
@@ -139,11 +147,12 @@ public class DataSource {
     try {
       isActive.setBytes(1, getBytesFromUUID(player.getUniqueId()));
 
-      @Cleanup ResultSet result = isActive.executeQuery();
-      isActive.clearParameters();
+      try (ResultSet result = isActive.executeQuery()) {
+        isActive.clearParameters();
 
-      if (result.next()) return result.getBoolean(1);
-      else return false;
+        if (result.next()) return result.getBoolean(1);
+        else return false;
+      }
     } catch (SQLException e) {
       InventorySync.getLogger()
           .error("Could not check if " + getPlayerString(player) + " is active", e);

@@ -18,7 +18,6 @@ import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.EventContext;
 import org.spongepowered.api.event.cause.EventContextKeys;
 import org.spongepowered.api.event.game.GameReloadEvent;
-import org.spongepowered.api.event.game.state.GameConstructionEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppingEvent;
@@ -67,6 +66,12 @@ public class InventorySync {
   private PermissionRegistry permissionRegistry;
   private List<AutoCloseable> eventListeners = new LinkedList<>();
 
+  public InventorySync() {
+    if (instance != null) throw new IllegalStateException("Instance already exists!");
+
+    instance = this;
+  }
+
   public static PluginContainer getContainer() {
     return instance.container;
   }
@@ -89,11 +94,6 @@ public class InventorySync {
 
   public static DataSource getDataSource() {
     return instance.dataSource;
-  }
-
-  @Listener
-  public void gameConstruct(GameConstructionEvent event) {
-    instance = this;
   }
 
   @Listener

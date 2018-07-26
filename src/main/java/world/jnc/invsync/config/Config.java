@@ -1,8 +1,8 @@
 package world.jnc.invsync.config;
 
+import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.NoSuchElementException;
 import lombok.Getter;
 import lombok.NonNull;
@@ -16,7 +16,7 @@ import world.jnc.invsync.InventorySync;
 import world.jnc.invsync.util.database.DatabaseConnection;
 
 public class Config {
-  public static final String[] validStorageEngines = new String[] {"h2", "mysql"};
+  public static final ImmutableList<String> validStorageEngines = ImmutableList.of("h2", "mysql");
 
   @NonNull private final InventorySync instance;
   @NonNull @Getter private final Path configFile;
@@ -35,7 +35,7 @@ public class Config {
             .getAsset(instance, configFile.getFileName().toString())
             .get()
             .copyToFile(configFile);
-      } catch (IOException | NoSuchElementException e) {
+      } catch (IOException | NoSuchElementException | NullPointerException e) {
         InventorySync.getLogger().error("Could not load default config!", e);
 
         return;
@@ -71,18 +71,18 @@ public class Config {
 
     ConfigurationNode storage = rootNode.getNode("storage");
     Values.Storage.storageEngine =
-        storage.getNode("storageEngine").getString(validStorageEngines[0]);
+        storage.getNode("storageEngine").getString(validStorageEngines.get(0));
 
-    if (!Arrays.asList(validStorageEngines).contains(Values.Storage.storageEngine)) {
+    if (!validStorageEngines.contains(Values.Storage.storageEngine)) {
       InventorySync.getLogger()
           .warn(
               "Invalid storage engine in config: \""
                   + Values.Storage.storageEngine
                   + "\"! Defaulting to \""
-                  + validStorageEngines[0]
+                  + validStorageEngines.get(0)
                   + "\"!");
 
-      Values.Storage.storageEngine = validStorageEngines[0];
+      Values.Storage.storageEngine = validStorageEngines.get(0);
     }
 
     ConfigurationNode h2 = storage.getNode("h2");

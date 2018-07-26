@@ -3,6 +3,8 @@ package world.jnc.invsync.util.serializer;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -255,12 +257,14 @@ public class PlayerSerializer {
 
       DataFormats.JSON.writeTo(debug, container);
 
-      logger.info(debug.toString());
+      logger.info(debug.toString(StandardCharsets.UTF_8.name()));
     } catch (NoSuchFieldError e) {
       // Just a brief message to the user. This happens in API version
       // 5.x.x
       logger.info(
           "You do not use API version 6.x.x or above. Dumping the container data is not available!");
+    } catch (UnsupportedEncodingException e) {
+      // Won't happen xD
     }
   }
 }

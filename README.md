@@ -1,6 +1,7 @@
 # [Inventory Sync](https://github.com/BrainStone/InvSync)
 
-[![Build Status](https://gitlab.brainstonemod.com/AuraDev/InvSync/badges/master/build.svg)](https://gitlab.brainstonemod.com/AuraDev/InvSync/commits/master)
+[![Build Status](https://gitlab.project-creative,de/AuraDev/InvSync/badges/master/build.svg)](https://gitlab.project-creative,de/AuraDev/InvSync/commits/master)
+[![Coverage Report](https://gitlab.project-creative,de/AuraDev/InvSync/badges/master/coverage.svg)](https://gitlab.project-creative,de/AuraDev/InvSync/commits/master)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/09e53d10121c46d693e2cb251fd12bf0)](https://www.codacy.com/app/BrainStone/InvSync?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=BrainStone/InvSync&amp;utm_campaign=Badge_Grade)
 
 This plugin synchronizes the player inventory with a database
@@ -10,7 +11,9 @@ This plugin synchronizes the player inventory with a database
 You can download all builds from either:
 
 - Ore: https://ore.spongepowered.org/BrainStone/Inventory-Sync
-- Personal Maven: https://maven.jnc.world/world/jnc/invsync/InvSync/
+- Maven:
+  - Releases: https://maven.project-creative.de/repository/auradev-releases/
+  - Snapshots: https://maven.project-creative.de/repository/auradev-snapshots/
 
 ## [Issue Reporting](https://github.com/AuraDevelopmentTeam/InvSync/issues)
 
@@ -40,17 +43,18 @@ You can also talk to us on [Discord](https://dicord.me/bungeechat).
 ## Developing with our Plugin
 
 So you want to add support or even develop an addon for our plugin then you can easily add it to your development environment! All releases beginning from
-version `0.0.13-alpha` get uploaded to my maven repository. (Replace `{version}` with the appropriate version!) 
+version `0.0.13-alpha` get uploaded to my maven repository. (Replace `{version}` with the appropriate version!)
 
 ### Maven
 
     <repositories>
         <repository>
             <id>AuraDevelopmentTeam/id>
-            <url>https://maven.jnc.world</url>
+            <url>https://maven.project-creative.de/repository/auradev-releases/</url>
+            <!--<url>https://maven.project-creative.de/repository/auradev-snapshots/</url>-->
         </repository>
     </repositories>
-    
+
     <dependencies>
         <dependency>
             <groupId>world.jnc.invsync</groupId>
@@ -65,7 +69,8 @@ version `0.0.13-alpha` get uploaded to my maven repository. (Replace `{version}`
     repositories {
         maven {
             name "AuraDevelopmentTeam"
-            url "https://maven.jnc.world"
+            url "https://maven.project-creative.de/repository/auradev-releases/"
+            // url "https://maven.project-creative.de/repository/auradev-snapshots/"
         }
     }
 
@@ -85,7 +90,7 @@ version `0.0.13-alpha` get uploaded to my maven repository. (Replace `{version}`
 Between each offical release there are several bleeding edge development builds, which you can also use. But be aware that they might contain unfinished
 features and therefore won't work properly.
 
-You can find the builds here: https://gitlab.brainstonemod.com/AuraDev/InvSync/pipelines
+You can find the builds here: https://gitlab.project-creative.de/AuraDev/InvSync/pipelines
 
 On the right is a download symbol, click that a dropdown will open. Select "build". Then you'll download a zip file containing all atrifacts including the
 plugin jar.

@@ -114,6 +114,7 @@ public class InventorySync {
     if (node.getNode("global").isVirtual()) {;
     }
 
+    // TODO: handle exception when invalid database type is specified
     config = node.<Config>getValue(configToken, Config::new);
 
     logger.debug("Saving config...");

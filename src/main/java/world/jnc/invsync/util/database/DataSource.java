@@ -2,13 +2,13 @@ package world.jnc.invsync.util.database;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.nio.ByteBuffer;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.Getter;
-import lombok.NonNull;
 import org.spongepowered.api.entity.living.player.Player;
 import world.jnc.invsync.InventorySync;
 import world.jnc.invsync.config.Config;
@@ -30,10 +30,10 @@ public class DataSource {
   private final String tableInventoriesColumnActive;
   private final String tableInventoriesColumnData;
 
-  @NonNull private PreparedStatement insertInventory;
-  @NonNull private PreparedStatement loadInventory;
-  @NonNull private PreparedStatement setActive;
-  @NonNull private PreparedStatement isActive;
+  private final String insertInventoryQuery;
+  private final String loadInventoryQuery;
+  private final String setActiveQuery;
+  private final String isActiveQuery;
 
   public static String getPlayerString(Player player) {
     return player.getName() + " (" + player.getUniqueId().toString() + ')';
@@ -72,17 +72,58 @@ public class DataSource {
     tableInventoriesColumnData = "Data";
 
     prepareTable();
-    prepareStatements();
+
+    StringBuilder insertInventoryStr = new StringBuilder();
+    StringBuilder getInventoryStr = new StringBuilder();
+    StringBuilder setActiveStr = new StringBuilder();
+    StringBuilder isActiveStr = new StringBuilder();
+
+    insertInventoryStr
+        .append("REPLACE INTO ")
+        .append(tableInventories)
+        .append(" (")
+        .append(tableInventoriesColumnUUID)
+        .append(", ")
+        .append(tableInventoriesColumnActive)
+        .append(", ")
+        .append(tableInventoriesColumnData)
+        .append(") VALUES (?, FALSE, ?)");
+    getInventoryStr
+        .append("SELECT ")
+        .append(tableInventoriesColumnData)
+        .append(" FROM ")
+        .append(tableInventories)
+        .append(" WHERE ")
+        .append(tableInventoriesColumnUUID)
+        .append(" = ? LIMIT 1");
+    setActiveStr
+        .append("UPDATE ")
+        .append(tableInventories)
+        .append(" SET ")
+        .append(tableInventoriesColumnActive)
+        .append(" = TRUE WHERE ")
+        .append(tableInventoriesColumnUUID)
+        .append(" = ? LIMIT 1");
+    isActiveStr
+        .append("SELECT ")
+        .append(tableInventoriesColumnActive)
+        .append(" FROM ")
+        .append(tableInventories)
+        .append(" WHERE ")
+        .append(tableInventoriesColumnUUID)
+        .append(" = ? LIMIT 1");
+
+    insertInventoryQuery = insertInventoryStr.toString();
+    loadInventoryQuery = getInventoryStr.toString();
+    setActiveQuery = setActiveStr.toString();
+    isActiveQuery = isActiveStr.toString();
   }
 
   public void saveInventory(Player player, byte[] data) {
-    if (!connection.verifyConnection()) {
-      prepareStatements();
-    }
-
     String playerName = getPlayerString(player);
 
-    try {
+    try (PreparedStatement insertInventory = connection.getPreparedStatement(insertInventoryQuery);
+        Connection connection = insertInventory.getConnection()) {
       InventorySync.getLogger().debug("Saving inventory for player " + playerName);
 
       insertInventory.setBytes(1, getBytesFromUUID(player.getUniqueId()));
@@ -96,13 +137,10 @@ public class DataSource {
   }
 
   public Optional<byte[]> loadInventory(Player player) {
-    if (!connection.verifyConnection()) {
-      prepareStatements();
-    }
-
     String playerName = getPlayerString(player);
 
-    try {
+    try (PreparedStatement loadInventory = connection.getPreparedStatement(loadInventoryQuery);
+        Connection connection = loadInventory.getConnection()) {
       InventorySync.getLogger().debug("Loading inventory for player " + playerName);
 
       loadInventory.setBytes(1, getBytesFromUUID(player.getUniqueId()));
@@ -121,13 +159,10 @@ public class DataSource {
   }
 
   public void setActive(Player player) {
-    if (!connection.verifyConnection()) {
-      prepareStatements();
-    }
-
     String playerName = getPlayerString(player);
 
-    try {
+    try (PreparedStatement setActive = connection.getPreparedStatement(setActiveQuery);
+        Connection connection = setActive.getConnection()) {
       InventorySync.getLogger().debug("Set player " + playerName + " active");
 
       setActive.setBytes(1, getBytesFromUUID(player.getUniqueId()));
@@ -140,11 +175,8 @@ public class DataSource {
   }
 
   public boolean isActive(Player player) {
-    if (!connection.verifyConnection()) {
-      prepareStatements();
-    }
-
-    try {
+    try (PreparedStatement isActive = connection.getPreparedStatement(isActiveQuery);
+        Connection connection = isActive.getConnection()) {
       isActive.setBytes(1, getBytesFromUUID(player.getUniqueId()));
 
       try (ResultSet result = isActive.executeQuery()) {
@@ -159,19 +191,6 @@ public class DataSource {
 
       return false;
     }
-  }
-
-  @Override
-  protected void finalize() throws Throwable {
-    if (insertInventory != null) {
-      insertInventory.close();
-    }
-
-    if (loadInventory != null) {
-      loadInventory.close();
-    }
-
-    super.finalize();
   }
 
   private String getTableName(String baseName) {
@@ -210,59 +229,6 @@ public class DataSource {
       InventorySync.getLogger().debug("Created table");
     } catch (SQLException e) {
       InventorySync.getLogger().error("Could not create table!", e);
-    }
-  }
-
-  private void prepareStatements() {
-    try {
-      StringBuilder insertInventoryStr = new StringBuilder();
-      StringBuilder getInventoryStr = new StringBuilder();
-      StringBuilder setActiveStr = new StringBuilder();
-      StringBuilder isActiveStr = new StringBuilder();
-
-      insertInventoryStr
-          .append("REPLACE INTO ")
-          .append(tableInventories)
-          .append(" (")
-          .append(tableInventoriesColumnUUID)
-          .append(", ")
-          .append(tableInventoriesColumnActive)
-          .append(", ")
-          .append(tableInventoriesColumnData)
-          .append(") VALUES (?, FALSE, ?)");
-      getInventoryStr
-          .append("SELECT ")
-          .append(tableInventoriesColumnData)
-          .append(" FROM ")
-          .append(tableInventories)
-          .append(" WHERE ")
-          .append(tableInventoriesColumnUUID)
-          .append(" = ? LIMIT 1");
-      setActiveStr
-          .append("UPDATE ")
-          .append(tableInventories)
-          .append(" SET ")
-          .append(tableInventoriesColumnActive)
-          .append(" = TRUE WHERE ")
-          .append(tableInventoriesColumnUUID)
-          .append(" = ? LIMIT 1");
-      isActiveStr
-          .append("SELECT ")
-          .append(tableInventoriesColumnActive)
-          .append(" FROM ")
-          .append(tableInventories)
-          .append(" WHERE ")
-          .append(tableInventoriesColumnUUID)
-          .append(" = ? LIMIT 1");
-
-      insertInventory = connection.getPreparedStatement(insertInventoryStr.toString());
-      loadInventory = connection.getPreparedStatement(getInventoryStr.toString());
-      setActive = connection.getPreparedStatement(setActiveStr.toString());
-      isActive = connection.getPreparedStatement(isActiveStr.toString());
-
-      InventorySync.getLogger().debug("Prepared statements");
-    } catch (SQLException e) {
-      InventorySync.getLogger().error("Could not prepare statements!", e);
     }
   }
 }

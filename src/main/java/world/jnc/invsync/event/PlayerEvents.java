@@ -1,7 +1,6 @@
 package world.jnc.invsync.event;
 
 import java.io.IOException;
-import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -45,8 +44,7 @@ public class PlayerEvents implements AutoCloseable {
           Task.builder()
               .execute(
                   new WaitingForPreviousServerToFinish(
-                      player,
-                      InventorySync.getConfig().getGeneral().getMaxWait().get(ChronoUnit.MILLIS)))
+                      player, InventorySync.getConfig().getGeneral().getMaxWait()))
               .intervalTicks(1)
               .submit(InventorySync.getInstance());
 

@@ -3,6 +3,7 @@ package world.jnc.invsync;
 import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,6 +17,8 @@ import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.bstats.sponge.Metrics;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.config.ConfigDir;
+import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.SpongeEventFactory;
 import org.spongepowered.api.event.cause.Cause;
@@ -57,7 +60,16 @@ public class InventorySync {
   @Inject @NonNull private Logger logger;
 
   @Inject private GuiceObjectMapperFactory factory;
-  @Inject private ConfigurationLoader<CommentedConfigurationNode> loader;
+
+  @Inject
+  @DefaultConfig(sharedRoot = false)
+  private ConfigurationLoader<CommentedConfigurationNode> loader;
+
+  @Inject
+  @ConfigDir(sharedRoot = false)
+  @NonNull
+  private Path configDir;
+
   @NonNull private Config config;
 
   @NonNull private DataSource dataSource;
@@ -78,6 +90,10 @@ public class InventorySync {
     return instance.logger;
   }
 
+  public static Path getConfigDir() {
+    return instance.configDir;
+  }
+
   public static Config getConfig() {
     return instance.config;
   }
@@ -90,10 +106,17 @@ public class InventorySync {
   public void preInit(GamePreInitializationEvent event) throws IOException, ObjectMappingException {
     final TypeToken<Config> configToken = TypeToken.of(Config.class);
 
+    logger.debug("Loading config...");
+
     CommentedConfigurationNode node =
         loader.load(ConfigurationOptions.defaults().setObjectMapperFactory(factory));
-    config = node.getValue(configToken);
 
+    if (node.getNode("global").isVirtual()) {;
+    }
+
+    config = node.<Config>getValue(configToken, Config::new);
+
+    logger.debug("Saving config...");
     node.setValue(configToken, config);
     loader.save(node);
   }

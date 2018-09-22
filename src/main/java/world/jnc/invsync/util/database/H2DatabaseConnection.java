@@ -13,6 +13,6 @@ public class H2DatabaseConnection extends DatabaseConnection {
    * @throws SQLException
    */
   public H2DatabaseConnection(Config.Storage.H2 h2) throws SQLException {
-    super(String.format(URLFormat, h2.getDatabaseFile().toAbsolutePath()));
+    super(String.format(URLFormat, h2.getAbsoluteDatabasePath()));
   }
 }

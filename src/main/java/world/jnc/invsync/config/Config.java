@@ -1,11 +1,10 @@
 package world.jnc.invsync.config;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.Duration;
 import lombok.Getter;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
+import world.jnc.invsync.InventorySync;
 
 @ConfigSerializable
 public class Config {
@@ -25,10 +24,10 @@ public class Config {
 
     @Setting(
       comment =
-          "Maximum amount of time to wait for the other server to finish writing the data.\nIncrease value if you notice synchronizations failing"
+          "Maximum amount of time to wait for the other server to finish writing the data. Time in ms\nIncrease value if you notice synchronizations failing"
     )
     @Getter
-    private Duration maxWait = Duration.ofMillis(1000);
+    private long maxWait = 1000L;
   }
 
   @ConfigSerializable
@@ -71,7 +70,11 @@ public class Config {
 
     @ConfigSerializable
     public static class H2 {
-      @Getter private Path databaseFile = Paths.get("inventoryStorage");
+      @Setting @Getter private String databaseFile = "inventoryStorage";
+
+      public Path getAbsoluteDatabasePath() {
+        return InventorySync.getConfigDir().resolve(getDatabaseFile()).toAbsolutePath();
+      }
     }
 
     @ConfigSerializable

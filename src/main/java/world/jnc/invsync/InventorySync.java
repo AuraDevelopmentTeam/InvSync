@@ -1,17 +1,21 @@
 package world.jnc.invsync;
 
+import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
-import java.nio.file.Path;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import lombok.Getter;
 import lombok.NonNull;
+import ninja.leaping.configurate.ConfigurationOptions;
+import ninja.leaping.configurate.commented.CommentedConfigurationNode;
+import ninja.leaping.configurate.loader.ConfigurationLoader;
+import ninja.leaping.configurate.objectmapping.GuiceObjectMapperFactory;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.bstats.sponge.Metrics;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.config.ConfigDir;
-import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.SpongeEventFactory;
 import org.spongepowered.api.event.cause.Cause;
@@ -19,6 +23,7 @@ import org.spongepowered.api.event.cause.EventContext;
 import org.spongepowered.api.event.cause.EventContextKeys;
 import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
+import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppingEvent;
 import org.spongepowered.api.plugin.Plugin;
@@ -51,17 +56,10 @@ public class InventorySync {
   @Inject private Metrics metrics;
   @Inject @NonNull private Logger logger;
 
-  @Inject
-  @DefaultConfig(sharedRoot = false)
-  @NonNull
-  private Path configFile;
-
-  @Inject
-  @ConfigDir(sharedRoot = false)
-  @NonNull
-  private Path configDir;
-
+  @Inject private GuiceObjectMapperFactory factory;
+  @Inject private ConfigurationLoader<CommentedConfigurationNode> loader;
   @NonNull private Config config;
+
   @NonNull private DataSource dataSource;
   private PermissionRegistry permissionRegistry;
   private List<AutoCloseable> eventListeners = new LinkedList<>();
@@ -80,20 +78,24 @@ public class InventorySync {
     return instance.logger;
   }
 
-  public static Path getConfigFile() {
-    return instance.configFile;
-  }
-
-  public static Path getConfigDir() {
-    return instance.configDir;
-  }
-
   public static Config getConfig() {
     return instance.config;
   }
 
   public static DataSource getDataSource() {
     return instance.dataSource;
+  }
+
+  @Listener
+  public void preInit(GamePreInitializationEvent event) throws IOException, ObjectMappingException {
+    final TypeToken<Config> configToken = TypeToken.of(Config.class);
+
+    CommentedConfigurationNode node =
+        loader.load(ConfigurationOptions.defaults().setObjectMapperFactory(factory));
+    config = node.getValue(configToken);
+
+    node.setValue(configToken, config);
+    loader.save(node);
   }
 
   @Listener
@@ -114,12 +116,9 @@ public class InventorySync {
       logger.debug("Registered permissions");
     }
 
-    config = new Config(this, configFile, configDir);
-    config.load();
-
     dataSource = new DataSource();
 
-    addEventListener(new PlayerEvents(dataSource));
+    addEventListener(new PlayerEvents(dataSource, config.getSynchronize()));
     logger.debug("Registered events");
 
     logger.info("Loaded successfully!");
@@ -142,6 +141,9 @@ public class InventorySync {
     stop(gameStoppingEvent);
 
     // Starting over
+    GamePreInitializationEvent gamePreInitializationEvent =
+        SpongeEventFactory.createGamePreInitializationEvent(cause);
+    preInit(gamePreInitializationEvent);
     GameInitializationEvent gameInitializationEvent =
         SpongeEventFactory.createGameInitializationEvent(cause);
     init(gameInitializationEvent);

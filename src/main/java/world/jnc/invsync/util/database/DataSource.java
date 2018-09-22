@@ -22,8 +22,7 @@ import world.jnc.invsync.config.Config;
 )
 public class DataSource {
   private final DatabaseConnection connection;
-  @Getter private final boolean h2;
-  @Getter private final boolean mysql;
+  @Getter private final Config.Storage storageConfig;
 
   private final String tableInventories;
   private final String tableInventoriesColumnUUID;
@@ -48,22 +47,12 @@ public class DataSource {
   }
 
   public DataSource() throws SQLException {
-    if ("h2".equals(Config.Values.Storage.getStorageEngine())) {
-      h2 = true;
-      mysql = false;
+    storageConfig = InventorySync.getConfig().getStorage();
 
-      connection = new H2DatabaseConnection(Config.Values.Storage.H2.getDatabaseFile());
-    } else if ("mysql".equals(Config.Values.Storage.getStorageEngine())) {
-      h2 = false;
-      mysql = true;
-
-      connection =
-          new MysqlDatabaseConnection(
-              Config.Values.Storage.MySQL.getHost(),
-              Config.Values.Storage.MySQL.getPort(),
-              Config.Values.Storage.MySQL.getDatabase(),
-              Config.Values.Storage.MySQL.getUser(),
-              Config.Values.Storage.MySQL.getPassword());
+    if (storageConfig.isH2()) {
+      connection = new H2DatabaseConnection(storageConfig.getH2());
+    } else if (storageConfig.isMySQL()) {
+      connection = new MysqlDatabaseConnection(storageConfig.getMysql());
     } else throw new IllegalArgumentException("Invalid storage Engine!");
 
     tableInventories = getTableName("inventories");
@@ -196,10 +185,10 @@ public class DataSource {
   private String getTableName(String baseName) {
     String name;
 
-    if (mysql) {
-      name = Config.Values.Storage.MySQL.getTablePrefix() + baseName;
-    } else if (h2) {
+    if (storageConfig.isH2()) {
       name = baseName;
+    } else if (storageConfig.isMySQL()) {
+      name = storageConfig.getMysql().getTablePrefix() + baseName;
     } else return null;
 
     name = name.replaceAll("`", "``");

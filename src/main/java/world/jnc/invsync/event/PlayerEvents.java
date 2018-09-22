@@ -1,6 +1,7 @@
 package world.jnc.invsync.event;
 
 import java.io.IOException;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -30,7 +31,8 @@ import world.jnc.invsync.util.serializer.PlayerSerializer;
 @RequiredArgsConstructor
 public class PlayerEvents implements AutoCloseable {
   private final DataSource dataSource;
-  private Map<UUID, Task> waitingPlayers = new HashMap<>();
+  private final Map<UUID, Task> waitingPlayers = new HashMap<>();
+  private final Config.Synchronize synchronizeConfig;
 
   @Listener
   public void onPlayerJoin(ClientConnectionEvent.Join event)
@@ -42,7 +44,9 @@ public class PlayerEvents implements AutoCloseable {
       Task task =
           Task.builder()
               .execute(
-                  new WaitingForPreviousServerToFinish(player, Config.Values.Global.getMaxWait()))
+                  new WaitingForPreviousServerToFinish(
+                      player,
+                      InventorySync.getConfig().getGeneral().getMaxWait().get(ChronoUnit.MILLIS)))
               .intervalTicks(1)
               .submit(InventorySync.getInstance());
 
@@ -66,7 +70,7 @@ public class PlayerEvents implements AutoCloseable {
 
   @Listener
   public void onPlayerItemPickUp(ChangeInventoryEvent.Pickup event, @First Player player) {
-    if (!Config.Values.Synchronize.getEnableInventory()) return;
+    if (!synchronizeConfig.getEnableInventory()) return;
 
     synchronized (waitingPlayers) {
       if (waitingPlayers.containsKey(player.getUniqueId())) {
@@ -77,7 +81,7 @@ public class PlayerEvents implements AutoCloseable {
 
   @Listener
   public void onPlayerExperiencePickUp(ChangeEntityExperienceEvent event, @First Player player) {
-    if (!Config.Values.Synchronize.getEnableExperience()) return;
+    if (!synchronizeConfig.getEnableExperience()) return;
 
     synchronized (waitingPlayers) {
       if (waitingPlayers.containsKey(player.getUniqueId())) {
@@ -88,7 +92,7 @@ public class PlayerEvents implements AutoCloseable {
 
   @Listener
   public void onPlayerEat(UseItemStackEvent.Finish event, @First Player player) {
-    if (!Config.Values.Synchronize.getEnableHunger()) return;
+    if (!synchronizeConfig.getEnableHunger()) return;
 
     if (!event.getItemStackInUse().getProperty(FoodRestorationProperty.class).isPresent()) return;
 
@@ -101,7 +105,7 @@ public class PlayerEvents implements AutoCloseable {
 
   @Listener
   public void onPlayerDamage(DamageEntityEvent event) {
-    if (!Config.Values.Synchronize.getEnableHealth()) return;
+    if (!synchronizeConfig.getEnableHealth()) return;
 
     Entity player = event.getTargetEntity();
 
@@ -117,7 +121,7 @@ public class PlayerEvents implements AutoCloseable {
   @Listener
   public void onPlayerChangeGamemode(ChangeGameModeEvent event, @First Player player) {
     // TODO: Use Cause once SpongeCommon#1355 is fixed
-    if (!Config.Values.Synchronize.getEnableGameMode()) return;
+    if (!synchronizeConfig.getEnableGameMode()) return;
 
     synchronized (waitingPlayers) {
       if (waitingPlayers.containsKey(player.getUniqueId())) {
@@ -160,7 +164,7 @@ public class PlayerEvents implements AutoCloseable {
     private final Player player;
     private final long endTime;
 
-    public WaitingForPreviousServerToFinish(Player player, int maxWait) {
+    public WaitingForPreviousServerToFinish(Player player, long maxWait) {
       this.player = player;
       endTime = System.currentTimeMillis() + maxWait;
     }

@@ -1,7 +1,7 @@
 package world.jnc.invsync.util.database;
 
-import java.nio.file.Path;
 import java.sql.SQLException;
+import world.jnc.invsync.config.Config;
 
 public class H2DatabaseConnection extends DatabaseConnection {
   private static final String URLFormat = "jdbc:h2:%s;AUTO_SERVER=TRUE";
@@ -9,10 +9,10 @@ public class H2DatabaseConnection extends DatabaseConnection {
   /**
    * Opens a h2 database connection.
    *
-   * @param databaseFile storage of the database file
+   * @param h2 storage of the database file
    * @throws SQLException
    */
-  public H2DatabaseConnection(Path databaseFile) throws SQLException {
-    super(String.format(URLFormat, databaseFile.toAbsolutePath()));
+  public H2DatabaseConnection(Config.Storage.H2 h2) throws SQLException {
+    super(String.format(URLFormat, h2.getDatabaseFile().toAbsolutePath()));
   }
 }

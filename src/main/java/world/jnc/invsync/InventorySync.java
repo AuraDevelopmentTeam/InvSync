@@ -111,7 +111,11 @@ public class InventorySync {
     CommentedConfigurationNode node =
         loader.load(ConfigurationOptions.defaults().setObjectMapperFactory(factory));
 
-    if (node.getNode("global").isVirtual()) {;
+    final Object globalValue = node.getNode("global").getValue();
+
+    if (globalValue != null) {
+      node.getNode("general").setValue(globalValue);
+      node.removeChild("global");
     }
 
     // TODO: handle exception when invalid database type is specified

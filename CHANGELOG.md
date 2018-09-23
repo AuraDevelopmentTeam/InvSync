@@ -1,158 +1,182 @@
-0.6.17
-------
+Version 0.6.17
+--------------
 
-- Fixed synchronizing crashing when unknow item is being synchronized (Fixes [#18](https://github.com/AuraDevelopmentTeam/InvSync/issues/18))
+\* Fixed synchronizing crashing when unknow item is being synchronized (Fixes [#18](https://github.com/AuraDevelopmentTeam/InvSync/issues/18))  
 
-0.6.14
-------
 
-- Prevented a very rare race condition
+Version 0.6.14
+--------------
 
-0.6.9
------
+\* Prevented a very rare race condition  
 
-- Added bStats metrics
-- Internal restructuring
 
-0.6.0
------
+Version 0.6.9
+-------------
 
-- Added individual permissions to allow fine tuning (Closes [#17](https://github.com/AuraDevelopmentTeam/InvSync/issues/17))
+\+ Added bStats metrics  
+\* Internal restructuring  
 
-0.5.51
-------
 
-- Made plugin work with API version 5.x.x again
-- Fixed console spam on error during synchronization (Fixes [#16](https://github.com/AuraDevelopmentTeam/InvSync/issues/16))
-- Improved and made game mode synchronizing work again (Fixes [#15](https://github.com/AuraDevelopmentTeam/InvSync/issues/15))
-- Improved debugging
-- Synchronizing selected slot as well to make transition even smoother!
+Version 0.6.0
+-------------
 
-0.5.42
-------
+\+ Added individual permissions to allow fine tuning (Closes [#17](https://github.com/AuraDevelopmentTeam/InvSync/issues/17))  
 
-- Added URL to plugin info
-- Improved event prevention (More events and they don't get prevented if the module is disabled)
-- Added warning when previous server took too long
 
-0.5.37
-------
+Version 0.5.51
+--------------
 
-- Synchronizing experience is now using a different method (Fixes [#4](https://github.com/AuraDevelopmentTeam/InvSync/issues/4))
-- No longer using deprecated class
+\* Made plugin work with API version 5.x.x again  
+\* Fixed console spam on error during synchronization (Fixes [#16](https://github.com/AuraDevelopmentTeam/InvSync/issues/16))  
+\* Improved and made game mode synchronizing work again (Fixes [#15](https://github.com/AuraDevelopmentTeam/InvSync/issues/15))  
+\* Improved debugging  
+\* Synchronizing selected slot as well to make transition even smoother!  
 
-0.5.32
-------
 
-- Updated to API 7.0.0
-- Removed Synchronizing Achievements because it's working by default (Fixes [#10](https://github.com/AuraDevelopmentTeam/InvSync/issues/10) and [#11](https://github.com/AuraDevelopmentTeam/InvSync/issues/11))
-- Synchronizing PotionEffects (Not working because of a bug in Sponge. See: [#12](https://github.com/AuraDevelopmentTeam/InvSync/issues/12))
-- Added Manifest to jar
+Version 0.5.42
+--------------
 
-0.5.19-beta
------------
+\+ Added URL to plugin info  
+\* Improved event prevention (More events and they don't get prevented if the module is disabled)  
+\* Added warning when previous server took too long  
 
-- Now Synchronizing Achievements (Fixes [#9](https://github.com/AuraDevelopmentTeam/InvSync/issues/9))
-- Not perfect as achievements get announced
-- Added hidden debug setting
 
-0.5.14
-------
+Version 0.5.37
+--------------
 
-- Added health to synchronization
-- Added hunger to synchronization
-- Internal improvements
+\* Synchronizing experience is now using a different method (Fixes [#4](https://github.com/AuraDevelopmentTeam/InvSync/issues/4))  
+\* No longer using deprecated class  
 
-0.5.10
-------
 
-- Files are now additionally signed with PGP (For real this time!)
+Version 0.5.32
+--------------
 
-0.5.7
------
+\+ Added Manifest to jar  
+\* Updated to API 7.0.0  
+\* Removed Synchronizing Achievements because it's working by default (Fixes [#10](https://github.com/AuraDevelopmentTeam/InvSync/issues/10) and [#11](https://github.com/AuraDevelopmentTeam/InvSync/issues/11))  
+\* Synchronizing PotionEffects (Not working because of a bug in Sponge. See: [#12](https://github.com/AuraDevelopmentTeam/InvSync/issues/12))  
 
-- Files are now additionally signed with PGP (Not working! See next release)
 
-0.5.4
------
+Version 0.5.19-beta
+-------------------
 
-- Added config option for individual parts to synchronize
+\+ Added hidden debug setting  
+\* Now Synchronizing Achievements (Fixes [#9](https://github.com/AuraDevelopmentTeam/InvSync/issues/9))  
+\* Not perfect as achievements get announced  
 
-0.5.0-beta
-----------
 
-- Fixed [#6](https://github.com/AuraDevelopmentTeam/InvSync/issues/6): Serialize inventories to NBT
-- Data in database is now way more portable
-- Fixed [#7](https://github.com/AuraDevelopmentTeam/InvSync/issues/7): Only one instance of the plugin can work with a H2 database
+Version 0.5.14
+--------------
 
-0.4.6-beta
-----------
+\+ Added health to synchronization  
+\+ Added hunger to synchronization  
+\* Internal improvements  
 
-- Fixed [#5](https://github.com/AuraDevelopmentTeam/InvSync/issues/5): Database connection sometimes times out and should be reconnected (Really this time)
-- Internal improvements
 
-0.4.2-beta
-----------
+Version 0.5.10
+--------------
 
-- Fixed [#5](https://github.com/AuraDevelopmentTeam/InvSync/issues/5): Database connection sometimes times out and should be reconnected (Not really fixed)
+\* Files are now additionally signed with PGP (For real this time!)  
 
-0.4.0-beta
-----------
 
-- Gamemode and Experience are now synced too (experience is bugged atm)
-- Waiting for other server to finish instead of waiting a fixed amount of time. Makes it more secure!
+Version 0.5.7
+-------------
 
-0.3.18-beta
------------
+\* Files are now additionally signed with PGP (Not working! See next release)  
 
-- Fixed [#3](https://github.com/AuraDevelopmentTeam/InvSync/issues/3): Special chars in the MySQL password do not work
 
-0.3.16-beta
------------
+Version 0.5.4
+-------------
 
-- Fixed [#2](https://github.com/AuraDevelopmentTeam/InvSync/issues/2): When switching servers by bungeecord, the inventory gets loaded from the database before the new data is written 
-- No item pickup while waiting for synchronization
-- Storing inventories to database when server stops
-- Internal improvements
+\+ Added config option for individual parts to synchronize  
 
-0.3.8-beta
-----------
 
-- Synchronizing from database now working
-- Fixed reloading bug
-- Fixed several bugs with statements
+Version 0.5.0-beta
+------------------
 
-0.3.0-alpha
------------
+\* Fixed [#6](https://github.com/AuraDevelopmentTeam/InvSync/issues/6): Serialize inventories to NBT  
+\* Data in database is now way more portable  
+\* Fixed [#7](https://github.com/AuraDevelopmentTeam/InvSync/issues/7): Only one instance of the plugin can work with a H2 database  
 
-- Added config
-- Added reload functionality
-- Fixed serialization for enchantments
 
-0.2.0-alpha
------------
+Version 0.4.6-beta
+------------------
 
-- Removed MySQL driver (sponge alerady has it implemented)
-- Added inventory serialization and deserialization (Not working 100%)
-- Added README
-- Compressing serialized data to safe space
+\* Fixed [#5](https://github.com/AuraDevelopmentTeam/InvSync/issues/5): Database connection sometimes times out and should be reconnected (Really this time)  
+\* Internal improvements  
 
-0.1.0-alpha
------------
 
-- Added MySQL driver
-- Fixed signing
-- Added Lombok to project
-- Added basic functionality
-- Added MySQL connection handler/wrapper
+Version 0.4.2-beta
+------------------
 
-0.0.13-alpha
-------------
+\* Fixed [#5](https://github.com/AuraDevelopmentTeam/InvSync/issues/5): Database connection sometimes times out and should be reconnected (Not really fixed)  
 
-- Set up project
-- First semi working plugin version!
 
-0.0.0-alpha
------------
+Version 0.4.0-beta
+------------------
 
-- Initial commit
+\* Gamemode and Experience are now synced too (experience is bugged atm)  
+\* Waiting for other server to finish instead of waiting a fixed amount of time. Makes it more secure!  
+
+
+Version 0.3.18-beta
+-------------------
+
+\* Fixed [#3](https://github.com/AuraDevelopmentTeam/InvSync/issues/3): Special chars in the MySQL password do not work  
+
+
+Version 0.3.16-beta
+-------------------
+
+\* Fixed [#2](https://github.com/AuraDevelopmentTeam/InvSync/issues/2): When switching servers by bungeecord, the inventory gets loaded from the database before the new data is written  
+\* No item pickup while waiting for synchronization  
+\* Storing inventories to database when server stops  
+\* Internal improvements  
+
+
+Version 0.3.8-beta
+------------------
+
+\* Synchronizing from database now working  
+\* Fixed reloading bug  
+\* Fixed several bugs with statements  
+
+
+Version 0.3.0-alpha
+-------------------
+
+\+ Added config  
+\+ Added reload functionality  
+\* Fixed serialization for enchantments  
+
+
+Version 0.2.0-alpha
+-------------------
+
+\+ Added inventory serialization and deserialization (Not working 100%)  
+\+ Added README  
+\* Compressing serialized data to safe space  
+\- Removed MySQL driver (sponge alerady has it implemented)  
+
+
+Version 0.1.0-alpha
+-------------------
+
+\+ Added MySQL driver  
+\+ Added Lombok to project  
+\+ Added basic functionality  
+\+ Added MySQL connection handler/wrapper  
+\* Fixed signing  
+
+
+Version 0.0.13-alpha
+--------------------
+
+\* Set up project  
+\* First semi working plugin version!  
+
+
+Version 0.0.0-alpha
+-------------------
+
+\* Initial commit  

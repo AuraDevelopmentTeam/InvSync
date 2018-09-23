@@ -118,10 +118,25 @@ public class InventorySync {
       node.removeChild("global");
     }
 
-    // TODO: handle exception when invalid database type is specified
-    config = node.<Config>getValue(configToken, Config::new);
+    try {
+      config = node.<Config>getValue(configToken, Config::new);
+    } catch (ObjectMappingException e) {
+      final String message = e.getMessage();
 
-    logger.debug("Saving config...");
+      if (!message.startsWith("Invalid enum constant provided for storageEngine:")) throw e;
+
+      final String defaultStorageEngine = (new Config.Storage()).getStorageEngine().name();
+
+      node.getNode("storage", "storageEngine").setValue(defaultStorageEngine);
+
+      config = node.<Config>getValue(configToken, Config::new);
+
+      logger.error(message);
+      logger.warn("Possible values are: " + Config.Storage.StorageEngine.allowedValues);
+      logger.warn("To fix your config we changed the storage engine to " + defaultStorageEngine);
+    }
+
+    logger.debug("Saving/Formatting config...");
     node.setValue(configToken, config);
     loader.save(node);
   }

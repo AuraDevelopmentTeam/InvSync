@@ -1,6 +1,8 @@
 package world.jnc.invsync.config;
 
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
@@ -24,7 +26,8 @@ public class Config {
 
     @Setting(
       comment =
-          "Maximum amount of time to wait for the other server to finish writing the data. Time in ms\nIncrease value if you notice synchronizations failing"
+          "Maximum amount of time to wait for the other server to finish writing the data. Time in ms\n"
+              + "Increase value if you notice synchronizations failing"
     )
     @Getter
     private long maxWait = 1000L;
@@ -43,7 +46,7 @@ public class Config {
 
   @ConfigSerializable
   public static class Storage {
-    @Setting(comment = "The stoage engine that should be used\nAllowed values: h2 mysql")
+    @Setting(comment = "The stoage engine that should be used\n" + "Allowed values: h2 mysql")
     @Getter
     private StorageEngine storageEngine = StorageEngine.h2;
 
@@ -66,11 +69,22 @@ public class Config {
     public static enum StorageEngine {
       h2,
       mysql;
+
+      public static final String allowedValues =
+          Arrays.stream(Config.Storage.StorageEngine.values())
+              .map(Enum::name)
+              .collect(Collectors.joining(", "));
     }
 
     @ConfigSerializable
     public static class H2 {
-      @Setting @Getter private String databaseFile = "inventoryStorage";
+      @Setting(
+        comment =
+            "If this is a relative path, it will be relative to the InvSync config dir (should be \"config/invsync\"). Absolute\n"
+                + "paths work too of course"
+      )
+      @Getter
+      private String databaseFile = "inventoryStorage";
 
       public Path getAbsoluteDatabasePath() {
         return InventorySync.getConfigDir().resolve(getDatabaseFile()).toAbsolutePath();

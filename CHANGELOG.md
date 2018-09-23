@@ -1,3 +1,14 @@
+Version 0.6.18
+--------------
+
+\+ Added GradleCommon (helper project. Only used for compiling)  
+\* Using new versioning System (due to GradleCommon)  
+\* Using SpongeAPI 7.1.0 (instead of 7.1.0-SNAPSHOT)  
+\* Using better config code.  
+\* Fixed Connection Leaks (Fixes [#17](https://github.com/AuraDevelopmentTeam/InvSync/issues/17))  
+\* Improved database performance.  
+
+
 Version 0.6.17
 --------------
 

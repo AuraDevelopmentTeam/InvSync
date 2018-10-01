@@ -4,7 +4,7 @@ import java.sql.SQLException;
 import world.jnc.invsync.config.Config;
 
 public class MysqlDatabaseConnection extends DatabaseConnection {
-  private static final String URLFormat = "jdbc:mysql://%s:%s@%s:%d/%s";
+  private static final String URLFormat = "jdbc:mysql://%s:%s@%s:%d/%s?autoReconnect=true";
 
   /**
    * Opens a MySQL database connection.

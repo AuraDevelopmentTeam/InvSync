@@ -1,7 +1,6 @@
 package world.jnc.invsync.util.serializer.module;
 
 import java.util.Optional;
-import lombok.AccessLevel;
 import lombok.Getter;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
@@ -11,7 +10,9 @@ import world.jnc.invsync.InventorySync;
 import world.jnc.invsync.permission.PermissionRegistry;
 
 public abstract class BaseSyncModule {
-  @Getter(value = AccessLevel.PROTECTED, lazy = true)
+  protected static final DataQuery THIS = DataQuery.of();
+
+  @Getter(lazy = true)
   private final DataQuery query = DataQuery.of(getName());
 
   public static String getPermissionPrefix() {
@@ -32,7 +33,7 @@ public abstract class BaseSyncModule {
     return InventorySync.getConfig().getSynchronize(getName());
   }
 
-  public boolean syncPlayer(Player player) {
+  public boolean getSyncPlayer(Player player) {
     return isEnabled() && player.hasPermission(getPermission());
   }
 
@@ -45,6 +46,10 @@ public abstract class BaseSyncModule {
   }
 
   public abstract DataView serialize(Player player, DataView container);
+
+  public void deserialize(Player player, Optional<DataView> container) {
+    if (container.isPresent()) deserialize(player, container.get());
+  }
 
   public abstract void deserialize(Player player, DataView container);
 }

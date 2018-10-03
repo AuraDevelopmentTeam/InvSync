@@ -2,7 +2,7 @@ package world.jnc.invsync.util.serializer.module;
 
 import org.spongepowered.api.Sponge;
 
-public abstract class ModSyncModule extends SyncModule {
+public abstract class BaseModSyncModule extends BaseSyncModule {
   public abstract String getModId();
 
   @Override

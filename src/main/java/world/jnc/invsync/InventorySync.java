@@ -36,7 +36,7 @@ import world.jnc.invsync.permission.PermissionRegistry;
 import world.jnc.invsync.util.database.DataSource;
 import world.jnc.invsync.util.metrics.FeatureChart;
 import world.jnc.invsync.util.serializer.PlayerSerializer;
-import world.jnc.invsync.util.serializer.module.SyncModule;
+import world.jnc.invsync.util.serializer.module.BaseSyncModule;
 
 @Plugin(
   id = InventorySync.ID,
@@ -205,7 +205,7 @@ public class InventorySync {
       logger.warn("To fix your config we changed the storage engine to " + defaultStorageEngine);
     }
 
-    for (SyncModule module : PlayerSerializer.getModules()) {
+    for (BaseSyncModule module : PlayerSerializer.getModules()) {
       // initializes the config map with a value if not present
       module.isEnabled();
     }

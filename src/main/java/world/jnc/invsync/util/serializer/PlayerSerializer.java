@@ -1,5 +1,6 @@
 package world.jnc.invsync.util.serializer;
 
+import com.google.common.collect.ImmutableList;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -36,10 +37,14 @@ import world.jnc.invsync.InventorySync;
 import world.jnc.invsync.config.Config;
 import world.jnc.invsync.permission.PermissionRegistry;
 import world.jnc.invsync.util.database.DataSource;
+import world.jnc.invsync.util.serializer.module.SyncModule;
 
 @UtilityClass
 public class PlayerSerializer {
   private static final Map<UUID, DataContainer> dataContainerCache = new HashMap<>();
+
+  private static final List<SyncModule> modules = null;
+  private static ImmutableList<SyncModule> modulesImmutableListCache = null;
 
   private static final DataQuery INVENTORY = DataQuery.of("inventory");
   private static final DataQuery SELECTED_SLOT = DataQuery.of("selectedSlot");
@@ -61,6 +66,18 @@ public class PlayerSerializer {
   private static final Key<MutableBoundedValue<Integer>> KEY_FOOD_LEVEL = Keys.FOOD_LEVEL;
   private static final Key<MutableBoundedValue<Double>> KEY_SATURATION = Keys.SATURATION;
   private static final Key<ListValue<PotionEffect>> KEY_POTION_EFFECTS = Keys.POTION_EFFECTS;
+
+  public static void registerModule(SyncModule module) {
+    modules.add(module);
+    modulesImmutableListCache = null;
+  }
+
+  public static ImmutableList<SyncModule> getModules() {
+    if (modulesImmutableListCache != null)
+      modulesImmutableListCache = ImmutableList.copyOf(modules);
+
+    return modulesImmutableListCache;
+  }
 
   public static byte[] serializePlayer(Player player, boolean removeFromCache) throws IOException {
     final Config config = InventorySync.getConfig();

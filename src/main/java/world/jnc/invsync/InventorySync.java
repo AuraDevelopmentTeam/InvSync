@@ -26,7 +26,6 @@ import org.spongepowered.api.event.cause.EventContext;
 import org.spongepowered.api.event.cause.EventContextKeys;
 import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
-import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppingEvent;
 import org.spongepowered.api.plugin.Plugin;
@@ -36,6 +35,8 @@ import world.jnc.invsync.event.PlayerEvents;
 import world.jnc.invsync.permission.PermissionRegistry;
 import world.jnc.invsync.util.database.DataSource;
 import world.jnc.invsync.util.metrics.FeatureChart;
+import world.jnc.invsync.util.serializer.PlayerSerializer;
+import world.jnc.invsync.util.serializer.module.SyncModule;
 
 @Plugin(
   id = InventorySync.ID,
@@ -103,7 +104,75 @@ public class InventorySync {
   }
 
   @Listener
-  public void preInit(GamePreInitializationEvent event) throws IOException, ObjectMappingException {
+  public void init(GameInitializationEvent event)
+      throws SQLException, IOException, ObjectMappingException {
+    logger.info("Initializing " + NAME + " Version " + VERSION);
+
+    loadConfig();
+
+    if (VERSION.contains("SNAPSHOT")) {
+      logger.warn("WARNING! This is a snapshot version!");
+      logger.warn("Use at your own risk!");
+    }
+    if (VERSION.contains("development")) {
+      logger.info("This is a unreleased development version!");
+      logger.info("Things might not work properly!");
+    }
+
+    if (permissionRegistry == null) {
+      permissionRegistry = new PermissionRegistry(this);
+      logger.debug("Registered permissions");
+    }
+
+    dataSource = new DataSource();
+
+    addEventListener(new PlayerEvents(dataSource));
+    logger.debug("Registered events");
+
+    logger.info("Loaded successfully!");
+  }
+
+  @Listener
+  public void onServerStart(GameStartedServerEvent event) {
+    metrics.addCustomChart(new FeatureChart("features"));
+  }
+
+  @Listener
+  public void reload(GameReloadEvent event) throws Exception {
+    Cause cause =
+        Cause.builder()
+            .append(this)
+            .build(EventContext.builder().add(EventContextKeys.PLUGIN, container).build());
+
+    // Unregistering everything
+    GameStoppingEvent gameStoppingEvent = SpongeEventFactory.createGameStoppingEvent(cause);
+    stop(gameStoppingEvent);
+
+    // Starting over
+    GameInitializationEvent gameInitializationEvent =
+        SpongeEventFactory.createGameInitializationEvent(cause);
+    init(gameInitializationEvent);
+
+    logger.info("Reloaded successfully!");
+  }
+
+  @Listener
+  public void stop(GameStoppingEvent event) throws Exception {
+    logger.info("Shutting down " + NAME + " Version " + VERSION);
+
+    removeEventListeners();
+    logger.debug("Unregistered events");
+
+    dataSource = null;
+    logger.debug("Closed database connection");
+
+    config = null;
+    logger.debug("Unloaded config");
+
+    logger.info("Unloaded successfully!");
+  }
+
+  private void loadConfig() throws IOException, ObjectMappingException {
     final TypeToken<Config> configToken = TypeToken.of(Config.class);
 
     logger.debug("Loading config...");
@@ -136,78 +205,14 @@ public class InventorySync {
       logger.warn("To fix your config we changed the storage engine to " + defaultStorageEngine);
     }
 
+    for (SyncModule module : PlayerSerializer.getModules()) {
+      // initializes the config map with a value if not present
+      module.isEnabled();
+    }
+
     logger.debug("Saving/Formatting config...");
     node.setValue(configToken, config);
     loader.save(node);
-  }
-
-  @Listener
-  public void init(GameInitializationEvent event) throws SQLException {
-    logger.info("Initializing " + NAME + " Version " + VERSION);
-
-    if (VERSION.contains("SNAPSHOT")) {
-      logger.warn("WARNING! This is a snapshot version!");
-      logger.warn("Use at your own risk!");
-    }
-    if (VERSION.contains("development")) {
-      logger.info("This is a unreleased development version!");
-      logger.info("Things might not work properly!");
-    }
-
-    if (permissionRegistry == null) {
-      permissionRegistry = new PermissionRegistry(this);
-      logger.debug("Registered permissions");
-    }
-
-    dataSource = new DataSource();
-
-    addEventListener(new PlayerEvents(dataSource, config.getSynchronize()));
-    logger.debug("Registered events");
-
-    logger.info("Loaded successfully!");
-  }
-
-  @Listener
-  public void onServerStart(GameStartedServerEvent event) {
-    metrics.addCustomChart(new FeatureChart("features"));
-  }
-
-  @Listener
-  public void reload(GameReloadEvent event) throws Exception {
-    Cause cause =
-        Cause.builder()
-            .append(this)
-            .build(EventContext.builder().add(EventContextKeys.PLUGIN, container).build());
-
-    // Unregistering everything
-    GameStoppingEvent gameStoppingEvent = SpongeEventFactory.createGameStoppingEvent(cause);
-    stop(gameStoppingEvent);
-
-    // Starting over
-    GamePreInitializationEvent gamePreInitializationEvent =
-        SpongeEventFactory.createGamePreInitializationEvent(cause);
-    preInit(gamePreInitializationEvent);
-    GameInitializationEvent gameInitializationEvent =
-        SpongeEventFactory.createGameInitializationEvent(cause);
-    init(gameInitializationEvent);
-
-    logger.info("Reloaded successfully!");
-  }
-
-  @Listener
-  public void stop(GameStoppingEvent event) throws Exception {
-    logger.info("Shutting down " + NAME + " Version " + VERSION);
-
-    removeEventListeners();
-    logger.debug("Unregistered events");
-
-    dataSource = null;
-    logger.debug("Closed database connection");
-
-    config = null;
-    logger.debug("Unloaded config");
-
-    logger.info("Unloaded successfully!");
   }
 
   private void addEventListener(AutoCloseable listener) {

@@ -2,6 +2,8 @@ package world.jnc.invsync.config;
 
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import ninja.leaping.configurate.objectmapping.Setting;
@@ -12,9 +14,10 @@ import world.jnc.invsync.InventorySync;
 public class Config {
   @Setting @Getter private General general = new General();
 
+  // TODO: Autofill with all modules
   @Setting(comment = "Which player data to synchronize")
   @Getter
-  private Synchronize synchronize = new Synchronize();
+  private Map<String, Boolean> synchronize = new HashMap<String, Boolean>();
 
   @Setting @Getter private Storage storage = new Storage();
 
@@ -33,15 +36,12 @@ public class Config {
     private long maxWait = 1000L;
   }
 
-  @ConfigSerializable
-  public static class Synchronize {
-    @Setting @Getter private boolean enableInventory = true;
-    @Setting @Getter private boolean enableEnderChest = true;
-    @Setting @Getter private boolean enableGameMode = true;
-    @Setting @Getter private boolean enableExperience = true;
-    @Setting @Getter private boolean enableHealth = true;
-    @Setting @Getter private boolean enableHunger = true;
-    @Setting @Getter private boolean enablePotionEffects = true;
+  public boolean getSynchronize(String module) {
+    if (!synchronize.containsKey(module)) {
+      synchronize.put(module, true);
+    }
+
+    return synchronize.get(module);
   }
 
   @ConfigSerializable

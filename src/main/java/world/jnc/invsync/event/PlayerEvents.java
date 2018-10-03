@@ -23,7 +23,6 @@ import org.spongepowered.api.event.item.inventory.UseItemStackEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.scheduler.Task;
 import world.jnc.invsync.InventorySync;
-import world.jnc.invsync.config.Config;
 import world.jnc.invsync.util.database.DataSource;
 import world.jnc.invsync.util.serializer.PlayerSerializer;
 
@@ -31,7 +30,6 @@ import world.jnc.invsync.util.serializer.PlayerSerializer;
 public class PlayerEvents implements AutoCloseable {
   private final DataSource dataSource;
   private final Map<UUID, Task> waitingPlayers = new HashMap<>();
-  private final Config.Synchronize synchronizeConfig;
 
   @Listener
   public void onPlayerJoin(ClientConnectionEvent.Join event)

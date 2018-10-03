@@ -66,8 +66,6 @@ public class PlayerEvents implements AutoCloseable {
 
   @Listener
   public void onPlayerItemPickUp(ChangeInventoryEvent.Pickup event, @First Player player) {
-    if (!synchronizeConfig.getEnableInventory()) return;
-
     synchronized (waitingPlayers) {
       if (waitingPlayers.containsKey(player.getUniqueId())) {
         event.setCancelled(true);
@@ -77,8 +75,6 @@ public class PlayerEvents implements AutoCloseable {
 
   @Listener
   public void onPlayerExperiencePickUp(ChangeEntityExperienceEvent event, @First Player player) {
-    if (!synchronizeConfig.getEnableExperience()) return;
-
     synchronized (waitingPlayers) {
       if (waitingPlayers.containsKey(player.getUniqueId())) {
         event.setCancelled(true);
@@ -88,8 +84,6 @@ public class PlayerEvents implements AutoCloseable {
 
   @Listener
   public void onPlayerEat(UseItemStackEvent.Finish event, @First Player player) {
-    if (!synchronizeConfig.getEnableHunger()) return;
-
     if (!event.getItemStackInUse().getProperty(FoodRestorationProperty.class).isPresent()) return;
 
     synchronized (waitingPlayers) {
@@ -101,8 +95,6 @@ public class PlayerEvents implements AutoCloseable {
 
   @Listener
   public void onPlayerDamage(DamageEntityEvent event) {
-    if (!synchronizeConfig.getEnableHealth()) return;
-
     Entity player = event.getTargetEntity();
 
     if (!(player instanceof Player)) return;
@@ -117,8 +109,6 @@ public class PlayerEvents implements AutoCloseable {
   @Listener
   public void onPlayerChangeGamemode(ChangeGameModeEvent event, @First Player player) {
     // TODO: Use Cause once SpongeCommon#1355 is fixed
-    if (!synchronizeConfig.getEnableGameMode()) return;
-
     synchronized (waitingPlayers) {
       if (waitingPlayers.containsKey(player.getUniqueId())) {
         event.setCancelled(true);

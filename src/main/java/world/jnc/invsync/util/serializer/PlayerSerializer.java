@@ -6,8 +6,11 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -36,6 +39,8 @@ import world.jnc.invsync.util.database.DataSource;
 
 @UtilityClass
 public class PlayerSerializer {
+  private static final Map<UUID, DataContainer> dataContainerCache = new HashMap<>();
+
   private static final DataQuery INVENTORY = DataQuery.of("inventory");
   private static final DataQuery SELECTED_SLOT = DataQuery.of("selectedSlot");
   private static final DataQuery ENDER_CHEST = DataQuery.of("enderChest");
@@ -57,11 +62,11 @@ public class PlayerSerializer {
   private static final Key<MutableBoundedValue<Double>> KEY_SATURATION = Keys.SATURATION;
   private static final Key<ListValue<PotionEffect>> KEY_POTION_EFFECTS = Keys.POTION_EFFECTS;
 
-  public static byte[] serializePlayer(Player player) throws IOException {
+  public static byte[] serializePlayer(Player player, boolean removeFromCache) throws IOException {
     final Config config = InventorySync.getConfig();
     final Config.Synchronize synchronizeConfig = config.getSynchronize();
 
-    final DataContainer container = DataContainer.createNew(SafetyMode.ALL_DATA_CLONED);
+    final DataContainer container = getDataContainer(player, removeFromCache);
 
     if (synchronizeConfig.getEnableInventory()
         && player.hasPermission(PermissionRegistry.SYNC_INVENTORY)) {
@@ -126,6 +131,7 @@ public class PlayerSerializer {
     // Cause cause =
     // Cause.builder().owner(InventorySync.getInstance()).build();
     DataContainer container = DataFormats.NBT.readFrom(zipIn);
+    dataContainerCache.put(player.getUniqueId(), container);
 
     Optional<List<DataView>> inventory = container.getViewList(INVENTORY);
     Optional<Integer> selectedSlot = container.getInt(SELECTED_SLOT);
@@ -211,6 +217,19 @@ public class PlayerSerializer {
       logger.info("foodLevel.isPresent(): " + foodLevel.isPresent());
       logger.info("saturation.isPresent(): " + saturation.isPresent());
       logger.info("potionEffects.isPresent(): " + potionEffects.isPresent());
+    }
+  }
+
+  private static DataContainer getDataContainer(Player player, boolean removeFromCache) {
+    return getDataContainer(player.getUniqueId(), removeFromCache);
+  }
+
+  private static DataContainer getDataContainer(UUID uuid, boolean removeFromCache) {
+    if (dataContainerCache.containsKey(uuid)) {
+      if (removeFromCache) return dataContainerCache.remove(uuid);
+      else return dataContainerCache.get(uuid);
+    } else {
+      return DataContainer.createNew(SafetyMode.ALL_DATA_CLONED);
     }
   }
 

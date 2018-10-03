@@ -57,7 +57,7 @@ public class PlayerEvents implements AutoCloseable {
     @NonNull Player player = event.getTargetEntity();
     UUID uuid = player.getUniqueId();
 
-    savePlayer(player);
+    savePlayer(player, true);
 
     synchronized (waitingPlayers) {
       if (waitingPlayers.containsKey(uuid)) {
@@ -130,7 +130,9 @@ public class PlayerEvents implements AutoCloseable {
 
   public void saveAllPlayers() throws IOException, DataFormatException {
     for (Player player : Sponge.getGame().getServer().getOnlinePlayers()) {
-      savePlayer(player);
+      // This is either called when reloading (we don't want to clear the cache)
+      // or when shutting down, where it doesn't matter
+      savePlayer(player, false);
     }
 
     InventorySync.getLogger().debug("Saved all player inventories");
@@ -148,14 +150,14 @@ public class PlayerEvents implements AutoCloseable {
     if (result.isPresent()) {
       PlayerSerializer.deserializePlayer(player, result.get());
     } else {
-      savePlayer(player);
+      savePlayer(player, false);
     }
 
     dataSource.setActive(player);
   }
 
-  private void savePlayer(@NonNull Player player) throws IOException {
-    dataSource.saveInventory(player, PlayerSerializer.serializePlayer(player));
+  private void savePlayer(@NonNull Player player, boolean removeFromCache) throws IOException {
+    dataSource.saveInventory(player, PlayerSerializer.serializePlayer(player, removeFromCache));
   }
 
   private class WaitingForPreviousServerToFinish implements Consumer<Task> {

@@ -2,6 +2,8 @@ package world.jnc.invsync.util.serializer.module.mod;
 
 import java.util.List;
 import java.util.Optional;
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.Inventory;
@@ -10,7 +12,8 @@ import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
 import world.jnc.invsync.util.serializer.InventorySerializer;
 
 public class BaublesSyncModule extends BaseModSyncModule {
-  private static final QueryOperation<Class<? extends Inventory>> BAUBLES_INVENTORY =
+  @Getter(value = AccessLevel.PRIVATE, lazy = true)
+  private static final QueryOperation<Class<? extends Inventory>> baublesInventoryQuery =
       QueryOperationTypes.INVENTORY_TYPE.of(getBaublesContainerClass());
 
   @SuppressWarnings("unchecked")
@@ -31,7 +34,8 @@ public class BaublesSyncModule extends BaseModSyncModule {
   public DataView serialize(Player player, DataView container) {
     container.set(
         THIS,
-        InventorySerializer.serializeInventory(player.getInventory().query(BAUBLES_INVENTORY)));
+        InventorySerializer.serializeInventory(
+            player.getInventory().query(getBaublesInventoryQuery())));
 
     return container;
   }
@@ -42,7 +46,7 @@ public class BaublesSyncModule extends BaseModSyncModule {
 
     if (enderChest.isPresent()) {
       InventorySerializer.deserializeInventory(
-          enderChest.get(), player.getInventory().query(BAUBLES_INVENTORY));
+          enderChest.get(), player.getInventory().query(getBaublesInventoryQuery()));
     }
 
     // TODO: Debug Logging

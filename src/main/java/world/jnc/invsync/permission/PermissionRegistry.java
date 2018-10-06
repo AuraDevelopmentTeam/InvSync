@@ -8,18 +8,12 @@ import org.spongepowered.api.service.permission.PermissionDescription.Builder;
 import org.spongepowered.api.service.permission.PermissionService;
 import org.spongepowered.api.text.Text;
 import world.jnc.invsync.InventorySync;
+import world.jnc.invsync.util.serializer.PlayerSerializer;
 
 @RequiredArgsConstructor
 public class PermissionRegistry {
   public static final String BASE = InventorySync.ID;
   public static final String SYNC = BASE + ".sync";
-  public static final String SYNC_INVENTORY = SYNC + ".inventory";
-  public static final String SYNC_ENDER_CHEST = SYNC + ".ender_chest";
-  public static final String SYNC_GAME_MODE = SYNC + ".game_mode";
-  public static final String SYNC_EXPERIENCE = SYNC + ".experience";
-  public static final String SYNC_HEALTH = SYNC + ".health";
-  public static final String SYNC_HUNGER = SYNC + ".hunger";
-  public static final String SYNC_POTION_EFFECTS = SYNC + ".potion_effects";
 
   private final InventorySync plugin;
   private final PermissionService service =
@@ -30,31 +24,31 @@ public class PermissionRegistry {
     registerPermission(
         SYNC, "Base permission for all synchronizing", PermissionDescription.ROLE_USER);
     registerPermission(
-        SYNC_INVENTORY,
+        PlayerSerializer.inventorySyncModule.getPermission(),
         "Allow this user's inventory to be synchronized",
         PermissionDescription.ROLE_USER);
     registerPermission(
-        SYNC_ENDER_CHEST,
+        PlayerSerializer.enderChestSyncModule.getPermission(),
         "Allow this user's ender chest to be synchronized",
         PermissionDescription.ROLE_USER);
     registerPermission(
-        SYNC_GAME_MODE,
+        PlayerSerializer.gameModeSyncModule.getPermission(),
         "Allow this user's game mode to be synchronized",
         PermissionDescription.ROLE_USER);
     registerPermission(
-        SYNC_EXPERIENCE,
+        PlayerSerializer.experienceSyncModule.getPermission(),
         "Allow this user's experience to be synchronized",
         PermissionDescription.ROLE_USER);
     registerPermission(
-        SYNC_HEALTH,
+        PlayerSerializer.healthSyncModule.getPermission(),
         "Allow this user's health to be synchronized",
         PermissionDescription.ROLE_USER);
     registerPermission(
-        SYNC_HUNGER,
+        PlayerSerializer.hungerSyncModule.getPermission(),
         "Allow this user's hunger to be synchronized",
         PermissionDescription.ROLE_USER);
     registerPermission(
-        SYNC_POTION_EFFECTS,
+        PlayerSerializer.healthSyncModule.getPermission(),
         "Allow this user's potion effects to be synchronized",
         PermissionDescription.ROLE_USER);
   }

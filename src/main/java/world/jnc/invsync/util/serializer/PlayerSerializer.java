@@ -66,7 +66,7 @@ public class PlayerSerializer {
   }
 
   public static ImmutableList<BaseSyncModule> getModules() {
-    if (modulesImmutableListCache != null)
+    if (modulesImmutableListCache == null)
       modulesImmutableListCache = ImmutableList.copyOf(modules);
 
     return modulesImmutableListCache;

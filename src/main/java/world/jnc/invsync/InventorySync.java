@@ -28,6 +28,7 @@ import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppingEvent;
+import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import world.jnc.invsync.config.Config;
@@ -44,7 +45,8 @@ import world.jnc.invsync.util.serializer.module.BaseSyncModule;
   version = InventorySync.VERSION,
   description = InventorySync.DESCRIPTION,
   url = InventorySync.URL,
-  authors = {InventorySync.AUTHOR}
+  authors = {InventorySync.AUTHOR},
+  dependencies = {@Dependency(id = "baubles", optional = true)}
 )
 public class InventorySync {
   public static final String ID = "@id@";

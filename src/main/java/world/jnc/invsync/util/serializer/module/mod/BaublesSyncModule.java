@@ -42,11 +42,11 @@ public class BaublesSyncModule extends BaseModSyncModule {
 
   @Override
   public void deserialize(Player player, DataView container) {
-    Optional<List<DataView>> enderChest = container.getViewList(THIS);
+    Optional<List<DataView>> baublesSlots = container.getViewList(THIS);
 
-    if (enderChest.isPresent()) {
+    if (baublesSlots.isPresent()) {
       InventorySerializer.deserializeInventory(
-          enderChest.get(), player.getInventory().query(getBaublesInventoryQuery()));
+          baublesSlots.get(), player.getInventory().query(getBaublesInventoryQuery()));
     }
 
     // TODO: Debug Logging

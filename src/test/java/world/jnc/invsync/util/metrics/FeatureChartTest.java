@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.mockito.Mockito;
-import world.jnc.invsync.util.serializer.module.BaseModSyncModule;
 import world.jnc.invsync.util.serializer.module.BaseSyncModule;
+import world.jnc.invsync.util.serializer.module.mod.BaseModSyncModule;
 
 public class FeatureChartTest {
   @Test

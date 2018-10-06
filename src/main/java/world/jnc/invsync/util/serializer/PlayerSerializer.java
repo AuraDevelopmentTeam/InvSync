@@ -34,6 +34,7 @@ import world.jnc.invsync.util.serializer.module.HealthSyncModule;
 import world.jnc.invsync.util.serializer.module.HungerSyncModule;
 import world.jnc.invsync.util.serializer.module.InventorySyncModule;
 import world.jnc.invsync.util.serializer.module.PotionEffectsSyncModule;
+import world.jnc.invsync.util.serializer.module.mod.BaublesSyncModule;
 
 @UtilityClass
 public class PlayerSerializer {
@@ -46,6 +47,8 @@ public class PlayerSerializer {
   public static final PotionEffectsSyncModule potionEffectsSyncModule =
       new PotionEffectsSyncModule();
 
+  public static final BaublesSyncModule baublesSyncModule = new BaublesSyncModule();
+
   private static final Map<UUID, DataContainer> dataContainerCache = new HashMap<>();
 
   private static final List<BaseSyncModule> modules =
@@ -57,7 +60,8 @@ public class PlayerSerializer {
               experienceSyncModule,
               healthSyncModule,
               hungerSyncModule,
-              potionEffectsSyncModule));
+              potionEffectsSyncModule,
+              baublesSyncModule));
   private static ImmutableList<BaseSyncModule> modulesImmutableListCache = null;
 
   public static void registerModule(BaseSyncModule module) {

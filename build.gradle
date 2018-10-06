@@ -1,12 +1,9 @@
 apply from: "GradleCommon/common.gradle"
 
 repositories {
-    maven {
-        name "Aura Dev"
-        url "https://maven.thiakil.com/"
-    }
+    // Additional repositories
 }
 
 dependencies {
-    compile "com.azanor.baubles:Baubles:${baubles_version}"
+    // Additional dependencies
 }

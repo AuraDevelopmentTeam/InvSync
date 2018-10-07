@@ -52,7 +52,7 @@ public abstract class BaseSyncModule {
 
   public abstract DataView serialize(Player player, DataView container);
 
-  public void deserialize(Player player, Optional<DataView> container) {
+  public final void deserialize(Player player, Optional<DataView> container) {
     if (container.isPresent()) deserialize(player, container.get());
   }
 

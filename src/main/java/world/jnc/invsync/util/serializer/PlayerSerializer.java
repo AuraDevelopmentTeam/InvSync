@@ -24,7 +24,6 @@ import org.spongepowered.api.data.persistence.DataFormats;
 import org.spongepowered.api.entity.living.player.Player;
 import world.jnc.invsync.InventorySync;
 import world.jnc.invsync.config.Config;
-import world.jnc.invsync.permission.PermissionRegistry;
 import world.jnc.invsync.util.database.DataSource;
 import world.jnc.invsync.util.serializer.module.BaseSyncModule;
 import world.jnc.invsync.util.serializer.module.EnderChestSyncModule;
@@ -155,36 +154,6 @@ public class PlayerSerializer {
     } else {
       logger.info("Deserializing data of " + DataSource.getPlayerString(player));
     }
-
-    logger.info("Permissions:");
-    logger.info(
-        PermissionRegistry.SYNC_INVENTORY
-            + ": "
-            + player.hasPermission(PermissionRegistry.SYNC_INVENTORY));
-    logger.info(
-        PermissionRegistry.SYNC_ENDER_CHEST
-            + ": "
-            + player.hasPermission(PermissionRegistry.SYNC_ENDER_CHEST));
-    logger.info(
-        PermissionRegistry.SYNC_GAME_MODE
-            + ": "
-            + player.hasPermission(PermissionRegistry.SYNC_GAME_MODE));
-    logger.info(
-        PermissionRegistry.SYNC_EXPERIENCE
-            + ": "
-            + player.hasPermission(PermissionRegistry.SYNC_EXPERIENCE));
-    logger.info(
-        PermissionRegistry.SYNC_HEALTH
-            + ": "
-            + player.hasPermission(PermissionRegistry.SYNC_HEALTH));
-    logger.info(
-        PermissionRegistry.SYNC_HUNGER
-            + ": "
-            + player.hasPermission(PermissionRegistry.SYNC_HUNGER));
-    logger.info(
-        PermissionRegistry.SYNC_POTION_EFFECTS
-            + ": "
-            + player.hasPermission(PermissionRegistry.SYNC_POTION_EFFECTS));
 
     try {
       @Cleanup ByteArrayOutputStream debug = new ByteArrayOutputStream();

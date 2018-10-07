@@ -1,23 +1,36 @@
 package world.jnc.invsync.util.serializer;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import lombok.experimental.UtilityClass;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.DataView.SafetyMode;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.common.item.inventory.util.ItemStackUtil;
 
 @UtilityClass
 public class NativeInventorySerializer {
   private static final DataQuery SLOT = InventorySerializer.SLOT;
-  static final DataQuery STACK = InventorySerializer.STACK;
+  private static final DataQuery STACK = InventorySerializer.STACK;
+
+  @SuppressFBWarnings(
+    value = "BC_UNCONFIRMED_CAST",
+    justification =
+        "Player must be a EntityPlayer.\n"
+            + "If this is not the case, it's a good thing this blows up with an Error rather than an exception."
+  )
+  public static EntityPlayer getNativePlayer(Player player) {
+    return (EntityPlayer) player;
+  }
 
   public static List<DataView> serializeInventory(IItemHandlerModifiable inventory) {
     DataContainer container;

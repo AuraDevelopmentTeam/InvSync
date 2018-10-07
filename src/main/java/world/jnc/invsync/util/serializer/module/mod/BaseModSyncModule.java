@@ -10,7 +10,7 @@ public abstract class BaseModSyncModule extends BaseSyncModule {
   public String getName() {
     return "mod." + getModId();
   }
-  
+
   public boolean canBeEnabled() {
     return Sponge.getPluginManager().isLoaded(getModId());
   }

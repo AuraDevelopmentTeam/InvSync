@@ -51,6 +51,10 @@ public class PermissionRegistry {
         PlayerSerializer.healthSyncModule.getPermission(),
         "Allow this user's potion effects to be synchronized",
         PermissionDescription.ROLE_USER);
+    registerPermission(
+        PlayerSerializer.baublesSyncModule.getPermission(),
+        "Allow this user's baubles inventory to be synchronized",
+        PermissionDescription.ROLE_USER);
   }
 
   private Builder getBuilder() {

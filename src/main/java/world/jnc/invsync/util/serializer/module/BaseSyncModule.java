@@ -2,6 +2,8 @@ package world.jnc.invsync.util.serializer.module;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.Getter;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
@@ -17,6 +19,8 @@ import world.jnc.invsync.permission.PermissionRegistry;
 public abstract class BaseSyncModule {
   public static final DataQuery THIS = DataQuery.of("data");
 
+  private static final Pattern capitalizerPattern = Pattern.compile("(?:^|\\.|_)(\\w)");
+
   @Getter(lazy = true)
   private final DataQuery query = DataQuery.of(getName());
 
@@ -30,12 +34,26 @@ public abstract class BaseSyncModule {
     return getPermissionPrefix() + getName();
   }
 
+  public String getNiceName() {
+    final String moduleName = getName();
+    final StringBuffer buffer = new StringBuffer(moduleName.length());
+    final Matcher match = capitalizerPattern.matcher(moduleName);
+
+    while (match.find()) {
+      match.appendReplacement(buffer, match.group(1).toUpperCase());
+    }
+
+    match.appendTail(buffer);
+
+    return buffer.toString();
+  }
+
   public String getSettingName() {
-    return getName();
+    return "Enable" + getNiceName();
   }
 
   public boolean isEnabled() {
-    return InventorySync.getConfig().getSynchronize(getName());
+    return InventorySync.getConfig().getSynchronize(getSettingName());
   }
 
   public boolean getSyncPlayer(Player player) {

@@ -5,46 +5,44 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import lombok.experimental.UtilityClass;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.DataView.SafetyMode;
-import org.spongepowered.api.item.inventory.Inventory;
-import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.common.item.inventory.util.ItemStackUtil;
 
 @UtilityClass
-public class InventorySerializer {
-  static final DataQuery SLOT = DataQuery.of("slot");
-  static final DataQuery STACK = DataQuery.of("stack");
+public class NativeInventorySerializer {
+  private static final DataQuery SLOT = InventorySerializer.SLOT;
+  static final DataQuery STACK = InventorySerializer.STACK;
 
-  public static List<DataView> serializeInventory(Inventory inventory) {
+  public static List<DataView> serializeInventory(IItemHandlerModifiable inventory) {
     DataContainer container;
     List<DataView> slots = new LinkedList<>();
 
-    int i = 0;
-    Optional<ItemStack> stack;
+    ItemStack stack;
 
-    for (Inventory inv : inventory.slots()) {
-      stack = inv.peek();
+    for (int i = 0; i < inventory.getSlots(); ++i) {
+      stack = inventory.getStackInSlot(i);
 
-      if (stack.isPresent()) {
+      if (!stack.isEmpty()) {
         container = DataContainer.createNew(SafetyMode.ALL_DATA_CLONED);
 
         container.set(SLOT, i);
-        container.set(STACK, serializeItemStack(stack.get()));
+        container.set(STACK, serializeItemStack(stack));
 
         slots.add(container);
       }
-
-      i++;
     }
 
     return slots;
   }
 
-  public static boolean deserializeInventory(List<DataView> slots, Inventory inventory) {
+  public static boolean deserializeInventory(
+      List<DataView> slots, IItemHandlerModifiable inventory) {
     Map<Integer, ItemStack> stacks = new HashMap<>();
     int i;
     ItemStack stack;
@@ -57,32 +55,27 @@ public class InventorySerializer {
       stacks.put(i, stack);
     }
 
-    i = 0;
-
-    for (Inventory slot : inventory.slots()) {
+    for (i = 0; i < inventory.getSlots(); ++i) {
       if (stacks.containsKey(i)) {
         try {
-          slot.set(stacks.get(i));
+          inventory.setStackInSlot(i, stacks.get(i));
         } catch (NoSuchElementException e) {
-          slot.clear();
+          inventory.setStackInSlot(i, ItemStack.EMPTY);
 
           fail = true;
         }
       } else {
-        slot.clear();
       }
-
-      ++i;
     }
 
     return fail;
   }
 
   static DataView serializeItemStack(ItemStack item) {
-    return item.toContainer();
+    return InventorySerializer.serializeItemStack(ItemStackUtil.fromNative(item));
   }
 
   static ItemStack deserializeItemStack(DataView data) {
-    return ItemStack.builder().fromContainer(data).build();
+    return ItemStackUtil.toNative(InventorySerializer.deserializeItemStack(data));
   }
 }

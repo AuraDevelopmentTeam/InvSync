@@ -14,7 +14,6 @@ import world.jnc.invsync.InventorySync;
 public class Config {
   @Setting @Getter private General general = new General();
 
-  // TODO: Autofill with all modules
   @Setting(comment = "Which player data to synchronize")
   @Getter
   private Map<String, Boolean> synchronize = new HashMap<String, Boolean>();

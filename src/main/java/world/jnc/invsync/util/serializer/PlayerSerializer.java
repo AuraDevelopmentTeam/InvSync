@@ -19,6 +19,7 @@ import lombok.Cleanup;
 import lombok.experimental.UtilityClass;
 import org.slf4j.Logger;
 import org.spongepowered.api.data.DataContainer;
+import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.DataView.SafetyMode;
 import org.spongepowered.api.data.persistence.DataFormats;
 import org.spongepowered.api.entity.living.player.Player;
@@ -80,6 +81,8 @@ public class PlayerSerializer {
 
     final DataContainer container = getDataContainer(player, removeFromCache);
 
+    container.set(DataMigrator.VERSION_QUERY, DataMigrator.VERSION);
+
     for (BaseSyncModule module : modules) {
       if (module.getSyncPlayer(player)) {
         container.set(
@@ -118,7 +121,7 @@ public class PlayerSerializer {
     DataContainer container = DataFormats.NBT.readFrom(zipIn);
     dataContainerCache.put(player.getUniqueId(), container);
 
-    // TODO: Convert old format
+    DataMigrator.migrate(container);
 
     for (BaseSyncModule module : modules) {
       // TODO: Debug Logging
@@ -145,8 +148,8 @@ public class PlayerSerializer {
     }
   }
 
-  private static void printCommonDebugInfo(
-      Player player, DataContainer container, boolean serializing) throws IOException {
+  private static void printCommonDebugInfo(Player player, DataView container, boolean serializing)
+      throws IOException {
     Logger logger = InventorySync.getLogger();
 
     if (serializing) {

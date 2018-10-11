@@ -35,7 +35,8 @@ public class DataSource {
   private final String isActiveQuery;
 
   public static String getPlayerString(Player player) {
-    return player.getName() + " (" + player.getUniqueId().toString() + ')';
+    if (player == null) return "<unknown>";
+    else return player.getName() + " (" + player.getUniqueId().toString() + ')';
   }
 
   private static byte[] getBytesFromUUID(UUID uuid) {

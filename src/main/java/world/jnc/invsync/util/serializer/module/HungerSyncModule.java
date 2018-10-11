@@ -9,7 +9,7 @@ import org.spongepowered.api.data.value.mutable.MutableBoundedValue;
 import org.spongepowered.api.entity.living.player.Player;
 
 public class HungerSyncModule extends BaseSyncModule {
-  private static final DataQuery FOOD_LEVEL = DataQuery.of("foodLevel");
+  private static final DataQuery FOOD_LEVEL = DataQuery.of("food_level");
   private static final DataQuery SATURATION = DataQuery.of("saturation");
 
   private static final Key<MutableBoundedValue<Integer>> KEY_FOOD_LEVEL = Keys.FOOD_LEVEL;

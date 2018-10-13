@@ -22,32 +22,25 @@ public abstract class DatabaseConnection {
   @Getter(lazy = true)
   private static final SqlService sql = Sponge.getServiceManager().provide(SqlService.class).get();
 
-  private final String connectionURL;
+  @Getter protected DataSource dataSource;
 
   protected static DataSource getDataSource(String jdbcUrl) throws SQLException {
     return getSql().getDataSource(jdbcUrl);
   }
 
   protected DatabaseConnection(String connectionURL) throws SQLException {
-    this.connectionURL = connectionURL;
-
-    connect();
+    connect(connectionURL);
   }
 
-  private void connect() throws SQLException {
+  private void connect(String connectionURL) throws SQLException {
     InventorySync.getLogger()
         .debug("Connecting to: " + connectionURL.replaceFirst(":[^:]*@", ":*****@"));
 
-    // Verify initial connection
-    getDataSource();
-  }
-
-  private DataSource getDataSource() throws SQLException {
-    return getDataSource(connectionURL);
+    dataSource = getDataSource(connectionURL);
   }
 
   public Connection getConnection() throws SQLException {
-    return getDataSource().getConnection();
+    return dataSource.getConnection();
   }
 
   public Statement getStatement() throws SQLException {

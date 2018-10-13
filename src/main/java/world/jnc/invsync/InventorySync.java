@@ -27,7 +27,7 @@ import org.spongepowered.api.event.cause.EventContextKeys;
 import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
-import org.spongepowered.api.event.game.state.GameStoppingEvent;
+import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
@@ -147,8 +147,9 @@ public class InventorySync {
             .build(EventContext.builder().add(EventContextKeys.PLUGIN, container).build());
 
     // Unregistering everything
-    GameStoppingEvent gameStoppingEvent = SpongeEventFactory.createGameStoppingEvent(cause);
-    stop(gameStoppingEvent);
+    GameStoppingServerEvent gameStoppingServerEvent =
+        SpongeEventFactory.createGameStoppingServerEvent(cause);
+    stop(gameStoppingServerEvent);
 
     // Starting over
     GameInitializationEvent gameInitializationEvent =
@@ -159,7 +160,7 @@ public class InventorySync {
   }
 
   @Listener
-  public void stop(GameStoppingEvent event) throws Exception {
+  public void stop(GameStoppingServerEvent event) throws Exception {
     logger.info("Shutting down " + NAME + " Version " + VERSION);
 
     removeEventListeners();

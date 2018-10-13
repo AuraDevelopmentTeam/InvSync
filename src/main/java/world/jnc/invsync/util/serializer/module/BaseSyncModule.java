@@ -49,7 +49,7 @@ public abstract class BaseSyncModule {
   }
 
   public String getSettingName() {
-    return "Enable" + getNiceName();
+    return "enable" + getNiceName();
   }
 
   public boolean isEnabled() {

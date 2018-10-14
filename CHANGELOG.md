@@ -1,3 +1,12 @@
+Version 0.6.19-DEV
+------------------
+
+\+ Added Baubles support.  
+\+ Implemented module system to allow mods to easily add support themselves.  
+\+ Added automatic conversion from old format to new format.  
+\* Fixed issue with players not properly saving on server shutdown (Fixes [#32](https://github.com/AuraDevelopmentTeam/InvSync/issues/32))  
+
+
 Version 0.6.18
 --------------
 
@@ -5,7 +14,7 @@ Version 0.6.18
 \* Using new versioning System (due to GradleCommon)  
 \* Using SpongeAPI 7.1.0 (instead of 7.1.0-SNAPSHOT)  
 \* Using better config code.  
-\* Fixed Connection Leaks (Fixes [#17](https://github.com/AuraDevelopmentTeam/InvSync/issues/17))  
+\* Fixed Connection Leaks (Fixes [#28](https://github.com/AuraDevelopmentTeam/InvSync/issues/28))  
 \* Improved database performance.  
 
 

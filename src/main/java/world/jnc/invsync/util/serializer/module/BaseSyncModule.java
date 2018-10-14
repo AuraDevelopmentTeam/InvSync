@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.Getter;
+import org.slf4j.Logger;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataView;
@@ -24,8 +25,16 @@ public abstract class BaseSyncModule {
   @Getter(lazy = true)
   private final DataQuery query = DataQuery.of(getName());
 
-  public static String getPermissionPrefix() {
+  protected static String getPermissionPrefix() {
     return PermissionRegistry.SYNC;
+  }
+
+  protected static boolean getDebug() {
+    return InventorySync.getConfig().getGeneral().getDebug();
+  }
+
+  protected static Logger getLogger() {
+    return InventorySync.getLogger();
   }
 
   public abstract String getName();
@@ -61,7 +70,7 @@ public abstract class BaseSyncModule {
   }
 
   public final DataView serialize(Player player) {
-    return serialize(null, Optional.empty());
+    return serialize(player, Optional.empty());
   }
 
   public final DataView serialize(Player player, Optional<DataView> container) {

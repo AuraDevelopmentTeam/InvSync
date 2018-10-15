@@ -29,7 +29,7 @@ public abstract class BaseSyncModule {
   private final String niceName = calculateNiceName();
 
   protected static String getPermissionPrefix() {
-    return PermissionRegistry.SYNC;
+    return PermissionRegistry.SYNC + '.';
   }
 
   protected static boolean getDebug() {

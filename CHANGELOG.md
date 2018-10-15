@@ -6,6 +6,13 @@ Version 0.6.19-DEV
 \+ Added automatic conversion from old format to new format.  
 \* Fixed issue with players not properly saving on server shutdown (Fixes [#32](https://github.com/AuraDevelopmentTeam/InvSync/issues/32))  
 
+Changes since last beta:
+
+\+ Added debugging for modules. And general better debugging
+\* Fixed config names for modules.  
+\* Fixed using wrong permissions.  
+\* Loads of internal improvements.  
+
 
 Version 0.6.18
 --------------

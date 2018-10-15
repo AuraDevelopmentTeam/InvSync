@@ -11,10 +11,10 @@ public class BaseSyncModuleTest {
   public void getNiceModuleNameSimpleTest() {
     final BaseSyncModule module = Mockito.mock(BaseSyncModule.class);
     Mockito.when(module.getName()).thenReturn("inventory").thenReturn("ender_chest");
-    Mockito.when(module.getNiceName()).thenCallRealMethod();
+    Mockito.when(module.calculateNiceName()).thenCallRealMethod();
 
-    assertEquals("Inventory", module.getNiceName());
-    assertEquals("EnderChest", module.getNiceName());
+    assertEquals("Inventory", module.calculateNiceName());
+    assertEquals("EnderChest", module.calculateNiceName());
   }
 
   @Test
@@ -22,10 +22,10 @@ public class BaseSyncModuleTest {
     final BaseModSyncModule module = Mockito.mock(BaseModSyncModule.class);
     Mockito.when(module.getModId()).thenReturn("baubles").thenReturn("test_mod");
     Mockito.when(module.getName()).thenCallRealMethod();
-    Mockito.when(module.getNiceName()).thenCallRealMethod();
+    Mockito.when(module.calculateNiceName()).thenCallRealMethod();
 
-    assertEquals("ModBaubles", module.getNiceName());
-    assertEquals("ModTestMod", module.getNiceName());
+    assertEquals("ModBaubles", module.calculateNiceName());
+    assertEquals("ModTestMod", module.calculateNiceName());
   }
 
   @Test
@@ -35,10 +35,10 @@ public class BaseSyncModuleTest {
         .thenReturn("xUuz_bhki")
         .thenReturn("fh_iG79.g/ads")
         .thenReturn("1.2_3");
-    Mockito.when(module.getNiceName()).thenCallRealMethod();
+    Mockito.when(module.calculateNiceName()).thenCallRealMethod();
 
-    assertEquals("XUuzBhki", module.getNiceName());
-    assertEquals("FhIG79G/ads", module.getNiceName());
-    assertEquals("123", module.getNiceName());
+    assertEquals("XUuzBhki", module.calculateNiceName());
+    assertEquals("FhIG79G/ads", module.calculateNiceName());
+    assertEquals("123", module.calculateNiceName());
   }
 }

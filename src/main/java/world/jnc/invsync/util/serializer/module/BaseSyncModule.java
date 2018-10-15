@@ -25,6 +25,9 @@ public abstract class BaseSyncModule {
   @Getter(lazy = true)
   private final DataQuery query = DataQuery.of(getName());
 
+  @Getter(lazy = true)
+  private final String niceName = calculateNiceName();
+
   protected static String getPermissionPrefix() {
     return PermissionRegistry.SYNC;
   }
@@ -43,7 +46,7 @@ public abstract class BaseSyncModule {
     return getPermissionPrefix() + getName();
   }
 
-  public String getNiceName() {
+  protected String calculateNiceName() {
     final String moduleName = getName();
     final StringBuffer buffer = new StringBuffer(moduleName.length());
     final Matcher match = capitalizerPattern.matcher(moduleName);
@@ -84,4 +87,12 @@ public abstract class BaseSyncModule {
   }
 
   public abstract void deserialize(Player player, DataView container);
+
+  public void printBasicDebug(Player player) {
+    final Logger logger = getLogger();
+
+    logger.info("Module " + getNiceName());
+    logger.info("\tisEnabled:     " + isEnabled());
+    logger.info("\tgetSyncPlayer: " + getSyncPlayer(player));
+  }
 }

@@ -78,12 +78,22 @@ public class PlayerSerializer {
 
   public static byte[] serializePlayer(Player player, boolean removeFromCache) throws IOException {
     final Config config = InventorySync.getConfig();
+    final boolean debug = config.getGeneral().getDebug();
+    final Logger logger = InventorySync.getLogger();
+
+    if (debug) {
+      logger.info("Serializing data of " + DataSource.getPlayerString(player));
+    }
 
     final DataContainer container = getDataContainer(player, removeFromCache);
 
     container.set(DataMigrator.VERSION_QUERY, DataMigrator.VERSION);
 
     for (BaseSyncModule module : modules) {
+      if (debug) {
+        module.printBasicDebug(player);
+      }
+
       if (module.getSyncPlayer(player)) {
         container.set(
             module.getQuery(), module.serialize(player, container.getView(module.getQuery())));
@@ -91,7 +101,7 @@ public class PlayerSerializer {
     }
 
     if (config.getGeneral().getDebug()) {
-      printCommonDebugInfo(player, container, true);
+      printContainer(container);
     }
 
     @Cleanup ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -111,6 +121,12 @@ public class PlayerSerializer {
 
   public static void deserializePlayer(Player player, byte[] data) throws IOException {
     final Config config = InventorySync.getConfig();
+    final boolean debug = config.getGeneral().getDebug();
+    final Logger logger = InventorySync.getLogger();
+
+    if (debug) {
+      logger.info("Deserializing data of " + DataSource.getPlayerString(player));
+    }
 
     @Cleanup ByteArrayInputStream in = new ByteArrayInputStream(data);
     @Cleanup GZIPInputStream zipIn = new GZIPInputStream(in);
@@ -124,14 +140,17 @@ public class PlayerSerializer {
     DataMigrator.migrate(container);
 
     for (BaseSyncModule module : modules) {
-      // TODO: Debug Logging
+      if (debug) {
+        module.printBasicDebug(player);
+      }
+
       if (module.getSyncPlayer(player)) {
         module.deserialize(player, container.getView(module.getQuery()));
       }
     }
 
-    if (config.getGeneral().getDebug()) {
-      printCommonDebugInfo(player, container, false);
+    if (debug) {
+      printContainer(container);
     }
   }
 
@@ -148,19 +167,10 @@ public class PlayerSerializer {
     }
   }
 
-  private static void printCommonDebugInfo(Player player, DataView container, boolean serializing)
-      throws IOException {
-    Logger logger = InventorySync.getLogger();
+  public static void printContainer(DataView container) throws IOException {
+    final Logger logger = InventorySync.getLogger();
 
-    if (serializing) {
-      logger.info("Serializing data of " + DataSource.getPlayerString(player));
-    } else {
-      logger.info("Deserializing data of " + DataSource.getPlayerString(player));
-    }
-
-    try {
-      @Cleanup ByteArrayOutputStream debug = new ByteArrayOutputStream();
-
+    try (ByteArrayOutputStream debug = new ByteArrayOutputStream()) {
       DataFormats.JSON.writeTo(debug, container);
 
       logger.info(debug.toString(StandardCharsets.UTF_8.name()));

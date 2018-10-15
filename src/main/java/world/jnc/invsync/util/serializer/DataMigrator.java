@@ -1,6 +1,7 @@
 package world.jnc.invsync.util.serializer;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import java.io.IOException;
 import java.util.Optional;
 import lombok.experimental.UtilityClass;
 import org.slf4j.Logger;
@@ -52,8 +53,17 @@ public class DataMigrator {
   private static final DataQuery potionEffectsV1 = DataQuery.of("potion_effects", "data");
 
   @SuppressFBWarnings(value = "SF_SWITCH_FALLTHROUGH", justification = "Fallthrough is intended")
-  public static void migrate(DataView container) {
+  public static void migrate(DataView container) throws IOException {
     final int version = getVersion(container);
+
+    final boolean debug = InventorySync.getConfig().getGeneral().getDebug();
+    final Logger logger = InventorySync.getLogger();
+
+    if (debug && (version < VERSION)) {
+      logger.info("Migrating dataset from version " + version + " to version " + VERSION);
+      logger.info("Before:");
+      PlayerSerializer.printContainer(container);
+    }
 
     switch (version) {
       case 0: // First version. 0.6.18 and below (doesn't even have a version attribute)
@@ -83,11 +93,16 @@ public class DataMigrator {
 
         // Version
         container.set(VERSION_QUERY, VERSION);
+
+        // Print debug
+        if (debug) {
+          logger.info("After:");
+          PlayerSerializer.printContainer(container);
+        }
       case 1: // Current version nothing to do
         break;
       default:
         final String message = "Unknow version \"" + version + "\" while trying to migrate";
-        final Logger logger = InventorySync.getLogger();
 
         if (InventorySync.getConfig().getGeneral().getDebug()) {
           logger.info(message);

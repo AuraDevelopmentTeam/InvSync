@@ -91,8 +91,10 @@ public abstract class BaseSyncModule {
   public void printBasicDebug(Player player) {
     final Logger logger = getLogger();
 
-    logger.info("Module " + getNiceName());
-    logger.info("\tisEnabled:     " + isEnabled());
-    logger.info("\tgetSyncPlayer: " + getSyncPlayer(player));
+    logger.info("\tModule " + getNiceName());
+    logger.info("\t\tisEnabled:\t" + isEnabled());
+    logger.info("\t\tPermission:\t" + getPermission());
+    logger.info("\t\thasPermission:\t" + player.hasPermission(getPermission()));
+    logger.info("\t\tgetSyncPlayer:\t" + getSyncPlayer(player));
   }
 }

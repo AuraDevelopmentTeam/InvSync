@@ -38,6 +38,10 @@ public class HungerSyncModule extends BaseSyncModule {
       player.offer(KEY_SATURATION, saturation.get());
     }
 
-    // TODO: Debug Logging
+    if (getDebug()) {
+      getLogger().info("\t\tisPresent:");
+      getLogger().info("\t\t\tfoodLevel:\t" + foodLevel.isPresent());
+      getLogger().info("\t\t\tsaturation:\t" + saturation.isPresent());
+    }
   }
 }

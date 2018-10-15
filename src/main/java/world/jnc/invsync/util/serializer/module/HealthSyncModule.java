@@ -30,6 +30,9 @@ public class HealthSyncModule extends BaseSyncModule {
       player.offer(KEY_HEALTH, health.get());
     }
 
-    // TODO: Debug Logging
+    if (getDebug()) {
+      getLogger().info("\t\tisPresent:");
+      getLogger().info("\t\t\thealth:\t" + health.isPresent());
+    }
   }
 }

@@ -27,6 +27,9 @@ public class EnderChestSyncModule extends BaseSyncModule {
       InventorySerializer.deserializeInventory(enderChest.get(), player.getEnderChestInventory());
     }
 
-    // TODO: Debug Logging
+    if (getDebug()) {
+      getLogger().info("\t\tisPresent:");
+      getLogger().info("\t\t\tenderChest:\t" + enderChest.isPresent());
+    }
   }
 }

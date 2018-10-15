@@ -57,6 +57,10 @@ public class InventorySyncModule extends BaseSyncModule {
       }
     }
 
-    // TODO: Debug Logging
+    if (getDebug()) {
+      getLogger().info("\t\tisPresent:");
+      getLogger().info("\t\t\tinventory:\t" + inventory.isPresent());
+      getLogger().info("\t\t\tselectedSlot:\t" + selectedSlot.isPresent());
+    }
   }
 }

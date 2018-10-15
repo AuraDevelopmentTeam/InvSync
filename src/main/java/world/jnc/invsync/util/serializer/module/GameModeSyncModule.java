@@ -31,6 +31,9 @@ public class GameModeSyncModule extends BaseSyncModule {
       player.offer(KEY_GAME_MODE, gameMode.get());
     }
 
-    // TODO: Debug Logging
+    if (getDebug()) {
+      getLogger().info("\t\tisPresent:");
+      getLogger().info("\t\t\tgameMode:\t" + gameMode.isPresent());
+    }
   }
 }

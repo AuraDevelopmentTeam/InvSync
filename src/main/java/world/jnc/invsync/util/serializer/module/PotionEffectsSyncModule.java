@@ -34,6 +34,9 @@ public class PotionEffectsSyncModule extends BaseSyncModule {
       player.offer(KEY_POTION_EFFECTS, potionEffects.get());
     }
 
-    // TODO: Debug Logging
+    if (getDebug()) {
+      getLogger().info("\t\tisPresent:");
+      getLogger().info("\t\t\tpotionEffects:\t" + potionEffects.isPresent());
+    }
   }
 }

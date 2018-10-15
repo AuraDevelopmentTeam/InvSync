@@ -40,6 +40,10 @@ public class ExperienceSyncModule extends BaseSyncModule {
       player.offer(KEY_EXPERIENCE_SINCE_LEVEL, experience_since_level.get());
     }
 
-    // TODO: Debug Logging
+    if (getDebug()) {
+      getLogger().info("\t\tisPresent:");
+      getLogger().info("\t\t\texperience_level:\t" + experience_level.isPresent());
+      getLogger().info("\t\t\texperience_since_level:\t" + experience_since_level.isPresent());
+    }
   }
 }

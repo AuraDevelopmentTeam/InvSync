@@ -44,7 +44,10 @@ public class BaublesSyncModule extends BaseModSyncModule {
         NativeInventorySerializer.deserializeInventory(baublesSlots.get(), inventory);
       }
 
-      // TODO: Debug Logging
+      if (getDebug()) {
+        getLogger().info("\t\tisPresent:");
+        getLogger().info("\t\t\tbaublesSlots:\t" + baublesSlots.isPresent());
+      }
     }
   }
 }

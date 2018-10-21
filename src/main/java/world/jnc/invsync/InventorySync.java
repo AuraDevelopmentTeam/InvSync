@@ -198,13 +198,13 @@ public class InventorySync {
 
       final String defaultStorageEngine = (new Config.Storage()).getStorageEngine().name();
 
-      node.getNode("storage", "storageEngine").setValue(defaultStorageEngine);
-
-      config = node.<Config>getValue(configToken, Config::new);
-
       logger.error(message);
       logger.warn("Possible values are: " + Config.Storage.StorageEngine.allowedValues);
       logger.warn("To fix your config we changed the storage engine to " + defaultStorageEngine);
+
+      node.getNode("storage", "storageEngine").setValue(defaultStorageEngine);
+
+      config = node.<Config>getValue(configToken, Config::new);
     }
 
     for (BaseSyncModule module : PlayerSerializer.getModules()) {

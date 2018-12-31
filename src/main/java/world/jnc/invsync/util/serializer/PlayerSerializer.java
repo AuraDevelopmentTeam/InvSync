@@ -181,6 +181,15 @@ public class PlayerSerializer {
           "You do not use API version 6.x.x or above. Dumping the container data is not available!");
     } catch (UnsupportedEncodingException e) {
       // Won't happen xD
+    } catch (RuntimeException e) {
+      // All kinds of shit can happen.
+      // We don't want the code to crash while doing debugging!
+      // So let's just catch and print the exception!
+      logger.warn(
+          "An unexpected exception occured while converting the player data to JSON for debugging.\n"
+              + "NO actual DATA has been LOST at this point.\n"
+              + "You just don't get any debugging output for the player.",
+          e);
     }
   }
 }

@@ -2,7 +2,7 @@ package world.jnc.invsync.util.metrics;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import org.bstats.sponge.Metrics.SimpleBarChart;
+import org.bstats.sponge.Metrics2.SimpleBarChart;
 import world.jnc.invsync.InventorySync;
 import world.jnc.invsync.config.Config;
 import world.jnc.invsync.util.serializer.PlayerSerializer;

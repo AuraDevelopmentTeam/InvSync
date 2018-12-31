@@ -14,7 +14,7 @@ import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.GuiceObjectMapperFactory;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
-import org.bstats.sponge.Metrics;
+import org.bstats.sponge.Metrics2;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
@@ -59,7 +59,7 @@ public class InventorySync {
   @NonNull @Getter private static InventorySync instance = null;
 
   @Inject @NonNull private PluginContainer container;
-  @Inject private Metrics metrics;
+  @Inject private Metrics2 metrics;
   @Inject @NonNull private Logger logger;
 
   @Inject private GuiceObjectMapperFactory factory;

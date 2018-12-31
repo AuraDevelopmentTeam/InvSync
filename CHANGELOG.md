@@ -12,6 +12,7 @@ Changes since last beta:
 \* Fixed config names for modules.  
 \* Fixed using wrong permissions.  
 \* Loads of internal improvements.  
+\* `RuntimeException`s while printing debug info won't cause any data being lost.  
 
 
 Version 0.6.18

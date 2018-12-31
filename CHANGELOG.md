@@ -5,14 +5,11 @@ Version 0.6.19-DEV
 \+ Implemented module system to allow mods to easily add support themselves.  
 \+ Added automatic conversion from old format to new format.  
 \* Fixed issue with players not properly saving on server shutdown (Fixes [#32](https://github.com/AuraDevelopmentTeam/InvSync/issues/32))  
+\* `RuntimeException`s while printing debug info won't cause any data being lost.  
 
 Changes since last beta:
 
-\+ Added debugging for modules. And general better debugging
-\* Fixed config names for modules.  
-\* Fixed using wrong permissions.  
-\* Loads of internal improvements.  
-\* `RuntimeException`s while printing debug info won't cause any data being lost.  
+\* Fixed missing metrics classes.   
 
 
 Version 0.6.18

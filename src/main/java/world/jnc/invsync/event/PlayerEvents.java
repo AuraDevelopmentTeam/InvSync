@@ -4,16 +4,20 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.zip.DataFormatException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.property.item.FoodRestorationProperty;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.entity.ChangeEntityExperienceEvent;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
 import org.spongepowered.api.event.entity.living.humanoid.ChangeGameModeEvent;
@@ -30,12 +34,13 @@ import world.jnc.invsync.util.serializer.PlayerSerializer;
 public class PlayerEvents implements AutoCloseable {
   private final DataSource dataSource;
   private final Map<UUID, Task> waitingPlayers = new HashMap<>();
+  private final SortedSet<UUID> successfulJoined = new TreeSet<>();
 
   @Listener
   public void onPlayerJoin(ClientConnectionEvent.Join event)
       throws IOException, ClassNotFoundException, DataFormatException {
-    @NonNull Player player = event.getTargetEntity();
-    UUID uuid = player.getUniqueId();
+    final @NonNull Player player = event.getTargetEntity();
+    final UUID uuid = player.getUniqueId();
 
     synchronized (waitingPlayers) {
       Task task =
@@ -50,10 +55,35 @@ public class PlayerEvents implements AutoCloseable {
     }
   }
 
+  @Listener(order = Order.POST)
+  public void onPlayerJoinComplete(ClientConnectionEvent.Join event) {
+    successfulJoined.add(event.getTargetEntity().getUniqueId());
+  }
+
   @Listener
   public void onPlayerLeave(ClientConnectionEvent.Disconnect event) throws IOException {
-    @NonNull Player player = event.getTargetEntity();
-    UUID uuid = player.getUniqueId();
+    final @NonNull Player player = event.getTargetEntity();
+    final UUID uuid = player.getUniqueId();
+
+    // If it can't be removed, it was not in the set, which means the player hasn't fully joined
+    // yet. Therefore we don't save the player.
+    if (!successfulJoined.remove(uuid)) {
+      final boolean debug = InventorySync.getConfig().getGeneral().getDebug();
+      final Logger logger = InventorySync.getLogger();
+      final String message =
+          "Serializing data of "
+              + DataSource.getPlayerString(player)
+              + " has been cancelled, due to them not having joined fully.";
+
+      if (debug) {
+        logger.warn(message);
+      } else {
+        logger.debug(message);
+      }
+
+      // Abort saving here
+      return;
+    }
 
     savePlayer(player, true);
 

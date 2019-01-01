@@ -37,8 +37,7 @@ public class PlayerEvents implements AutoCloseable {
   private final SortedSet<UUID> successfulJoined = new TreeSet<>();
 
   @Listener
-  public void onPlayerJoin(ClientConnectionEvent.Join event)
-      throws IOException, ClassNotFoundException, DataFormatException {
+  public void onPlayerJoin(ClientConnectionEvent.Join event) {
     final @NonNull Player player = event.getTargetEntity();
     final UUID uuid = player.getUniqueId();
 

@@ -5,10 +5,16 @@ repositories {
         name "Thiakil"
         url "https://maven.thiakil.com/"
     }
+    maven {
+        name = "CurseForge"
+        url = "https://minecraft.curseforge.com/api/maven/"
+    }
 }
 
 dependencies {
     compileOnly "org.spongepowered:spongecommon:${sponge_version}:dev"
 
     compileOnly "com.azanor.baubles:Baubles:${baubles_version}"
+
+    deobfCompile "spice-of-life-carrot-edition:solcarrot:${solcarrot_version}"
 }

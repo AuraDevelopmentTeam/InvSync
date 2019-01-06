@@ -35,6 +35,7 @@ import world.jnc.invsync.util.serializer.module.HungerSyncModule;
 import world.jnc.invsync.util.serializer.module.InventorySyncModule;
 import world.jnc.invsync.util.serializer.module.PotionEffectsSyncModule;
 import world.jnc.invsync.util.serializer.module.mod.BaublesSyncModule;
+import world.jnc.invsync.util.serializer.module.mod.SolCarrotSyncModule;
 
 @UtilityClass
 public class PlayerSerializer {
@@ -48,6 +49,7 @@ public class PlayerSerializer {
       new PotionEffectsSyncModule();
 
   public static final BaublesSyncModule baublesSyncModule = new BaublesSyncModule();
+  public static final SolCarrotSyncModule solCarrotSyncModule = new SolCarrotSyncModule();
 
   private static final Map<UUID, DataContainer> dataContainerCache = new HashMap<>();
 
@@ -58,6 +60,9 @@ public class PlayerSerializer {
               enderChestSyncModule,
               gameModeSyncModule,
               experienceSyncModule,
+              // Sync the solcarrot data before syncing the player's current health, because the
+              // solcarrot sets the player's maxhealth.
+              solCarrotSyncModule,
               healthSyncModule,
               hungerSyncModule,
               potionEffectsSyncModule,

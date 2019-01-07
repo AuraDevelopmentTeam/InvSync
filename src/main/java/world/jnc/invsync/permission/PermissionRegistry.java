@@ -66,6 +66,11 @@ public class PermissionRegistry {
           PlayerSerializer.spiceOfLifeSyncModule.getPermission(),
           "Allow this user's Spice of Life food list to be synchronized",
           PermissionDescription.ROLE_USER);
+    if (PlayerSerializer.cyclicSyncModule.canBeEnabled())
+      registerPermission(
+          PlayerSerializer.cyclicSyncModule.getPermission(),
+          "Allow this user's cyclic capabilities and extended inventory to be synchronized",
+          PermissionDescription.ROLE_USER);
   }
 
   private Builder getBuilder() {

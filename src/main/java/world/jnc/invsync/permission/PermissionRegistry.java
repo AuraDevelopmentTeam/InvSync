@@ -61,6 +61,11 @@ public class PermissionRegistry {
           PlayerSerializer.solCarrotSyncModule.getPermission(),
           "Allow this user's solcarrot food list to be synchronized",
           PermissionDescription.ROLE_USER);
+    if (PlayerSerializer.spiceOfLifeSyncModule.canBeEnabled())
+      registerPermission(
+          PlayerSerializer.spiceOfLifeSyncModule.getPermission(),
+          "Allow this user's Spice of Life food list to be synchronized",
+          PermissionDescription.ROLE_USER);
   }
 
   private Builder getBuilder() {

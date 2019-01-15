@@ -16,5 +16,5 @@ dependencies {
 
     compileOnly "com.azanor.baubles:Baubles:${baubles_version}"
 
-    deobfCompile "spice-of-life-carrot-edition:solcarrot:${solcarrot_version}"
+    deobfProvided "spice-of-life-carrot-edition:solcarrot:${solcarrot_version}"
 }

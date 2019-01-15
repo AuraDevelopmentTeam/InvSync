@@ -46,7 +46,10 @@ import world.jnc.invsync.util.serializer.module.BaseSyncModule;
   description = InventorySync.DESCRIPTION,
   url = InventorySync.URL,
   authors = {InventorySync.AUTHOR},
-  dependencies = {@Dependency(id = "baubles", optional = true)}
+  dependencies = {
+    @Dependency(id = "baubles", optional = true),
+    @Dependency(id = "solcarrot", optional = true)
+  }
 )
 public class InventorySync {
   public static final String ID = "@id@";

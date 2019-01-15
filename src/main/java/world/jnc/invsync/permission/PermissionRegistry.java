@@ -56,6 +56,11 @@ public class PermissionRegistry {
           PlayerSerializer.baublesSyncModule.getPermission(),
           "Allow this user's baubles inventory to be synchronized",
           PermissionDescription.ROLE_USER);
+    if (PlayerSerializer.solCarrotSyncModule.canBeEnabled())
+      registerPermission(
+          PlayerSerializer.solCarrotSyncModule.getPermission(),
+          "Allow this user's solcarrot food list to be synchronized",
+          PermissionDescription.ROLE_USER);
   }
 
   private Builder getBuilder() {

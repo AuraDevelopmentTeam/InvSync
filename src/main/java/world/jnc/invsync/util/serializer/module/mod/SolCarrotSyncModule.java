@@ -57,6 +57,7 @@ public class SolCarrotSyncModule extends BaseModSyncModule {
       }
 
       container.set(THIS, serializedFoods);
+
       return container;
     }
 
@@ -77,8 +78,8 @@ public class SolCarrotSyncModule extends BaseModSyncModule {
           ItemStack food_stack =
               ItemStack.builder().fromContainer(serializedFood.getView(STACK).get()).build();
           int meta = serializedFood.getInt(META).get();
-
           Item food_item = (Item) food_stack.getType();
+
           foodCapability.addFood(food_item, meta);
         }
 
@@ -86,6 +87,7 @@ public class SolCarrotSyncModule extends BaseModSyncModule {
         EntityPlayer nativePlayer = NativeInventorySerializer.getNativePlayer(player);
         FoodCapability playerFoodCapability =
             nativePlayer.getCapability(FoodCapability.FOOD_CAPABILITY, null);
+
         if (playerFoodCapability != null) {
           playerFoodCapability.copyFoods(foodCapability);
           HandlerCapability.syncFoodList(nativePlayer);

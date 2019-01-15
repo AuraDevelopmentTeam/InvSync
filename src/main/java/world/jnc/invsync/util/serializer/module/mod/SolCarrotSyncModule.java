@@ -64,11 +64,6 @@ public class SolCarrotSyncModule extends BaseModSyncModule {
     private static void deserialize(Player player, DataView container) {
       Optional<List<DataView>> serializedFoods = container.getViewList(THIS);
 
-      if (getDebug()) {
-        getLogger().info("\t\tisPresent:");
-        getLogger().info("\t\t\tserializedFoods:\t" + serializedFoods.isPresent());
-      }
-
       if (serializedFoods.isPresent()) {
         // Deserialize to a new instance first. This way if anything goes wrong, an exception is
         // raised before
@@ -83,6 +78,11 @@ public class SolCarrotSyncModule extends BaseModSyncModule {
           foodCapability.addFood(food_item, meta);
         }
 
+        if (getDebug()) {
+          getLogger().info("\t\tisPresent:");
+          getLogger().info("\t\t\tserializedFoods:\t" + serializedFoods.isPresent());
+        }
+
         // Now copy the food list to the player
         EntityPlayer nativePlayer = NativeInventorySerializer.getNativePlayer(player);
         FoodCapability playerFoodCapability =
@@ -94,7 +94,8 @@ public class SolCarrotSyncModule extends BaseModSyncModule {
 
           // Now that the food list has been synchronized, use it to set the player's max health.
           MaxHealthHandler.updateFoodHPModifier(nativePlayer);
-          getLogger().info("\t\t\tfoodCount:\t" + foodCapability.getCount());
+
+          if (getDebug()) getLogger().info("\t\t\tfoodCount:\t" + foodCapability.getCount());
         }
       }
     }

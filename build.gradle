@@ -6,8 +6,8 @@ repositories {
         url "https://maven.thiakil.com/"
     }
     maven {
-        name = "CurseForge"
-        url = "https://minecraft.curseforge.com/api/maven/"
+        name "CurseForge"
+        url "https://minecraft.curseforge.com/api/maven/"
     }
 }
 

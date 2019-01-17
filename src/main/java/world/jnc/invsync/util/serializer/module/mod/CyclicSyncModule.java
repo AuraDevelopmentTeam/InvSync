@@ -7,6 +7,7 @@ import com.lothrazar.cyclicmagic.util.UtilPlayerInventoryFilestorage;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -36,12 +37,9 @@ public class CyclicSyncModule extends BaseModSyncModule {
 
   // Adapt an InventoryPlayerExtended into an IItemHandlerModifiable. Only the parts of the
   // interface that are used by NativeInventorySerializer are implemented.
+  @RequiredArgsConstructor
   private static class InventoryAdapter implements IItemHandlerModifiable {
-    private InventoryPlayerExtended inventory;
-
-    private InventoryAdapter(InventoryPlayerExtended inventory) {
-      this.inventory = inventory;
-    }
+    private final InventoryPlayerExtended inventory;
 
     @Override
     public void setStackInSlot(int slot, @Nonnull ItemStack stack) {

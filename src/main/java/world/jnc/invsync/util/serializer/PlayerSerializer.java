@@ -38,6 +38,7 @@ import world.jnc.invsync.util.serializer.module.mod.BaublesSyncModule;
 import world.jnc.invsync.util.serializer.module.mod.CyclicSyncModule;
 import world.jnc.invsync.util.serializer.module.mod.SolCarrotSyncModule;
 import world.jnc.invsync.util.serializer.module.mod.SpiceOfLifeSyncModule;
+import world.jnc.invsync.util.serializer.module.mod.ToughAsNailsSyncModule;
 
 @UtilityClass
 public class PlayerSerializer {
@@ -54,6 +55,7 @@ public class PlayerSerializer {
   public static final CyclicSyncModule cyclicSyncModule = new CyclicSyncModule();
   public static final SolCarrotSyncModule solCarrotSyncModule = new SolCarrotSyncModule();
   public static final SpiceOfLifeSyncModule spiceOfLifeSyncModule = new SpiceOfLifeSyncModule();
+  public static final ToughAsNailsSyncModule toughAsNailsSyncModule = new ToughAsNailsSyncModule();
 
   private static final Map<UUID, DataContainer> dataContainerCache = new HashMap<>();
 
@@ -72,7 +74,8 @@ public class PlayerSerializer {
               potionEffectsSyncModule,
               baublesSyncModule,
               cyclicSyncModule,
-              spiceOfLifeSyncModule));
+              spiceOfLifeSyncModule,
+              toughAsNailsSyncModule));
   private static ImmutableList<BaseSyncModule> modulesImmutableListCache = null;
 
   public static void registerModule(BaseSyncModule module) {

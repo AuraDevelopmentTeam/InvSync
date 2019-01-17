@@ -71,6 +71,11 @@ public class PermissionRegistry {
           PlayerSerializer.spiceOfLifeSyncModule.getPermission(),
           "Allow this user's Spice of Life food list to be synchronized",
           PermissionDescription.ROLE_USER);
+    if (PlayerSerializer.toughAsNailsSyncModule.canBeEnabled())
+      registerPermission(
+          PlayerSerializer.toughAsNailsSyncModule.getPermission(),
+          "Allow this user's ToughAsNails stats to be synchronized",
+          PermissionDescription.ROLE_USER);
   }
 
   private Builder getBuilder() {

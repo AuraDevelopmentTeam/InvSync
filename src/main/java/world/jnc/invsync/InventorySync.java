@@ -50,7 +50,8 @@ import world.jnc.invsync.util.serializer.module.BaseSyncModule;
     @Dependency(id = "baubles", optional = true),
     @Dependency(id = "cyclicmagic", optional = true),
     @Dependency(id = "solcarrot", optional = true),
-    @Dependency(id = "spiceoflife", optional = true)
+    @Dependency(id = "spiceoflife", optional = true),
+    @Dependency(id = "toughasnails", optional = true)
   }
 )
 public class InventorySync {

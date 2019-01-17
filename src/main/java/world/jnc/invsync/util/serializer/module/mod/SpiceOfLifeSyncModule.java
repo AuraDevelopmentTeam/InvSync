@@ -4,8 +4,8 @@ import java.util.Optional;
 import lombok.experimental.UtilityClass;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.common.data.persistence.NbtTranslator;
 import squeek.spiceoflife.foodtracker.FoodHistory;
+import world.jnc.invsync.util.serializer.CapabilitySerializer;
 import world.jnc.invsync.util.serializer.NativeInventorySerializer;
 
 public class SpiceOfLifeSyncModule extends BaseModSyncModule {
@@ -27,10 +27,10 @@ public class SpiceOfLifeSyncModule extends BaseModSyncModule {
   @UtilityClass
   private static class Helper {
     private static DataView serialize(Player player, DataView container) {
-      final FoodHistory nativeFoodHistory =
-          FoodHistory.get(NativeInventorySerializer.getNativePlayer(player));
-
-      container.set(THIS, NbtTranslator.getInstance().translate(nativeFoodHistory.serializeNBT()));
+      container.set(
+          THIS,
+          CapabilitySerializer.serializeCapabilityToView(
+              FoodHistory.CAPABILITY, NativeInventorySerializer.getNativePlayer(player)));
 
       return container;
     }
@@ -39,10 +39,10 @@ public class SpiceOfLifeSyncModule extends BaseModSyncModule {
       Optional<DataView> foodHistory = container.getView(THIS);
 
       if (foodHistory.isPresent()) {
-        final FoodHistory nativeFoodHistory =
-            FoodHistory.get(NativeInventorySerializer.getNativePlayer(player));
-
-        nativeFoodHistory.deserializeNBT(NbtTranslator.getInstance().translate(foodHistory.get()));
+        CapabilitySerializer.deserializeCapabilityFromView(
+            FoodHistory.CAPABILITY,
+            NativeInventorySerializer.getNativePlayer(player),
+            foodHistory.get());
       }
 
       if (getDebug()) {

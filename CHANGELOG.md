@@ -2,6 +2,9 @@ Version 0.6.19-DEV
 ------------------
 
 \+ Added Baubles support.  
+\+ Added support for Cyclic.  
+\+ Added support for Spice of Life: Carrot Edition.  
+\+ Added support for Spice of Life.  
 \+ Implemented module system to allow mods to easily add support themselves.  
 \+ Added automatic conversion from old (data storage and config) format to new format.  
 \+ Added system to prevent saving inventory when the player hasn't fully joined yet.  
@@ -10,7 +13,9 @@ Version 0.6.19-DEV
 
 Changes since last beta:
 
-\+ Added system to prevent saving inventory when the player hasn't fully joined yet.  
+\+ Added support for Cyclic.  
+\+ Added support for Spice of Life: Carrot Edition.  
+\+ Added support for Spice of Life.  
 
 
 Version 0.6.18

@@ -35,6 +35,7 @@ import world.jnc.invsync.util.serializer.module.HungerSyncModule;
 import world.jnc.invsync.util.serializer.module.InventorySyncModule;
 import world.jnc.invsync.util.serializer.module.PotionEffectsSyncModule;
 import world.jnc.invsync.util.serializer.module.mod.BaublesSyncModule;
+import world.jnc.invsync.util.serializer.module.mod.CyclicSyncModule;
 import world.jnc.invsync.util.serializer.module.mod.SolCarrotSyncModule;
 import world.jnc.invsync.util.serializer.module.mod.SpiceOfLifeSyncModule;
 
@@ -50,6 +51,7 @@ public class PlayerSerializer {
       new PotionEffectsSyncModule();
 
   public static final BaublesSyncModule baublesSyncModule = new BaublesSyncModule();
+  public static final CyclicSyncModule cyclicSyncModule = new CyclicSyncModule();
   public static final SolCarrotSyncModule solCarrotSyncModule = new SolCarrotSyncModule();
   public static final SpiceOfLifeSyncModule spiceOfLifeSyncModule = new SpiceOfLifeSyncModule();
 
@@ -69,6 +71,7 @@ public class PlayerSerializer {
               hungerSyncModule,
               potionEffectsSyncModule,
               baublesSyncModule,
+              cyclicSyncModule,
               spiceOfLifeSyncModule));
   private static ImmutableList<BaseSyncModule> modulesImmutableListCache = null;
 

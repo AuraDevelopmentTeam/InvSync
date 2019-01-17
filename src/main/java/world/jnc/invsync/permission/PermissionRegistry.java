@@ -56,6 +56,11 @@ public class PermissionRegistry {
           PlayerSerializer.baublesSyncModule.getPermission(),
           "Allow this user's baubles inventory to be synchronized",
           PermissionDescription.ROLE_USER);
+    if (PlayerSerializer.cyclicSyncModule.canBeEnabled())
+      registerPermission(
+          PlayerSerializer.cyclicSyncModule.getPermission(),
+          "Allow this user's cyclic capabilities and extended inventory to be synchronized",
+          PermissionDescription.ROLE_USER);
     if (PlayerSerializer.solCarrotSyncModule.canBeEnabled())
       registerPermission(
           PlayerSerializer.solCarrotSyncModule.getPermission(),

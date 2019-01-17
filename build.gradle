@@ -18,4 +18,5 @@ dependencies {
 
     deobfProvided "spice-of-life-carrot-edition:solcarrot:${solcarrot_version}"
     deobfProvided "the-spice-of-life:SpiceOfLife:${spiceOfLive_version}"
+    deobfProvided "cyclic:Cyclic:${cyclic_version}"
 }

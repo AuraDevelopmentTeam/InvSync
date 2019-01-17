@@ -4,6 +4,7 @@ import com.lothrazar.cyclicmagic.capability.IPlayerExtendedProperties;
 import com.lothrazar.cyclicmagic.playerupgrade.storage.InventoryPlayerExtended;
 import com.lothrazar.cyclicmagic.registry.CapabilityRegistry;
 import com.lothrazar.cyclicmagic.util.UtilPlayerInventoryFilestorage;
+import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import lombok.experimental.UtilityClass;
@@ -112,31 +113,56 @@ public class CyclicSyncModule extends BaseModSyncModule {
         EntityPlayer nativePlayer = NativeInventorySerializer.getNativePlayer(player);
         IPlayerExtendedProperties props = CapabilityRegistry.getPlayerProperties(nativePlayer);
 
-        props.setInventoryCrafting(serializedData.get().getBoolean(CRAFTING_CAPABILITY).get());
-        props.setInventoryExtended(serializedData.get().getBoolean(INVENTORY_CAPABILITY).get());
-        CapabilityRegistry.syncServerDataToClient((EntityPlayerMP) nativePlayer);
+        Optional<Boolean> serializedCraftingCapability =
+            serializedData.get().getBoolean(CRAFTING_CAPABILITY);
+        Optional<Boolean> serializedInventoryCapability =
+            serializedData.get().getBoolean(INVENTORY_CAPABILITY);
+
+        boolean modifiedCapabilities = false;
+        if (serializedCraftingCapability.isPresent()) {
+          props.setInventoryCrafting(serializedCraftingCapability.get());
+          modifiedCapabilities = true;
+        }
+        if (serializedInventoryCapability.isPresent()) {
+          props.setInventoryExtended(serializedInventoryCapability.get());
+          modifiedCapabilities = true;
+        }
+        if (modifiedCapabilities) {
+          CapabilityRegistry.syncServerDataToClient((EntityPlayerMP) nativePlayer);
+        }
 
         // Create a new inventory to deserialize into. This way if anything goes wrong, the current
         // extended inventory isn't overwritten.
         InventoryPlayerExtended inventory = new InventoryPlayerExtended(nativePlayer);
 
-        boolean fail =
-            NativeInventorySerializer.deserializeInventory(
-                serializedData.get().getViewList(INVENTORY).get(), new InventoryAdapter(inventory));
-        if (fail) {
-          getLogger()
-              .error(
-                  "Could not load extended inventory of player "
-                      + DataSource.getPlayerString(player)
-                      + " because there were unknown item(s).");
-          getLogger()
-              .warn(
-                  "Please make sure you are using the same mods on all servers you are synchronizing with.");
-        } else {
-          // Now assign the deserialized inventory to the player.
-          UtilPlayerInventoryFilestorage.setPlayerInventory(nativePlayer, inventory);
-          UtilPlayerInventoryFilestorage.syncItems(nativePlayer);
+        Optional<List<DataView>> serializedInventory = serializedData.get().getViewList(INVENTORY);
+        boolean inventoryDeserialized = false;
+        if (serializedInventory.isPresent()) {
+          if (NativeInventorySerializer.deserializeInventory(
+              serializedInventory.get(), new InventoryAdapter(inventory))) {
+            getLogger()
+                .error(
+                    "Could not load extended inventory of player "
+                        + DataSource.getPlayerString(player)
+                        + " because there were unknown item(s).");
+            getLogger()
+                .warn(
+                    "Please make sure you are using the same mods "
+                        + "on all servers you are synchronizing with.");
+          } else {
+            // Now assign the deserialized inventory to the player.
+            UtilPlayerInventoryFilestorage.setPlayerInventory(nativePlayer, inventory);
+            UtilPlayerInventoryFilestorage.syncItems(nativePlayer);
+          }
         }
+        getLogger()
+            .info(
+                "\t\t\tserializedCraftingCapability:\t" + serializedCraftingCapability.isPresent());
+        getLogger()
+            .info(
+                "\t\t\tserializedInventoryCapability:\t"
+                    + serializedInventoryCapability.isPresent());
+        getLogger().info("\t\t\tserializedInventory:\t" + serializedInventory.isPresent());
       }
     }
   }

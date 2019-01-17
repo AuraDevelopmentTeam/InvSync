@@ -51,9 +51,9 @@ public class PlayerSerializer {
       new PotionEffectsSyncModule();
 
   public static final BaublesSyncModule baublesSyncModule = new BaublesSyncModule();
+  public static final CyclicSyncModule cyclicSyncModule = new CyclicSyncModule();
   public static final SolCarrotSyncModule solCarrotSyncModule = new SolCarrotSyncModule();
   public static final SpiceOfLifeSyncModule spiceOfLifeSyncModule = new SpiceOfLifeSyncModule();
-  public static final CyclicSyncModule cyclicSyncModule = new CyclicSyncModule();
 
   private static final Map<UUID, DataContainer> dataContainerCache = new HashMap<>();
 
@@ -71,8 +71,8 @@ public class PlayerSerializer {
               hungerSyncModule,
               potionEffectsSyncModule,
               baublesSyncModule,
-              spiceOfLifeSyncModule,
-              cyclicSyncModule));
+              cyclicSyncModule,
+              spiceOfLifeSyncModule));
   private static ImmutableList<BaseSyncModule> modulesImmutableListCache = null;
 
   public static void registerModule(BaseSyncModule module) {

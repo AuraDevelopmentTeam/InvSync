@@ -1,7 +1,7 @@
 Version 0.6.19-DEV
 ------------------
 
-\+ Added Baubles support.  
+\+ Added support for Baubles.  
 \+ Added support for Cyclic.  
 \+ Added support for Spice of Life: Carrot Edition.  
 \+ Added support for Spice of Life.  

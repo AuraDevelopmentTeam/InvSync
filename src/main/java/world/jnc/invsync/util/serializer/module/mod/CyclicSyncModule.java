@@ -12,7 +12,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandlerModifiable;
-import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.entity.living.player.Player;
@@ -86,75 +85,70 @@ public class CyclicSyncModule extends BaseModSyncModule {
 
     private static DataView serialize(Player player, DataView container) {
       EntityPlayer nativePlayer = NativeInventorySerializer.getNativePlayer(player);
-      DataContainer serializedData = DataContainer.createNew(DataView.SafetyMode.ALL_DATA_CLONED);
 
       IPlayerExtendedProperties props = CapabilityRegistry.getPlayerProperties(nativePlayer);
-      serializedData.set(CRAFTING_CAPABILITY, props.hasInventoryCrafting());
-      serializedData.set(INVENTORY_CAPABILITY, props.hasInventoryExtended());
+      container.set(CRAFTING_CAPABILITY, props.hasInventoryCrafting());
+      container.set(INVENTORY_CAPABILITY, props.hasInventoryExtended());
 
       InventoryPlayerExtended inventory =
           UtilPlayerInventoryFilestorage.getPlayerInventory(
               NativeInventorySerializer.getNativePlayer(player));
-      serializedData.set(
+      container.set(
           INVENTORY, NativeInventorySerializer.serializeInventory(new InventoryAdapter(inventory)));
 
-      container.set(THIS, serializedData);
       return container;
     }
 
     private static void deserialize(Player player, DataView container) {
-      Optional<DataView> serializedData = container.getView(THIS);
-      if (getDebug()) {
-        getLogger().info("\t\tisPresent:");
-        getLogger().info("\t\t\tserializedData:\t" + serializedData.isPresent());
+      EntityPlayer nativePlayer = NativeInventorySerializer.getNativePlayer(player);
+      IPlayerExtendedProperties props = CapabilityRegistry.getPlayerProperties(nativePlayer);
+
+      Optional<Boolean> serializedCraftingCapability = container.getBoolean(CRAFTING_CAPABILITY);
+      Optional<Boolean> serializedInventoryCapability = container.getBoolean(INVENTORY_CAPABILITY);
+
+      boolean modifiedCapabilities = false;
+
+      if (serializedCraftingCapability.isPresent()) {
+        props.setInventoryCrafting(serializedCraftingCapability.get());
+        modifiedCapabilities = true;
       }
 
-      if (serializedData.isPresent()) {
-        EntityPlayer nativePlayer = NativeInventorySerializer.getNativePlayer(player);
-        IPlayerExtendedProperties props = CapabilityRegistry.getPlayerProperties(nativePlayer);
+      if (serializedInventoryCapability.isPresent()) {
+        props.setInventoryExtended(serializedInventoryCapability.get());
+        modifiedCapabilities = true;
+      }
 
-        Optional<Boolean> serializedCraftingCapability =
-            serializedData.get().getBoolean(CRAFTING_CAPABILITY);
-        Optional<Boolean> serializedInventoryCapability =
-            serializedData.get().getBoolean(INVENTORY_CAPABILITY);
+      if (modifiedCapabilities) {
+        CapabilityRegistry.syncServerDataToClient((EntityPlayerMP) nativePlayer);
+      }
 
-        boolean modifiedCapabilities = false;
-        if (serializedCraftingCapability.isPresent()) {
-          props.setInventoryCrafting(serializedCraftingCapability.get());
-          modifiedCapabilities = true;
-        }
-        if (serializedInventoryCapability.isPresent()) {
-          props.setInventoryExtended(serializedInventoryCapability.get());
-          modifiedCapabilities = true;
-        }
-        if (modifiedCapabilities) {
-          CapabilityRegistry.syncServerDataToClient((EntityPlayerMP) nativePlayer);
-        }
+      // Create a new inventory to deserialize into. This way if anything goes wrong, the current
+      // extended inventory isn't overwritten.
+      InventoryPlayerExtended inventory = new InventoryPlayerExtended(nativePlayer);
 
-        // Create a new inventory to deserialize into. This way if anything goes wrong, the current
-        // extended inventory isn't overwritten.
-        InventoryPlayerExtended inventory = new InventoryPlayerExtended(nativePlayer);
+      Optional<List<DataView>> serializedInventory = container.getViewList(INVENTORY);
 
-        Optional<List<DataView>> serializedInventory = serializedData.get().getViewList(INVENTORY);
-        boolean inventoryDeserialized = false;
-        if (serializedInventory.isPresent()) {
-          if (NativeInventorySerializer.deserializeInventory(
-              serializedInventory.get(), new InventoryAdapter(inventory))) {
-            getLogger()
-                .error(
-                    "Could not load extended inventory of player "
-                        + DataSource.getPlayerString(player)
-                        + " because there were unknown item(s).");
-            getLogger()
-                .warn(
-                    "Please make sure you are using the same mods "
-                        + "on all servers you are synchronizing with.");
-          } else {
-            // Now assign the deserialized inventory to the player.
-            UtilPlayerInventoryFilestorage.setPlayerInventory(nativePlayer, inventory);
-            UtilPlayerInventoryFilestorage.syncItems(nativePlayer);
-          }
+      if (serializedInventory.isPresent()) {
+        if (NativeInventorySerializer.deserializeInventory(
+            serializedInventory.get(), new InventoryAdapter(inventory))) {
+          getLogger()
+              .error(
+                  "Could not load extended inventory of player "
+                      + DataSource.getPlayerString(player)
+                      + " because there were unknown item(s).");
+          getLogger()
+              .warn(
+                  "Please make sure you are using the same mods "
+                      + "on all servers you are synchronizing with.");
+        } else {
+          // Now assign the deserialized inventory to the player.
+          UtilPlayerInventoryFilestorage.setPlayerInventory(nativePlayer, inventory);
+          UtilPlayerInventoryFilestorage.syncItems(nativePlayer);
         }
+      }
+
+      if (getDebug()) {
+        getLogger().info("\t\tisPresent:");
         getLogger()
             .info(
                 "\t\t\tserializedCraftingCapability:\t" + serializedCraftingCapability.isPresent());

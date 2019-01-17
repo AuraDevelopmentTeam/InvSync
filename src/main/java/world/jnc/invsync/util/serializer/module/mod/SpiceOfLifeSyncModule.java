@@ -1,5 +1,6 @@
 package world.jnc.invsync.util.serializer.module.mod;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Optional;
 import lombok.experimental.UtilityClass;
 import org.spongepowered.api.data.DataView;
@@ -24,6 +25,10 @@ public class SpiceOfLifeSyncModule extends BaseModSyncModule {
     Helper.deserialize(player, container);
   }
 
+  @SuppressFBWarnings(
+    value = "NP_NULL_PARAM_DEREF_NONVIRTUAL",
+    justification = "Capabilities aren't null during runtime (but compile time)."
+  )
   @UtilityClass
   private static class Helper {
     private static DataView serialize(Player player, DataView container) {

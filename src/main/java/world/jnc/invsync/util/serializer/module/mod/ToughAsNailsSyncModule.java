@@ -29,7 +29,7 @@ public class ToughAsNailsSyncModule extends BaseModSyncModule {
 
   @SuppressFBWarnings(
     value = "NP_NULL_PARAM_DEREF_NONVIRTUAL",
-    justification = "Capabilities aren't null durin runtime (but compile time)."
+    justification = "Capabilities aren't null during runtime (but compile time)."
   )
   @UtilityClass
   private static class Helper {

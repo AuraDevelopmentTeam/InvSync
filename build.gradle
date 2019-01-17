@@ -15,8 +15,8 @@ dependencies {
     compileOnly "org.spongepowered:spongecommon:${sponge_version}:dev"
 
     compileOnly "com.azanor.baubles:Baubles:${baubles_version}"
-
+    deobfProvided "cyclic:Cyclic:${cyclic_version}"
     deobfProvided "spice-of-life-carrot-edition:solcarrot:${solcarrot_version}"
     deobfProvided "the-spice-of-life:SpiceOfLife:${spiceOfLive_version}"
-    deobfProvided "cyclic:Cyclic:${cyclic_version}"
+    deobfProvided "com.github.glitchfiend.biomesoplenty:ToughAsNails:${minecraft_version}-${toughAsNails_version}:api"
 }

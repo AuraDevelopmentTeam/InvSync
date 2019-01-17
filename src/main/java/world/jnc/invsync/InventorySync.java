@@ -48,7 +48,9 @@ import world.jnc.invsync.util.serializer.module.BaseSyncModule;
   authors = {InventorySync.AUTHOR},
   dependencies = {
     @Dependency(id = "baubles", optional = true),
-    @Dependency(id = "solcarrot", optional = true)
+    @Dependency(id = "cyclicmagic", optional = true),
+    @Dependency(id = "solcarrot", optional = true),
+    @Dependency(id = "spiceoflife", optional = true)
   }
 )
 public class InventorySync {

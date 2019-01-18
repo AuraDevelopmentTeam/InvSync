@@ -65,7 +65,7 @@ public class PlayerSerializer {
               // Sync these before syncing the player's current health, because they change the
               // player's maxhealth.
               solCarrotSyncModule,
-              toughAsNailsSyncModule,
+
               // Vanilla syncs
               inventorySyncModule,
               enderChestSyncModule,
@@ -77,7 +77,8 @@ public class PlayerSerializer {
               // Mod syncs
               baublesSyncModule,
               cyclicSyncModule,
-              spiceOfLifeSyncModule));
+              spiceOfLifeSyncModule,
+              toughAsNailsSyncModule));
   private static ImmutableList<BaseSyncModule> modulesImmutableListCache = null;
 
   public static void registerModule(BaseSyncModule module) {

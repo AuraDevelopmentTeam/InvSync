@@ -62,24 +62,36 @@ public class PlayerSerializer {
   private static final List<BaseSyncModule> modules =
       new LinkedList<BaseSyncModule>(
           Arrays.asList(
+              // Sync these before syncing the player's current health, because they change the
+              // player's maxhealth.
+              solCarrotSyncModule,
+              toughAsNailsSyncModule,
+              // Vanilla syncs
               inventorySyncModule,
               enderChestSyncModule,
               gameModeSyncModule,
               experienceSyncModule,
-              // Sync the solcarrot data before syncing the player's current health, because the
-              // solcarrot sets the player's maxhealth.
-              solCarrotSyncModule,
               healthSyncModule,
               hungerSyncModule,
               potionEffectsSyncModule,
+              // Mod syncs
               baublesSyncModule,
               cyclicSyncModule,
-              spiceOfLifeSyncModule,
-              toughAsNailsSyncModule));
+              spiceOfLifeSyncModule));
   private static ImmutableList<BaseSyncModule> modulesImmutableListCache = null;
 
   public static void registerModule(BaseSyncModule module) {
     modules.add(module);
+    modulesImmutableListCache = null;
+  }
+
+  /**
+   * @deprecated Not really deprecated, but should only be used if syncing this value <b>needs</b>
+   *     to happen before the vanilla syncs. Like if it changes the max health of a player.
+   */
+  @Deprecated
+  public static void registerEarlyModule(BaseSyncModule module) {
+    modules.add(0, module);
     modulesImmutableListCache = null;
   }
 

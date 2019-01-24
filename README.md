@@ -1,7 +1,7 @@
-# [Inventory Sync](https://github.com/BrainStone/InvSync)
+# [Inventory Sync](https://github.com/AuraDevelopmentTeam/InvSync)
 
-[![Build Status](https://gitlab.project-creative.de/AuraDev/InvSync/badges/master/build.svg)](https://gitlab.project-creative.de/AuraDev/InvSync/commits/master)
-[![Coverage Report](https://gitlab.project-creative.de/AuraDev/InvSync/badges/master/coverage.svg)](https://gitlab.project-creative.de/AuraDev/InvSync/commits/master)
+[![Build Status](https://gitlab.project-creative.de/AuraDev/InvSync/badges/master/build.svg)](https://gitlab.project-creative.de/AuraDev/InvSync/pipelines)
+[![Coverage Report](https://gitlab.project-creative.de/AuraDev/InvSync/badges/master/coverage.svg)](https://gitlab.project-creative.de/AuraDev/InvSync/pipelines)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/09e53d10121c46d693e2cb251fd12bf0)](https://www.codacy.com/app/BrainStone/InvSync?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=BrainStone/InvSync&amp;utm_campaign=Badge_Grade)
 
 This plugin synchronizes the player inventory with a database

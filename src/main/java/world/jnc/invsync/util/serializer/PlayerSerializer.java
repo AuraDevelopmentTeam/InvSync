@@ -65,7 +65,6 @@ public class PlayerSerializer {
               // Sync these before syncing the player's current health, because they change the
               // player's maxhealth.
               solCarrotSyncModule,
-
               // Vanilla syncs
               inventorySyncModule,
               enderChestSyncModule,

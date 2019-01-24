@@ -5,7 +5,7 @@ import world.jnc.invsync.config.Config;
 
 public class MysqlDatabaseConnection extends DatabaseConnection {
   private static final String URLFormat = "jdbc:mysql://%1$s:%2$s@%3$s:%4$d/%5$s";
-  private static final String URLFormatNoPassword = "jdbc:mysql://%1$s:@%3$s:%4$d/%5$s";
+  private static final String URLFormatNoPassword = "jdbc:mysql://%1$s@%3$s:%4$d/%5$s";
 
   /**
    * Opens a MySQL database connection.

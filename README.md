@@ -1,7 +1,7 @@
 # [Inventory Sync](https://github.com/AuraDevelopmentTeam/InvSync)
 
-[![Build Status](https://gitlab.project-creative.de/AuraDev/InvSync/badges/master/build.svg)](https://gitlab.project-creative.de/AuraDev/InvSync/pipelines)
-[![Coverage Report](https://gitlab.project-creative.de/AuraDev/InvSync/badges/master/coverage.svg)](https://gitlab.project-creative.de/AuraDev/InvSync/pipelines)
+[![Build Status](https://gitlab.aura-dev.team/AuraDev/InvSync/badges/master/build.svg)](https://gitlab.aura-dev.team/AuraDev/InvSync/pipelines)
+[![Coverage Report](https://gitlab.aura-dev.team/AuraDev/InvSync/badges/master/coverage.svg)](https://gitlab.aura-dev.team/AuraDev/InvSync/pipelines)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/09e53d10121c46d693e2cb251fd12bf0)](https://www.codacy.com/app/BrainStone/InvSync?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=BrainStone/InvSync&amp;utm_campaign=Badge_Grade)
 
 This plugin synchronizes the player inventory with a database
@@ -12,8 +12,8 @@ You can download all builds from either:
 
 - Ore: https://ore.spongepowered.org/BrainStone/Inventory-Sync
 - Maven:
-  - Releases: https://maven.project-creative.de/repository/auradev-releases/
-  - Snapshots: https://maven.project-creative.de/repository/auradev-snapshots/
+  - Releases: https://maven.aura-dev.team/repository/auradev-releases/
+  - Snapshots: https://maven.aura-dev.team/repository/auradev-snapshots/
 
 ## [Issue Reporting](https://github.com/AuraDevelopmentTeam/InvSync/issues)
 
@@ -50,8 +50,8 @@ version `0.0.13-alpha` get uploaded to my maven repository. (Replace `{version}`
     <repositories>
         <repository>
             <id>AuraDevelopmentTeam/id>
-            <url>https://maven.project-creative.de/repository/auradev-releases/</url>
-            <!--<url>https://maven.project-creative.de/repository/auradev-snapshots/</url>-->
+            <url>https://maven.aura-dev.team/repository/auradev-releases/</url>
+            <!--<url>https://maven.aura-dev.team/repository/auradev-snapshots/</url>-->
         </repository>
     </repositories>
 
@@ -69,8 +69,8 @@ version `0.0.13-alpha` get uploaded to my maven repository. (Replace `{version}`
     repositories {
         maven {
             name "AuraDevelopmentTeam"
-            url "https://maven.project-creative.de/repository/auradev-releases/"
-            // url "https://maven.project-creative.de/repository/auradev-snapshots/"
+            url "https://maven.aura-dev.team/repository/auradev-releases/"
+            // url "https://maven.aura-dev.team/repository/auradev-snapshots/"
         }
     }
 
@@ -90,7 +90,7 @@ version `0.0.13-alpha` get uploaded to my maven repository. (Replace `{version}`
 Between each offical release there are several bleeding edge development builds, which you can also use. But be aware that they might contain unfinished
 features and therefore won't work properly.
 
-You can find the builds here: https://gitlab.project-creative.de/AuraDev/InvSync/pipelines
+You can find the builds here: https://gitlab.aura-dev.team/AuraDev/InvSync/pipelines
 
 On the right is a download symbol, click that a dropdown will open. Select "build". Then you'll download a zip file containing all atrifacts including the
 plugin jar.

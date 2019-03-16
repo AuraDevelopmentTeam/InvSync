@@ -11,7 +11,6 @@ import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.DataView.SafetyMode;
 import org.spongepowered.common.data.persistence.NbtTranslator;
 
-// TODO: Testing!!
 @UtilityClass
 public class CapabilitySerializer {
   private static final String OUTER = "xxx";
@@ -21,12 +20,16 @@ public class CapabilitySerializer {
     return capability.writeNBT(player.getCapability(capability, null), null);
   }
 
-  public static <T> Object serializeCapabilityToView(
-      Capability<T> capability, EntityPlayer player) {
+  public static Object nbtToData(NBTBase nbt) {
     final NBTTagCompound container = new NBTTagCompound();
-    container.setTag(OUTER, serializeCapability(capability, player));
+    container.setTag(OUTER, nbt);
 
     return NbtTranslator.getInstance().translateFrom(container).get(OUTER_QUERY).orElse(null);
+  }
+
+  public static <T> Object serializeCapabilityToData(
+      Capability<T> capability, EntityPlayer player) {
+    return nbtToData(serializeCapability(capability, player));
   }
 
   public static <T> void deserializeCapability(
@@ -34,12 +37,15 @@ public class CapabilitySerializer {
     capability.readNBT(player.getCapability(capability, null), null, nbt);
   }
 
-  public static <T> void deserializeCapabilityFromView(
-      Capability<T> capability, EntityPlayer player, Object data) {
+  public static NBTBase dataToNbt(Object data) {
     final DataView container = DataContainer.createNew(SafetyMode.NO_DATA_CLONED);
     container.set(OUTER_QUERY, data);
 
-    deserializeCapability(
-        capability, player, NbtTranslator.getInstance().translateData(container).getTag(OUTER));
+    return NbtTranslator.getInstance().translateData(container).getTag(OUTER);
+  }
+
+  public static <T> void deserializeCapabilityFromData(
+      Capability<T> capability, EntityPlayer player, Object data) {
+    deserializeCapability(capability, player, dataToNbt(data));
   }
 }

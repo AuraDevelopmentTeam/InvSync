@@ -19,4 +19,6 @@ dependencies {
     deobfProvided "spice-of-life-carrot-edition:solcarrot:${solcarrot_version}"
     deobfProvided "the-spice-of-life:SpiceOfLife:${spiceOfLive_version}"
     deobfProvided "com.github.glitchfiend.biomesoplenty:ToughAsNails:${minecraft_version}-${toughAsNails_version}:api"
+
+    testRuntime "org.spongepowered:spongecommon:${sponge_version}:dev"
 }

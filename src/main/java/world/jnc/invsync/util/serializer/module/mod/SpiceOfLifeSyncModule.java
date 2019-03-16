@@ -34,7 +34,7 @@ public class SpiceOfLifeSyncModule extends BaseModSyncModule {
     private static DataView serialize(Player player, DataView container) {
       container.set(
           THIS,
-          CapabilitySerializer.serializeCapabilityToView(
+          CapabilitySerializer.serializeCapabilityToData(
               FoodHistory.CAPABILITY, NativeInventorySerializer.getNativePlayer(player)));
 
       return container;
@@ -44,7 +44,7 @@ public class SpiceOfLifeSyncModule extends BaseModSyncModule {
       Optional<DataView> foodHistory = container.getView(THIS);
 
       if (foodHistory.isPresent()) {
-        CapabilitySerializer.deserializeCapabilityFromView(
+        CapabilitySerializer.deserializeCapabilityFromData(
             FoodHistory.CAPABILITY,
             NativeInventorySerializer.getNativePlayer(player),
             foodHistory.get());

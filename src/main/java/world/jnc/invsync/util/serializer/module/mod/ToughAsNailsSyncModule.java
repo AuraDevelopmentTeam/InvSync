@@ -41,11 +41,11 @@ public class ToughAsNailsSyncModule extends BaseModSyncModule {
 
       container.set(
           TEMPERATURE,
-          CapabilitySerializer.serializeCapabilityToView(
+          CapabilitySerializer.serializeCapabilityToData(
               TANCapabilities.TEMPERATURE, nativePlayer));
       container.set(
           THIRST,
-          CapabilitySerializer.serializeCapabilityToView(TANCapabilities.THIRST, nativePlayer));
+          CapabilitySerializer.serializeCapabilityToData(TANCapabilities.THIRST, nativePlayer));
 
       return container;
     }
@@ -57,9 +57,9 @@ public class ToughAsNailsSyncModule extends BaseModSyncModule {
       if (temperature.isPresent() && thirst.isPresent()) {
         final EntityPlayer nativePlayer = NativeInventorySerializer.getNativePlayer(player);
 
-        CapabilitySerializer.deserializeCapabilityFromView(
+        CapabilitySerializer.deserializeCapabilityFromData(
             TANCapabilities.TEMPERATURE, nativePlayer, temperature.get());
-        CapabilitySerializer.deserializeCapabilityFromView(
+        CapabilitySerializer.deserializeCapabilityFromData(
             TANCapabilities.THIRST, nativePlayer, thirst.get());
       }
 

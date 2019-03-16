@@ -17,7 +17,7 @@ Version 0.6.19-DEV
 Changes since last beta:
 
 \+ Added support for Tough As Nails.  
-\* Updated to latest version of Spice of Life: Carrot Edition (Fixes [#36](https://github.com/AuraDevelopmentTeam/InvSync/issues/32)).  
+\* Updated to latest version of Spice of Life: Carrot Edition (Fixes [#36](https://github.com/AuraDevelopmentTeam/InvSync/issues/36)).  
 \* Synchronizing Spice of Life and Spice of Life: Carrot Edition is different and sadly incompatible with the previous DEV version.  
 \* Allow empty MySQL passwords.  
 \* Fixed several links in README.  

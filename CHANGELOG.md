@@ -5,17 +5,22 @@ Version 0.6.19-DEV
 \+ Added support for Cyclic.  
 \+ Added support for Spice of Life: Carrot Edition.  
 \+ Added support for Spice of Life.  
+\+ Added support for Tough As Nails.  
 \+ Implemented module system to allow mods to easily add support themselves.  
 \+ Added automatic conversion from old (data storage and config) format to new format.  
 \+ Added system to prevent saving inventory when the player hasn't fully joined yet.  
 \* Fixed issue with players not properly saving on server shutdown (Fixes [#32](https://github.com/AuraDevelopmentTeam/InvSync/issues/32))  
 \* `RuntimeException`s while printing debug info won't cause any data being lost.  
+\* Allow empty MySQL passwords.  
+\* Fixed several links in README.  
 
 Changes since last beta:
 
-\+ Added support for Cyclic.  
-\+ Added support for Spice of Life: Carrot Edition.  
-\+ Added support for Spice of Life.  
+\+ Added support for Tough As Nails.  
+\* Updated to latest version of Spice of Life: Carrot Edition (Fixes [#36](https://github.com/AuraDevelopmentTeam/InvSync/issues/32)).  
+\* Synchronizing Spice of Life and Spice of Life: Carrot Edition is different and sadly incompatible with the previous DEV version.  
+\* Allow empty MySQL passwords.  
+\* Fixed several links in README.  
 
 
 Version 0.6.18

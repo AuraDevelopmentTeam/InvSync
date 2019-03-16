@@ -3,6 +3,7 @@ package world.jnc.invsync.util.serializer.module.mod;
 import com.cazsius.solcarrot.capability.FoodCapability;
 import com.cazsius.solcarrot.handler.CapabilityHandler;
 import com.cazsius.solcarrot.handler.MaxHealthHandler;
+import java.util.List;
 import java.util.Optional;
 import lombok.experimental.UtilityClass;
 import net.minecraft.entity.player.EntityPlayer;
@@ -34,20 +35,20 @@ public class SolCarrotSyncModule extends BaseModSyncModule {
 
       container.set(
           THIS,
-          CapabilitySerializer.serializeCapabilityToView(
+          CapabilitySerializer.serializeCapabilityToViewList(
               FoodCapability.FOOD_CAPABILITY, nativePlayer));
 
       return container;
     }
 
     private static void deserialize(Player player, DataView container) {
-      Optional<DataView> serializedFoods = container.getView(THIS);
+      Optional<List<DataView>> serializedFoods = container.getViewList(THIS);
       int foodCount = 0;
 
       if (serializedFoods.isPresent()) {
         final EntityPlayer nativePlayer = NativeInventorySerializer.getNativePlayer(player);
 
-        CapabilitySerializer.deserializeCapabilityFromView(
+        CapabilitySerializer.deserializeCapabilityFromViewList(
             FoodCapability.FOOD_CAPABILITY, nativePlayer, serializedFoods.get());
 
         final FoodCapability foodCapability =

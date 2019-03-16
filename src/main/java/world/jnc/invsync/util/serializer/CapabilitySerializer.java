@@ -1,69 +1,45 @@
 package world.jnc.invsync.util.serializer;
 
-import java.util.List;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import lombok.experimental.UtilityClass;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.capabilities.Capability;
+import org.spongepowered.api.data.DataContainer;
+import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataView;
+import org.spongepowered.api.data.DataView.SafetyMode;
 import org.spongepowered.common.data.persistence.NbtTranslator;
 
 // TODO: Testing!!
 @UtilityClass
 public class CapabilitySerializer {
-  public static <T> NBTTagCompound serializeCapability(
-      Capability<T> capability, EntityPlayer player) {
-    return (NBTTagCompound) capability.writeNBT(player.getCapability(capability, null), null);
+  private static final String OUTER = "xxx";
+  private static final DataQuery OUTER_QUERY = DataQuery.of(OUTER);
+
+  public static <T> NBTBase serializeCapability(Capability<T> capability, EntityPlayer player) {
+    return capability.writeNBT(player.getCapability(capability, null), null);
   }
 
-  public static <T> DataView serializeCapabilityToView(
+  public static <T> Object serializeCapabilityToView(
       Capability<T> capability, EntityPlayer player) {
-    return NbtTranslator.getInstance().translateFrom(serializeCapability(capability, player));
-  }
+    final NBTTagCompound container = new NBTTagCompound();
+    container.setTag(OUTER, serializeCapability(capability, player));
 
-  public static <T> NBTTagList serializeCapabilityList(
-      Capability<T> capability, EntityPlayer player) {
-    return (NBTTagList) capability.writeNBT(player.getCapability(capability, null), null);
-  }
-
-  public static <T> List<DataView> serializeCapabilityToViewList(
-      Capability<T> capability, EntityPlayer player) {
-    final NbtTranslator translator = NbtTranslator.getInstance();
-
-    return StreamSupport.stream(serializeCapabilityList(capability, player).spliterator(), false)
-        .map(NBTTagCompound.class::cast)
-        .map(translator::translateFrom)
-        .collect(Collectors.toList());
+    return NbtTranslator.getInstance().translateFrom(container).get(OUTER_QUERY);
   }
 
   public static <T> void deserializeCapability(
-      Capability<T> capability, EntityPlayer player, NBTTagCompound nbt) {
+      Capability<T> capability, EntityPlayer player, NBTBase nbt) {
     capability.readNBT(player.getCapability(capability, null), null, nbt);
   }
 
   public static <T> void deserializeCapabilityFromView(
-      Capability<T> capability, EntityPlayer player, DataView view) {
-    deserializeCapability(capability, player, NbtTranslator.getInstance().translateData(view));
-  }
+      Capability<T> capability, EntityPlayer player, Object data) {
+    final DataView container = DataContainer.createNew(SafetyMode.NO_DATA_CLONED);
+    container.set(OUTER_QUERY, data);
 
-  public static <T> void deserializeCapabilityList(
-      Capability<T> capability, EntityPlayer player, NBTTagList nbt) {
-    capability.readNBT(player.getCapability(capability, null), null, nbt);
-  }
-
-  public static <T> void deserializeCapabilityFromViewList(
-      Capability<T> capability, EntityPlayer player, List<DataView> view) {
-    final NbtTranslator translator = NbtTranslator.getInstance();
-
-    deserializeCapabilityList(
-        capability,
-        player,
-        view.stream()
-            .map(translator::translateData)
-            .collect(Collector.of(NBTTagList::new, NBTTagList::appendTag, null)));
+    deserializeCapability(
+        capability, player, NbtTranslator.getInstance().translateData(container).getTag(OUTER));
   }
 }

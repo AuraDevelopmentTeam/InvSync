@@ -35,7 +35,7 @@ public class SolCarrotSyncModule extends BaseModSyncModule {
 
       container.set(
           THIS,
-          CapabilitySerializer.serializeCapabilityToViewList(
+          CapabilitySerializer.serializeCapabilityToView(
               FoodCapability.FOOD_CAPABILITY, nativePlayer));
 
       return container;
@@ -48,7 +48,7 @@ public class SolCarrotSyncModule extends BaseModSyncModule {
       if (serializedFoods.isPresent()) {
         final EntityPlayer nativePlayer = NativeInventorySerializer.getNativePlayer(player);
 
-        CapabilitySerializer.deserializeCapabilityFromViewList(
+        CapabilitySerializer.deserializeCapabilityFromView(
             FoodCapability.FOOD_CAPABILITY, nativePlayer, serializedFoods.get());
 
         final FoodCapability foodCapability =

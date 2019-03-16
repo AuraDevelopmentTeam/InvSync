@@ -26,7 +26,7 @@ public class CapabilitySerializer {
     final NBTTagCompound container = new NBTTagCompound();
     container.setTag(OUTER, serializeCapability(capability, player));
 
-    return NbtTranslator.getInstance().translateFrom(container).get(OUTER_QUERY);
+    return NbtTranslator.getInstance().translateFrom(container).get(OUTER_QUERY).orElse(null);
   }
 
   public static <T> void deserializeCapability(

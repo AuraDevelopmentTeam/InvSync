@@ -51,17 +51,12 @@ public class SolCarrotSyncModule extends BaseModSyncModule {
         CapabilitySerializer.deserializeCapabilityFromData(
             FoodCapability.FOOD_CAPABILITY, nativePlayer, serializedFoods.get());
 
-        final FoodCapability foodCapability =
-            nativePlayer.getCapability(FoodCapability.FOOD_CAPABILITY, null);
+        CapabilityHandler.syncFoodList(nativePlayer);
 
-        if (foodCapability != null) {
-          CapabilityHandler.syncFoodList(nativePlayer);
+        // Now that the food list has been synchronized, use it to set the player's max health.
+        MaxHealthHandler.updateFoodHPModifier(nativePlayer);
 
-          // Now that the food list has been synchronized, use it to set the player's max health.
-          MaxHealthHandler.updateFoodHPModifier(nativePlayer);
-
-          foodCount = foodCapability.getFoodCount();
-        }
+        foodCount = nativePlayer.getCapability(FoodCapability.FOOD_CAPABILITY, null).getFoodCount();
       }
 
       if (getDebug()) {

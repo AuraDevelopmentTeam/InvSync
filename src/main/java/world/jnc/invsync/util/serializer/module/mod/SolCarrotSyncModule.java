@@ -42,7 +42,7 @@ public class SolCarrotSyncModule extends BaseModSyncModule {
     }
 
     private static void deserialize(Player player, DataView container) {
-      Optional<List<DataView>> serializedFoods = container.getViewList(THIS);
+      Optional<?> serializedFoods = container.get(THIS);
       int foodCount = 0;
 
       if (serializedFoods.isPresent()) {

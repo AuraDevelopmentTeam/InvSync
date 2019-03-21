@@ -3,7 +3,6 @@ package world.jnc.invsync.util.serializer.module.mod;
 import com.cazsius.solcarrot.capability.FoodCapability;
 import com.cazsius.solcarrot.handler.CapabilityHandler;
 import com.cazsius.solcarrot.handler.MaxHealthHandler;
-import java.util.List;
 import java.util.Optional;
 import lombok.experimental.UtilityClass;
 import net.minecraft.entity.player.EntityPlayer;

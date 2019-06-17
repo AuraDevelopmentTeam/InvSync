@@ -1,8 +1,8 @@
 package world.jnc.invsync.util.serializer.module.mod;
 
-import com.cazsius.solcarrot.capability.FoodCapability;
-import com.cazsius.solcarrot.handler.CapabilityHandler;
-import com.cazsius.solcarrot.handler.MaxHealthHandler;
+import com.cazsius.solcarrot.tracking.CapabilityHandler;
+import com.cazsius.solcarrot.tracking.FoodCapability;
+import com.cazsius.solcarrot.tracking.MaxHealthHandler;
 import java.util.Optional;
 import lombok.experimental.UtilityClass;
 import net.minecraft.entity.player.EntityPlayer;
@@ -55,7 +55,8 @@ public class SolCarrotSyncModule extends BaseModSyncModule {
         // Now that the food list has been synchronized, use it to set the player's max health.
         MaxHealthHandler.updateFoodHPModifier(nativePlayer);
 
-        foodCount = nativePlayer.getCapability(FoodCapability.FOOD_CAPABILITY, null).getFoodCount();
+        foodCount =
+            nativePlayer.getCapability(FoodCapability.FOOD_CAPABILITY, null).getFoodList().size();
       }
 
       if (getDebug()) {

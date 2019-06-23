@@ -1,8 +1,6 @@
 package world.jnc.invsync.util.serializer.module.mod;
 
-import com.cazsius.solcarrot.tracking.CapabilityHandler;
-import com.cazsius.solcarrot.tracking.FoodCapability;
-import com.cazsius.solcarrot.tracking.MaxHealthHandler;
+import com.cazsius.solcarrot.api.SOLCarrotAPI;
 import java.util.Optional;
 import lombok.experimental.UtilityClass;
 import net.minecraft.entity.player.EntityPlayer;
@@ -35,7 +33,7 @@ public class SolCarrotSyncModule extends BaseModSyncModule {
       container.set(
           THIS,
           CapabilitySerializer.serializeCapabilityToData(
-              FoodCapability.FOOD_CAPABILITY, nativePlayer));
+              SOLCarrotAPI.FOOD_CAPABILITY, nativePlayer));
 
       return container;
     }
@@ -48,15 +46,12 @@ public class SolCarrotSyncModule extends BaseModSyncModule {
         final EntityPlayer nativePlayer = NativeInventorySerializer.getNativePlayer(player);
 
         CapabilitySerializer.deserializeCapabilityFromData(
-            FoodCapability.FOOD_CAPABILITY, nativePlayer, serializedFoods.get());
+            SOLCarrotAPI.FOOD_CAPABILITY, nativePlayer, serializedFoods.get());
 
-        CapabilityHandler.syncFoodList(nativePlayer);
-
-        // Now that the food list has been synchronized, use it to set the player's max health.
-        MaxHealthHandler.updateFoodHPModifier(nativePlayer);
+        SOLCarrotAPI.syncFoodList(nativePlayer);
 
         foodCount =
-            nativePlayer.getCapability(FoodCapability.FOOD_CAPABILITY, null).getFoodList().size();
+            nativePlayer.getCapability(SOLCarrotAPI.FOOD_CAPABILITY, null).getEatenFoodCount();
       }
 
       if (getDebug()) {

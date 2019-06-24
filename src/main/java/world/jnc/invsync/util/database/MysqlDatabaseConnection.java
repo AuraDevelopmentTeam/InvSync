@@ -17,8 +17,8 @@ public class MysqlDatabaseConnection extends DatabaseConnection {
     super(
         String.format(
             mysql.getPassword().isEmpty() ? URLFormatNoPassword : URLFormat,
-            mysql.getUser(),
-            mysql.getPassword(),
+            mysql.getUserEncoded(),
+            mysql.getPasswordEncoded(),
             mysql.getHost(),
             mysql.getPort(),
             mysql.getDatabase()));

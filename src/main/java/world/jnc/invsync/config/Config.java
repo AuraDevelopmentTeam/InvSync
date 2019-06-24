@@ -1,11 +1,16 @@
 package world.jnc.invsync.config;
 
+import com.google.common.annotations.VisibleForTesting;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import world.jnc.invsync.InventorySync;
@@ -92,6 +97,8 @@ public class Config {
 
     @ConfigSerializable
     public static class MySQL {
+      private static final String UTF_8 = StandardCharsets.UTF_8.name();
+
       @Setting @Getter private String host = "localhost";
       @Setting @Getter private int port = 3306;
       @Setting @Getter private String database = "invsync";
@@ -101,6 +108,20 @@ public class Config {
       @Setting(comment = "Prefix for the plugin tables")
       @Getter
       private String tablePrefix = "invsync_";
+
+      public String getUserEncoded() {
+        return urlEncode(getUser());
+      }
+
+      public String getPasswordEncoded() {
+        return urlEncode(getPassword());
+      }
+
+      @VisibleForTesting
+      @SneakyThrows(UnsupportedEncodingException.class)
+      static String urlEncode(String str) {
+        return URLEncoder.encode(str, UTF_8);
+      }
     }
   }
 }

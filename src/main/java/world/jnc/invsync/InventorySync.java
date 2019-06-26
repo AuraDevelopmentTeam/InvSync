@@ -49,7 +49,7 @@ import world.jnc.invsync.util.serializer.module.BaseSyncModule;
   dependencies = {
     @Dependency(id = "baubles", optional = true),
     @Dependency(id = "cyclicmagic", optional = true),
-    @Dependency(id = "solcarrot", version = "[1.12.2-1.8.1,)", optional = true),
+    @Dependency(id = "solcarrot", version = "[1.8.2,)", optional = true),
     @Dependency(id = "spiceoflife", optional = true),
     @Dependency(id = "toughasnails", optional = true)
   }

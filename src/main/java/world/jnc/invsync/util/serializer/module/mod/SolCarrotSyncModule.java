@@ -33,7 +33,7 @@ public class SolCarrotSyncModule extends BaseModSyncModule {
       container.set(
           THIS,
           CapabilitySerializer.serializeCapabilityToData(
-              SOLCarrotAPI.FOOD_CAPABILITY, nativePlayer));
+              SOLCarrotAPI.foodCapability, nativePlayer));
 
       return container;
     }
@@ -46,12 +46,12 @@ public class SolCarrotSyncModule extends BaseModSyncModule {
         final EntityPlayer nativePlayer = NativeInventorySerializer.getNativePlayer(player);
 
         CapabilitySerializer.deserializeCapabilityFromData(
-            SOLCarrotAPI.FOOD_CAPABILITY, nativePlayer, serializedFoods.get());
+            SOLCarrotAPI.foodCapability, nativePlayer, serializedFoods.get());
 
         SOLCarrotAPI.syncFoodList(nativePlayer);
 
         foodCount =
-            nativePlayer.getCapability(SOLCarrotAPI.FOOD_CAPABILITY, null).getEatenFoodCount();
+            nativePlayer.getCapability(SOLCarrotAPI.foodCapability, null).getEatenFoodCount();
       }
 
       if (getDebug()) {

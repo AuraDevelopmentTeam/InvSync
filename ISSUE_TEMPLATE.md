@@ -12,20 +12,20 @@ Please remove anything that doesn't apply!
 
 #### Steps to reproduce:
 
-1. 
-2. 
-3. 
+1.
+2.
+3.
 ...
 
 ____
 #### Affected Versions (Do *not* use "latest"):
 
-- Minecraft: 1.11.2
-- InvSync: 
-- Sponge: 
-- Other related mods: 
+- Minecraft: 1.12.2
+- InvSync:
+- Sponge:
+- Other related mods:
 
-#### Your most recent log or stack trace file where the issue was present: 
+#### Your most recent log or stack trace file where the issue was present:
 
 [pastebin/gist/etc link here]
 

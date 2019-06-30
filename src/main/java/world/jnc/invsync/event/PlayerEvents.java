@@ -56,7 +56,14 @@ public class PlayerEvents implements AutoCloseable {
 
   @Listener(order = Order.POST)
   public void onPlayerJoinComplete(ClientConnectionEvent.Join event) {
-    successfulJoined.add(event.getTargetEntity().getUniqueId());
+    final @NonNull Player player = event.getTargetEntity();
+
+    successfulJoined.add(player.getUniqueId());
+
+    if (InventorySync.getConfig().getGeneral().getDebug()) {
+      InventorySync.getLogger()
+          .info("Player " + DataSource.getPlayerString(player) + " has joined successfully.");
+    }
   }
 
   @Listener

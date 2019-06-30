@@ -8,6 +8,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.zip.DataFormatException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,7 @@ import world.jnc.invsync.util.serializer.PlayerSerializer;
 public class PlayerEvents implements AutoCloseable {
   private final DataSource dataSource;
   private final Map<UUID, Task> waitingPlayers = new HashMap<>();
-  private final SortedSet<UUID> successfulJoined = new TreeSet<>();
+  private final SortedSet<UUID> successfulJoined = getJoinedPlayers();
 
   @Listener
   public void onPlayerJoin(ClientConnectionEvent.Join event) {
@@ -182,6 +183,14 @@ public class PlayerEvents implements AutoCloseable {
 
   private void savePlayer(@NonNull Player player, boolean removeFromCache) throws IOException {
     dataSource.saveInventory(player, PlayerSerializer.serializePlayer(player, removeFromCache));
+  }
+
+  private static final SortedSet<UUID> getJoinedPlayers() {
+    return Sponge.getServer()
+        .getOnlinePlayers()
+        .stream()
+        .map(Player::getUniqueId)
+        .collect(Collectors.toCollection(TreeSet::new));
   }
 
   private class WaitingForPreviousServerToFinish implements Consumer<Task> {

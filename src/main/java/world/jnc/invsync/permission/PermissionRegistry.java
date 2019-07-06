@@ -14,6 +14,7 @@ import world.jnc.invsync.util.serializer.PlayerSerializer;
 public class PermissionRegistry {
   public static final String BASE = InventorySync.ID;
   public static final String SYNC = BASE + ".sync";
+  public static final String MOD = SYNC + ".mod";
 
   private final InventorySync plugin;
   private final PermissionService service =
@@ -51,6 +52,8 @@ public class PermissionRegistry {
         PlayerSerializer.healthSyncModule.getPermission(),
         "Allow this user's potion effects to be synchronized",
         PermissionDescription.ROLE_USER);
+    registerPermission(
+        MOD, "Base permission for all mod synchronizing", PermissionDescription.ROLE_USER);
     if (PlayerSerializer.baublesSyncModule.canBeEnabled())
       registerPermission(
           PlayerSerializer.baublesSyncModule.getPermission(),

@@ -74,6 +74,11 @@ public class PermissionRegistry {
           PlayerSerializer.spiceOfLifeSyncModule.getPermission(),
           "Allow this user's Spice of Life food list to be synchronized",
           PermissionDescription.ROLE_USER);
+    if (PlayerSerializer.thaumcraft6SyncModule.canBeEnabled())
+      registerPermission(
+          PlayerSerializer.thaumcraft6SyncModule.getPermission(),
+          "Allow this user's Thaumcraft 6 capabilities to be synchronized",
+          PermissionDescription.ROLE_USER);
     if (PlayerSerializer.toughAsNailsSyncModule.canBeEnabled())
       registerPermission(
           PlayerSerializer.toughAsNailsSyncModule.getPermission(),

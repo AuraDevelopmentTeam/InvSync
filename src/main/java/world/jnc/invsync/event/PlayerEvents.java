@@ -69,36 +69,7 @@ public class PlayerEvents implements AutoCloseable {
 
   @Listener
   public void onPlayerLeave(ClientConnectionEvent.Disconnect event) throws IOException {
-    final @NonNull Player player = event.getTargetEntity();
-    final UUID uuid = player.getUniqueId();
-
-    // If it can't be removed, it was not in the set, which means the player hasn't fully joined
-    // yet. Therefore we don't save the player.
-    if (!successfulJoined.remove(uuid)) {
-      final boolean debug = InventorySync.getConfig().getGeneral().getDebug();
-      final Logger logger = InventorySync.getLogger();
-      final String message =
-          "Serializing data of "
-              + DataSource.getPlayerString(player)
-              + " has been cancelled, due to them not having joined fully.";
-
-      if (debug) {
-        logger.warn(message);
-      } else {
-        logger.debug(message);
-      }
-
-      // Abort saving here
-      return;
-    }
-
-    savePlayer(player, true);
-
-    synchronized (waitingPlayers) {
-      if (waitingPlayers.containsKey(uuid)) {
-        waitingPlayers.remove(uuid).cancel();
-      }
-    }
+    safeSavePlayer(event.getTargetEntity(), true);
   }
 
   @Listener
@@ -157,7 +128,7 @@ public class PlayerEvents implements AutoCloseable {
     for (Player player : Sponge.getGame().getServer().getOnlinePlayers()) {
       // This is either called when reloading (we don't want to clear the cache)
       // or when shutting down, where it doesn't matter
-      savePlayer(player, false);
+      safeSavePlayer(player, false);
     }
 
     InventorySync.getLogger().debug("Saved all player inventories");
@@ -170,9 +141,11 @@ public class PlayerEvents implements AutoCloseable {
 
   private void loadPlayer(@NonNull Player player)
       throws ClassNotFoundException, IOException, DataFormatException {
+    // TODO: Load sync during ClientConnectingEvent.Auth
     Optional<byte[]> result = dataSource.loadInventory(player);
 
     if (result.isPresent()) {
+      // TODO: Perform actual inventory change during ClientConnectingEvent.Login
       PlayerSerializer.deserializePlayer(player, result.get());
     } else {
       savePlayer(player, false);
@@ -183,6 +156,38 @@ public class PlayerEvents implements AutoCloseable {
 
   private void savePlayer(@NonNull Player player, boolean removeFromCache) throws IOException {
     dataSource.saveInventory(player, PlayerSerializer.serializePlayer(player, removeFromCache));
+  }
+
+  private void safeSavePlayer(@NonNull Player player, boolean removeFromCache) throws IOException {
+    final UUID uuid = player.getUniqueId();
+
+    // If it can't be removed, it was not in the set, which means the player hasn't fully joined
+    // yet. Therefore we don't save the player.
+    if (!successfulJoined.remove(uuid)) {
+      final boolean debug = InventorySync.getConfig().getGeneral().getDebug();
+      final Logger logger = InventorySync.getLogger();
+      final String message =
+          "Serializing data of "
+              + DataSource.getPlayerString(player)
+              + " has been cancelled, due to them not having joined fully.";
+
+      if (debug) {
+        logger.warn(message);
+      } else {
+        logger.debug(message);
+      }
+
+      // Abort saving here
+      return;
+    }
+
+    savePlayer(player, removeFromCache);
+
+    synchronized (waitingPlayers) {
+      if (waitingPlayers.containsKey(uuid)) {
+        waitingPlayers.remove(uuid).cancel();
+      }
+    }
   }
 
   private static final SortedSet<UUID> getJoinedPlayers() {

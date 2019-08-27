@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -30,16 +31,17 @@ import org.spongepowered.api.event.item.inventory.UseItemStackEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.scheduler.Task;
 import world.jnc.invsync.InventorySync;
-import world.jnc.invsync.config.Config;
 import world.jnc.invsync.util.database.DataSource;
 import world.jnc.invsync.util.serializer.PlayerSerializer;
 
 @RequiredArgsConstructor
 public class PlayerEvents implements AutoCloseable {
+  private static final Random RNG = new Random();
+
   private final DataSource dataSource;
   private final Map<UUID, Task> waitingPlayers = new HashMap<>();
   private final SortedSet<UUID> successfulJoined = getJoinedPlayers();
-  private final Map<UUID, Task> autoSaveTasks = new HashMap<>();
+  private final Map<UUID, Task> autoSaveTasks = startAutoSaveTasksForJoinedPlayers();
 
   @Listener
   public void onPlayerJoin(ClientConnectionEvent.Join event) {
@@ -63,21 +65,12 @@ public class PlayerEvents implements AutoCloseable {
   public void onPlayerJoinComplete(ClientConnectionEvent.Join event) {
     final @NonNull Player player = event.getTargetEntity();
     final UUID uuid = player.getUniqueId();
-    final Config.General configGeneral = InventorySync.getConfig().getGeneral();
 
-    if (configGeneral.isAutoSaveEnabled()) {
-      final Task autoSaveTask =
-          Task.builder()
-              .execute(new AutoSaveTask(uuid))
-              .interval(configGeneral.getAutoSaveInterval(), TimeUnit.SECONDS)
-              .submit(InventorySync.getInstance());
-
-      autoSaveTasks.put(uuid, autoSaveTask);
-    }
+    startAutoSaveTask(uuid);
 
     successfulJoined.add(uuid);
 
-    if (configGeneral.getDebug()) {
+    if (InventorySync.getConfig().getGeneral().getDebug()) {
       InventorySync.getLogger()
           .info("Player " + DataSource.getPlayerString(player) + " has joined successfully.");
     }
@@ -214,6 +207,39 @@ public class PlayerEvents implements AutoCloseable {
         waitingPlayers.remove(uuid).cancel();
       }
     }
+  }
+
+  private Task startAutoSaveTask(UUID uuid) {
+    return startAutoSaveTask(uuid, true, false);
+  }
+
+  private Task startAutoSaveTask(UUID uuid, boolean addToMap, boolean randomStartupDelay) {
+    final long delay = InventorySync.getConfig().getGeneral().getAutoSaveInterval();
+
+    final Task autoSaveTask =
+        Task.builder()
+            .execute(new AutoSaveTask(uuid))
+            .delay(delay + (randomStartupDelay ? (RNG.nextLong() % delay) : 0), TimeUnit.SECONDS)
+            .interval(delay, TimeUnit.SECONDS)
+            .submit(InventorySync.getInstance());
+
+    if (addToMap) {
+      autoSaveTasks.put(uuid, autoSaveTask);
+    }
+
+    return autoSaveTask;
+  }
+
+  private final Map<UUID, Task> startAutoSaveTasksForJoinedPlayers() {
+    if (!InventorySync.getConfig().getGeneral().isAutoSaveEnabled()) {
+      return null;
+    }
+
+    return Sponge.getServer()
+        .getOnlinePlayers()
+        .stream()
+        .map(Player::getUniqueId)
+        .collect(Collectors.toMap(uuid -> uuid, uuid -> startAutoSaveTask(uuid, false, true)));
   }
 
   private static final SortedSet<UUID> getJoinedPlayers() {

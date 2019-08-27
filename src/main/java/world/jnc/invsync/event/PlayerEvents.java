@@ -232,7 +232,7 @@ public class PlayerEvents implements AutoCloseable {
 
   private final Map<UUID, Task> startAutoSaveTasksForJoinedPlayers() {
     if (!InventorySync.getConfig().getGeneral().isAutoSaveEnabled()) {
-      return null;
+      return new HashMap<>();
     }
 
     return Sponge.getServer()

@@ -7,11 +7,13 @@ import java.util.Optional;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.zip.DataFormatException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.property.item.FoodRestorationProperty;
@@ -28,6 +30,7 @@ import org.spongepowered.api.event.item.inventory.UseItemStackEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.scheduler.Task;
 import world.jnc.invsync.InventorySync;
+import world.jnc.invsync.config.Config;
 import world.jnc.invsync.util.database.DataSource;
 import world.jnc.invsync.util.serializer.PlayerSerializer;
 
@@ -36,6 +39,7 @@ public class PlayerEvents implements AutoCloseable {
   private final DataSource dataSource;
   private final Map<UUID, Task> waitingPlayers = new HashMap<>();
   private final SortedSet<UUID> successfulJoined = getJoinedPlayers();
+  private final Map<UUID, Task> autoSaveTasks = new HashMap<>();
 
   @Listener
   public void onPlayerJoin(ClientConnectionEvent.Join event) {
@@ -46,7 +50,7 @@ public class PlayerEvents implements AutoCloseable {
       Task task =
           Task.builder()
               .execute(
-                  new WaitingForPreviousServerToFinish(
+                  new WaitingForPreviousServerToFinishTask(
                       player, InventorySync.getConfig().getGeneral().getMaxWait()))
               .intervalTicks(1)
               .submit(InventorySync.getInstance());
@@ -58,10 +62,22 @@ public class PlayerEvents implements AutoCloseable {
   @Listener(order = Order.POST)
   public void onPlayerJoinComplete(ClientConnectionEvent.Join event) {
     final @NonNull Player player = event.getTargetEntity();
+    final UUID uuid = player.getUniqueId();
+    final Config.General configGeneral = InventorySync.getConfig().getGeneral();
 
-    successfulJoined.add(player.getUniqueId());
+    if (configGeneral.isAutoSaveEnabled()) {
+      final Task autoSaveTask =
+          Task.builder()
+              .execute(new AutoSaveTask(uuid))
+              .interval(configGeneral.getAutoSaveInterval(), TimeUnit.SECONDS)
+              .submit(InventorySync.getInstance());
 
-    if (InventorySync.getConfig().getGeneral().getDebug()) {
+      autoSaveTasks.put(uuid, autoSaveTask);
+    }
+
+    successfulJoined.add(uuid);
+
+    if (configGeneral.getDebug()) {
       InventorySync.getLogger()
           .info("Player " + DataSource.getPlayerString(player) + " has joined successfully.");
     }
@@ -69,7 +85,15 @@ public class PlayerEvents implements AutoCloseable {
 
   @Listener
   public void onPlayerLeave(ClientConnectionEvent.Disconnect event) throws IOException {
-    safeSavePlayer(event.getTargetEntity(), true);
+    final Player player = event.getTargetEntity();
+
+    safeSavePlayer(player, true);
+
+    final Task autoSaveTask = autoSaveTasks.remove(player.getUniqueId());
+
+    if (autoSaveTask != null) {
+      autoSaveTask.cancel();
+    }
   }
 
   @Listener
@@ -137,6 +161,8 @@ public class PlayerEvents implements AutoCloseable {
   @Override
   public void close() throws IOException, DataFormatException {
     saveAllPlayers();
+
+    autoSaveTasks.values().forEach(Task::cancel);
   }
 
   private void loadPlayer(@NonNull Player player)
@@ -198,11 +224,11 @@ public class PlayerEvents implements AutoCloseable {
         .collect(Collectors.toCollection(TreeSet::new));
   }
 
-  private class WaitingForPreviousServerToFinish implements Consumer<Task> {
+  private class WaitingForPreviousServerToFinishTask implements Consumer<Task> {
     private final Player player;
     private final long endTime;
 
-    public WaitingForPreviousServerToFinish(Player player, long maxWait) {
+    public WaitingForPreviousServerToFinishTask(Player player, long maxWait) {
       this.player = player;
       endTime = System.currentTimeMillis() + maxWait;
     }
@@ -241,6 +267,37 @@ public class PlayerEvents implements AutoCloseable {
 
         task.cancel();
       }
+    }
+  }
+
+  @RequiredArgsConstructor
+  private class AutoSaveTask implements Consumer<Task> {
+    private final UUID uuid;
+    private final boolean debug = InventorySync.getConfig().getGeneral().getDebug();
+
+    @SneakyThrows(IOException.class)
+    @Override
+    public void accept(Task task) {
+      final Optional<Player> oPlayer = Sponge.getServer().getPlayer(uuid);
+
+      // If the player is offline, cancel the task
+      if (!oPlayer.isPresent()) {
+        task.cancel();
+
+        return;
+      }
+
+      final Player player = oPlayer.get();
+      final String logMessage = "Autosaving player " + DataSource.getPlayerString(player);
+      final Logger logger = InventorySync.getLogger();
+
+      if (debug) {
+        logger.info(logMessage);
+      } else {
+        logger.debug(logMessage);
+      }
+
+      savePlayer(player, false);
     }
   }
 }

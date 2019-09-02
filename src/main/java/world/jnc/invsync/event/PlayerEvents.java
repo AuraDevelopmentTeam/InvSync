@@ -221,6 +221,7 @@ public class PlayerEvents implements AutoCloseable {
             .execute(new AutoSaveTask(uuid))
             .delay(delay + (randomStartupDelay ? (RNG.nextLong() % delay) : 0), TimeUnit.SECONDS)
             .interval(delay, TimeUnit.SECONDS)
+            .async()
             .submit(InventorySync.getInstance());
 
     if (addToMap) {

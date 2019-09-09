@@ -15,6 +15,7 @@ dependencies {
     compileOnly "org.spongepowered:spongecommon:${sponge_version}:dev"
 
     compileOnly "com.azanor.baubles:Baubles:${baubles_version}"
+    deobfProvided "forge-backpacks:backpack:${backpacks_version}:${minecraft_version}"
     deobfProvided "cyclic:Cyclic:${cyclic_version}"
     deobfProvided "spice-of-life-carrot-edition:solcarrot:${solcarrot_version}"
     deobfProvided "the-spice-of-life:SpiceOfLife:${spiceOfLive_version}"

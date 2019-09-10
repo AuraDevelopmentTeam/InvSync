@@ -6,7 +6,9 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.service.permission.PermissionDescription;
 import org.spongepowered.api.service.permission.PermissionDescription.Builder;
 import org.spongepowered.api.service.permission.PermissionService;
+import org.spongepowered.api.service.permission.SubjectData;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.util.Tristate;
 import world.jnc.invsync.InventorySync;
 import world.jnc.invsync.util.serializer.PlayerSerializer;
 
@@ -90,6 +92,10 @@ public class PermissionRegistry {
     return service.newDescriptionBuilder(plugin);
   }
 
+  private SubjectData getDefaultUser() {
+    return service.getDefaults().getSubjectData();
+  }
+
   private void registerPermission(String permission, String role) {
     registerPermission(permission, null, role);
   }
@@ -100,5 +106,9 @@ public class PermissionRegistry {
         .description((description == null) ? Text.of() : Text.of(description))
         .assign(role, true)
         .register();
+
+    if (PermissionDescription.ROLE_USER.equals(role)) {
+      getDefaultUser().setPermission(SubjectData.GLOBAL_CONTEXT, permission, Tristate.TRUE);
+    }
   }
 }

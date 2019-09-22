@@ -116,15 +116,22 @@ public class InventorySync {
       throws SQLException, IOException, ObjectMappingException {
     logger.info("Initializing " + NAME + " Version " + VERSION);
 
-    loadConfig();
-
     if (VERSION.contains("SNAPSHOT")) {
       logger.warn("WARNING! This is a snapshot version!");
       logger.warn("Use at your own risk!");
     }
-    if (VERSION.contains("development")) {
+    if (VERSION.contains("DEV")) {
       logger.info("This is a unreleased development version!");
       logger.info("Things might not work properly!");
+    }
+
+    loadConfig();
+
+    if (config.getGeneral().isAutoSaveIntervalDangerous()) {
+      logger.warn(
+          "The setting \"general.autoSaveInterval\" is lower than the recommended minimum value of "
+              + Config.General.DANGEROUS_AUTO_SAVE_INTERVAL);
+      logger.warn("This may cause performance issues! Use at your own risk!");
     }
 
     if (permissionRegistry == null) {

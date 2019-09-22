@@ -16,29 +16,14 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import world.jnc.invsync.InventorySync;
 
 @ConfigSerializable
+@Getter
 public class Config {
-  @Setting @Getter private General general = new General();
+  @Setting private General general = new General();
 
   @Setting(comment = "Which player data to synchronize")
-  @Getter
   private Map<String, Boolean> synchronize = new HashMap<String, Boolean>();
 
-  @Setting @Getter private Storage storage = new Storage();
-
-  @ConfigSerializable
-  public static class General {
-    @Setting(comment = "Enable debug logging")
-    @Getter
-    private boolean debug = false;
-
-    @Setting(
-      comment =
-          "Maximum amount of time to wait for the other server to finish writing the data. Time in ms\n"
-              + "Increase value if you notice synchronizations failing"
-    )
-    @Getter
-    private long maxWait = 1000L;
-  }
+  @Setting private Storage storage = new Storage();
 
   public boolean getSynchronize(String module) {
     if (!synchronize.containsKey(module)) {
@@ -49,17 +34,48 @@ public class Config {
   }
 
   @ConfigSerializable
+  @Getter
+  public static class General {
+    public static final long DANGEROUS_AUTO_SAVE_INTERVAL = 30;
+
+    @Setting(
+      comment =
+          "In which interval (in s) should the plugin autosave the players. (Values lower than "
+              + DANGEROUS_AUTO_SAVE_INTERVAL
+              + "s are not recommended!)\n"
+              + "Values of 0 or lower disable auto saving."
+    )
+    private long autoSaveInterval = 0;
+
+    @Setting(comment = "Enable debug logging")
+    private boolean debug = false;
+
+    @Setting(
+      comment =
+          "Maximum amount of time to wait for the other server to finish writing the data. Time in ms\n"
+              + "Increase value if you notice synchronizations failing"
+    )
+    private long maxWait = 1000L;
+
+    public boolean isAutoSaveEnabled() {
+      return getAutoSaveInterval() > 0;
+    }
+
+    public boolean isAutoSaveIntervalDangerous() {
+      return isAutoSaveEnabled() && (getAutoSaveInterval() < DANGEROUS_AUTO_SAVE_INTERVAL);
+    }
+  }
+
+  @ConfigSerializable
+  @Getter
   public static class Storage {
     @Setting(comment = "The stoage engine that should be used\n" + "Allowed values: h2 mysql")
-    @Getter
     private StorageEngine storageEngine = StorageEngine.h2;
 
     @Setting(comment = "Settings for the h2 storage engine")
-    @Getter
     private H2 h2 = new H2();
 
     @Setting(value = "MySQL", comment = "Settings for the MySQL storage engine")
-    @Getter
     private MySQL mysql = new MySQL();
 
     public boolean isH2() {
@@ -81,13 +97,13 @@ public class Config {
     }
 
     @ConfigSerializable
+    @Getter
     public static class H2 {
       @Setting(
         comment =
             "If this is a relative path, it will be relative to the InvSync config dir (should be \"config/invsync\"). Absolute\n"
                 + "paths work too of course"
       )
-      @Getter
       private String databaseFile = "inventoryStorage";
 
       public Path getAbsoluteDatabasePath() {
@@ -96,17 +112,17 @@ public class Config {
     }
 
     @ConfigSerializable
+    @Getter
     public static class MySQL {
       private static final String UTF_8 = StandardCharsets.UTF_8.name();
 
-      @Setting @Getter private String host = "localhost";
-      @Setting @Getter private int port = 3306;
-      @Setting @Getter private String database = "invsync";
-      @Setting @Getter private String user = "invsync";
-      @Setting @Getter private String password = "sup3rS3cur3Pa55w0rd!";
+      @Setting private String host = "localhost";
+      @Setting private int port = 3306;
+      @Setting private String database = "invsync";
+      @Setting private String user = "invsync";
+      @Setting private String password = "sup3rS3cur3Pa55w0rd!";
 
       @Setting(comment = "Prefix for the plugin tables")
-      @Getter
       private String tablePrefix = "invsync_";
 
       public String getUserEncoded() {

@@ -36,6 +36,7 @@ import world.jnc.invsync.util.serializer.module.InventorySyncModule;
 import world.jnc.invsync.util.serializer.module.PotionEffectsSyncModule;
 import world.jnc.invsync.util.serializer.module.mod.BaublesSyncModule;
 import world.jnc.invsync.util.serializer.module.mod.CyclicSyncModule;
+import world.jnc.invsync.util.serializer.module.mod.ReskillableSyncModule;
 import world.jnc.invsync.util.serializer.module.mod.SolCarrotSyncModule;
 import world.jnc.invsync.util.serializer.module.mod.SpiceOfLifeSyncModule;
 import world.jnc.invsync.util.serializer.module.mod.Thaumcraft6SyncModule;
@@ -54,6 +55,7 @@ public class PlayerSerializer {
 
   public static final BaublesSyncModule baublesSyncModule = new BaublesSyncModule();
   public static final CyclicSyncModule cyclicSyncModule = new CyclicSyncModule();
+  public static final ReskillableSyncModule reskillableSyncModule = new ReskillableSyncModule();
   public static final SolCarrotSyncModule solCarrotSyncModule = new SolCarrotSyncModule();
   public static final SpiceOfLifeSyncModule spiceOfLifeSyncModule = new SpiceOfLifeSyncModule();
   public static final Thaumcraft6SyncModule thaumcraft6SyncModule = new Thaumcraft6SyncModule();
@@ -78,6 +80,7 @@ public class PlayerSerializer {
               // Mod syncs
               baublesSyncModule,
               cyclicSyncModule,
+              reskillableSyncModule,
               spiceOfLifeSyncModule,
               thaumcraft6SyncModule,
               toughAsNailsSyncModule));

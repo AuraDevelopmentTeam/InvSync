@@ -43,8 +43,8 @@ public class ReskillableSyncModule extends BaseModSyncModule {
           container
               .get(THIS)
               .map(CapabilitySerializer::dataToNbt)
-              .filter(nbt -> nbt instanceof NBTTagCompound)
-              .map(nbt -> (NBTTagCompound) nbt);
+              .filter(NBTTagCompound.class::isInstance)
+              .map(NBTTagCompound.class::cast);
 
       if (skills.isPresent()) {
         playerData.loadFromNBT(skills.get());

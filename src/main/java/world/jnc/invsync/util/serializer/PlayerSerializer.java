@@ -65,7 +65,8 @@ public class PlayerSerializer {
       new LinkedList<BaseSyncModule>(
           Arrays.asList(
               // Sync these before syncing the player's current health, because they change the
-              // player's maxhealth.
+              // player's maxhealth or inventory (and therefore possibly the maxhealth).
+              baublesSyncModule,
               solCarrotSyncModule,
               // Vanilla syncs
               inventorySyncModule,
@@ -76,7 +77,6 @@ public class PlayerSerializer {
               hungerSyncModule,
               potionEffectsSyncModule,
               // Mod syncs
-              baublesSyncModule,
               cyclicSyncModule,
               spiceOfLifeSyncModule,
               thaumcraft6SyncModule,

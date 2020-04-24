@@ -2,10 +2,13 @@ package world.jnc.invsync.util.serializer.module.mod;
 
 import codersafterdark.reskillable.api.data.PlayerData;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import lombok.experimental.UtilityClass;
 import net.minecraft.nbt.NBTTagCompound;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.scheduler.Task;
+import world.jnc.invsync.InventorySync;
 import world.jnc.invsync.util.serializer.CapabilitySerializer;
 import world.jnc.invsync.util.serializer.NativeInventorySerializer;
 
@@ -49,6 +52,15 @@ public class ReskillableSyncModule extends BaseModSyncModule {
       if (skills.isPresent()) {
         playerData.loadFromNBT(skills.get());
         playerData.saveAndSync();
+
+        Task.builder()
+            .delay(100, TimeUnit.MILLISECONDS)
+            .execute(
+                () -> {
+                  if (player.isOnline())
+                    (new PlayerData(NativeInventorySerializer.getNativePlayer(player))).sync();
+                })
+            .submit(InventorySync.getInstance());
       }
 
       if (getDebug()) {

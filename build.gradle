@@ -5,6 +5,10 @@ repositories {
         name "Thiakil"
         url "https://maven.thiakil.com/"
     }
+    maven{
+        name "Reskillable"
+        url "https://maven.blamejared.com"
+    }
     maven {
         name "CurseForge"
         url "https://minecraft.curseforge.com/api/maven/"
@@ -16,6 +20,7 @@ dependencies {
 
     compileOnly "com.azanor.baubles:Baubles:${baubles_version}"
     deobfProvided "cyclic:Cyclic:${cyclic_version}"
+    deobfProvided "codersafterdark.reskillable:Reskillable:${minecraft_version}-${reskillable_version}"
     deobfProvided "spice-of-life-carrot-edition:solcarrot:${solcarrot_version}"
     deobfProvided "the-spice-of-life:SpiceOfLife:${spiceOfLive_version}"
     deobfProvided "thaumcraft:Thaumcraft:${minecraft_version}:${thaumcraft_version}"

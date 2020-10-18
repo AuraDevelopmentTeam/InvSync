@@ -16,6 +16,7 @@ import ninja.leaping.configurate.objectmapping.GuiceObjectMapperFactory;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.bstats.sponge.Metrics2;
 import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.config.DefaultConfig;
@@ -65,7 +66,7 @@ public class InventorySync {
   @NonNull @Getter private static InventorySync instance = null;
 
   @Inject @NonNull private PluginContainer container;
-  @Inject private Metrics2 metrics;
+  private Metrics2 metrics;
   @Inject @NonNull private Logger logger;
 
   @Inject private GuiceObjectMapperFactory factory;
@@ -85,10 +86,15 @@ public class InventorySync {
   private PermissionRegistry permissionRegistry;
   private List<AutoCloseable> eventListeners = new LinkedList<>();
 
-  public InventorySync() {
-    if (instance != null) throw new IllegalStateException("Instance already exists!");
+  @Inject
+  public InventorySync(Metrics2.Factory metricsFactory) {
+    if (instance != null) throw new IllegalStateException("instance cannot be instantiated twice");
 
     instance = this;
+
+    // Make sure logger is initialized
+    logger = getLogger();
+    metrics = metricsFactory.make(932);
   }
 
   public static PluginContainer getContainer() {
@@ -96,7 +102,8 @@ public class InventorySync {
   }
 
   public static Logger getLogger() {
-    return instance.logger;
+    if ((instance == null) || (instance.logger == null)) return NOPLogger.NOP_LOGGER;
+    else return instance.logger;
   }
 
   public static Path getConfigDir() {

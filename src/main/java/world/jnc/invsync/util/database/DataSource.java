@@ -54,6 +54,8 @@ public class DataSource {
       connection = new H2DatabaseConnection(storageConfig.getH2());
     } else if (storageConfig.isMySQL()) {
       connection = new MysqlDatabaseConnection(storageConfig.getMysql());
+    } else if (storageConfig.isPostgreSQL()) {
+      connection = new PostgreSQLDatabaseConnection(storageConfig.getPostgreSQL());
     } else throw new IllegalArgumentException("Invalid storage Engine!");
 
     tableInventories = getTableName("inventories");
@@ -69,7 +71,8 @@ public class DataSource {
     StringBuilder isActiveStr = new StringBuilder();
 
     insertInventoryStr
-        .append("REPLACE INTO ")
+        .append(storageConfig.isPostgreSQL() ? "INSERT" : "REPLACE")
+        .append(" INTO ")
         .append(tableInventories)
         .append(" (")
         .append(tableInventoriesColumnUUID)
@@ -78,6 +81,21 @@ public class DataSource {
         .append(", ")
         .append(tableInventoriesColumnData)
         .append(") VALUES (?, FALSE, ?)");
+
+    if (storageConfig.isPostgreSQL()) {
+      insertInventoryStr
+          .append(" ON CONFLICT (")
+          .append(tableInventoriesColumnUUID)
+          .append(") DO UPDATE SET ")
+          .append(tableInventoriesColumnActive)
+          .append(" = EXCLUDED.")
+          .append(tableInventoriesColumnActive)
+          .append(", ")
+          .append(tableInventoriesColumnData)
+          .append(" = EXCLUDED.")
+          .append(tableInventoriesColumnData);
+    }
+
     getInventoryStr
         .append("SELECT ")
         .append(tableInventoriesColumnData)
@@ -85,7 +103,10 @@ public class DataSource {
         .append(tableInventories)
         .append(" WHERE ")
         .append(tableInventoriesColumnUUID)
-        .append(" = ? LIMIT 1");
+        .append(" = ?");
+
+    if (!storageConfig.isPostgreSQL()) getInventoryStr.append(" LIMIT 1");
+
     setActiveStr
         .append("UPDATE ")
         .append(tableInventories)
@@ -93,7 +114,10 @@ public class DataSource {
         .append(tableInventoriesColumnActive)
         .append(" = TRUE WHERE ")
         .append(tableInventoriesColumnUUID)
-        .append(" = ? LIMIT 1");
+        .append(" = ?");
+
+    if (!storageConfig.isPostgreSQL()) setActiveStr.append(" LIMIT 1");
+
     isActiveStr
         .append("SELECT ")
         .append(tableInventoriesColumnActive)
@@ -101,7 +125,9 @@ public class DataSource {
         .append(tableInventories)
         .append(" WHERE ")
         .append(tableInventoriesColumnUUID)
-        .append(" = ? LIMIT 1");
+        .append(" = ?");
+
+    if (!storageConfig.isPostgreSQL()) isActiveStr.append(" LIMIT 1");
 
     insertInventoryQuery = insertInventoryStr.toString();
     loadInventoryQuery = getInventoryStr.toString();
@@ -190,6 +216,8 @@ public class DataSource {
       name = baseName;
     } else if (storageConfig.isMySQL()) {
       name = storageConfig.getMysql().getTablePrefix() + baseName;
+    } else if (storageConfig.isPostgreSQL()) {
+      return storageConfig.getPostgreSQL().getTablePrefix() + baseName;
     } else return null;
 
     name = name.replaceAll("`", "``");
@@ -201,18 +229,27 @@ public class DataSource {
     try {
       StringBuilder createTable = new StringBuilder();
 
+      String uuidDataType = storageConfig.isPostgreSQL() ? "bytea" : "BINARY(16)";
+      String invDataDataType = storageConfig.isPostgreSQL() ? "bytea" : "MEDIUMBLOB";
+
       createTable
           .append("CREATE TABLE IF NOT EXISTS ")
           .append(tableInventories)
           .append(" (")
           .append(tableInventoriesColumnUUID)
-          .append(" BINARY(16) NOT NULL, ")
+          .append(" ")
+          .append(uuidDataType)
+          .append(" NOT NULL, ")
           .append(tableInventoriesColumnActive)
           .append(" BOOL NOT NULL, ")
           .append(tableInventoriesColumnData)
-          .append(" MEDIUMBLOB NOT NULL, PRIMARY KEY (")
+          .append(" ")
+          .append(invDataDataType)
+          .append(" NOT NULL, PRIMARY KEY (")
           .append(tableInventoriesColumnUUID)
-          .append(")) DEFAULT CHARSET=utf8");
+          .append("))");
+
+      if (!storageConfig.isPostgreSQL()) createTable.append(" DEFAULT CHARSET=utf8");
 
       connection.executeStatement(createTable.toString());
 

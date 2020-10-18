@@ -69,7 +69,11 @@ public class Config {
   @ConfigSerializable
   @Getter
   public static class Storage {
-    @Setting(comment = "The stoage engine that should be used\n" + "Allowed values: h2 mysql")
+    private static final String UTF_8 = StandardCharsets.UTF_8.name();
+
+    @Setting(
+      comment = "The stoage engine that should be used\n" + "Allowed values: h2 mysql postgresql"
+    )
     private StorageEngine storageEngine = StorageEngine.h2;
 
     @Setting(comment = "Settings for the h2 storage engine")
@@ -77,6 +81,9 @@ public class Config {
 
     @Setting(value = "MySQL", comment = "Settings for the MySQL storage engine")
     private MySQL mysql = new MySQL();
+
+    @Setting(value = "PostgreSQL", comment = "Settings for the PostgreSQL storage engine")
+    private PostgreSQL postgreSQL = new PostgreSQL();
 
     public boolean isH2() {
       return getStorageEngine() == Config.Storage.StorageEngine.h2;
@@ -86,9 +93,14 @@ public class Config {
       return getStorageEngine() == Config.Storage.StorageEngine.mysql;
     }
 
+    public boolean isPostgreSQL() {
+      return getStorageEngine() == Config.Storage.StorageEngine.postgresql;
+    }
+
     public static enum StorageEngine {
       h2,
-      mysql;
+      mysql,
+      postgresql;
 
       public static final String allowedValues =
           Arrays.stream(Config.Storage.StorageEngine.values())
@@ -114,8 +126,6 @@ public class Config {
     @ConfigSerializable
     @Getter
     public static class MySQL {
-      private static final String UTF_8 = StandardCharsets.UTF_8.name();
-
       @Setting private String host = "localhost";
       @Setting private int port = 3306;
       @Setting private String database = "invsync";
@@ -124,6 +134,40 @@ public class Config {
 
       @Setting(comment = "Prefix for the plugin tables")
       private String tablePrefix = "invsync_";
+
+      public String getUserEncoded() {
+        return urlEncode(getUser());
+      }
+
+      public String getPasswordEncoded() {
+        return urlEncode(getPassword());
+      }
+
+      @VisibleForTesting
+      @SneakyThrows(UnsupportedEncodingException.class)
+      static String urlEncode(String str) {
+        return URLEncoder.encode(str, UTF_8);
+      }
+    }
+
+    @ConfigSerializable
+    @Getter
+    public static class PostgreSQL {
+      @Setting private String host = "localhost";
+      @Setting private int port = 5432;
+      @Setting private String database = "invsync";
+      @Setting private String user = "invsync";
+      @Setting private String password = "sup3rS3cur3Pa55w0rd!";
+
+      @Setting(comment = "Prefix for the plugin tables")
+      private String tablePrefix = "invsync_";
+
+      @Setting(
+        value = "postgreProperties",
+        comment =
+            "Additional properties that can be passed into the postgresql connection string. Refer to https://jdbc.postgresql.org/documentation/head/connect.html"
+      )
+      private Map<String, String> properties = new HashMap<>();
 
       public String getUserEncoded() {
         return urlEncode(getUser());

@@ -16,6 +16,7 @@ public class FeatureChart extends SimpleBarChart {
     final Config.Storage storageConfig = config.getStorage();
 
     sortedMap.put("MySQL", storageConfig.isMySQL() ? 1 : 0);
+    sortedMap.put("PostgreSQL", storageConfig.isPostgreSQL() ? 1 : 0);
     sortedMap.put("H2", storageConfig.isH2() ? 1 : 0);
 
     for (BaseSyncModule module : PlayerSerializer.getModules()) {

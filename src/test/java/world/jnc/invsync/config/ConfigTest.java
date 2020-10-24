@@ -9,6 +9,6 @@ public class ConfigTest {
   public void urlEncodeTest() {
     assertEquals(
         "test%40%3A%C3%A4%C3%B6%C3%BC%26%3F+%40test",
-        Config.Storage.MySQL.urlEncode("test@:äöü&? @test"));
+        Config.Storage.urlEncode("test@:äöü&? @test"));
   }
 }

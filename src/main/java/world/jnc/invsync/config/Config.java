@@ -97,6 +97,12 @@ public class Config {
       return getStorageEngine() == Config.Storage.StorageEngine.postgresql;
     }
 
+    @VisibleForTesting
+    @SneakyThrows(UnsupportedEncodingException.class)
+    static String urlEncode(String str) {
+      return URLEncoder.encode(str, UTF_8);
+    }
+
     public static enum StorageEngine {
       h2,
       mysql,
@@ -142,12 +148,6 @@ public class Config {
       public String getPasswordEncoded() {
         return urlEncode(getPassword());
       }
-
-      @VisibleForTesting
-      @SneakyThrows(UnsupportedEncodingException.class)
-      static String urlEncode(String str) {
-        return URLEncoder.encode(str, UTF_8);
-      }
     }
 
     @ConfigSerializable
@@ -175,12 +175,6 @@ public class Config {
 
       public String getPasswordEncoded() {
         return urlEncode(getPassword());
-      }
-
-      @VisibleForTesting
-      @SneakyThrows(UnsupportedEncodingException.class)
-      static String urlEncode(String str) {
-        return URLEncoder.encode(str, UTF_8);
       }
     }
   }

@@ -103,9 +103,7 @@ public class DataSource {
         .append(tableInventories)
         .append(" WHERE ")
         .append(tableInventoriesColumnUUID)
-        .append(" = ?");
-
-    if (!storageConfig.isPostgreSQL()) getInventoryStr.append(" LIMIT 1");
+        .append(" = ? LIMIT 1");
 
     setActiveStr
         .append("UPDATE ")
@@ -125,9 +123,7 @@ public class DataSource {
         .append(tableInventories)
         .append(" WHERE ")
         .append(tableInventoriesColumnUUID)
-        .append(" = ?");
-
-    if (!storageConfig.isPostgreSQL()) isActiveStr.append(" LIMIT 1");
+        .append(" = ? LIMIT 1");
 
     insertInventoryQuery = insertInventoryStr.toString();
     loadInventoryQuery = getInventoryStr.toString();

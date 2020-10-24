@@ -26,5 +26,7 @@ dependencies {
     deobfProvided "thaumcraft:Thaumcraft:${minecraft_version}:${thaumcraft_version}"
     deobfProvided "com.github.glitchfiend.biomesoplenty:ToughAsNails:${minecraft_version}-${toughAsNails_version}:api"
 
+    shadow "org.postgresql:postgresql:${postgres_version}"
+
     testRuntime "org.spongepowered:spongecommon:${minecraft_version}-${sponge_version}:dev"
 }

@@ -52,9 +52,16 @@ public class InventorySerializer {
 
     for (DataView slot : slots) {
       i = slot.getInt(SLOT).get();
-      stack = deserializeItemStack(slot.getView(STACK).get());
 
-      stacks.put(i, stack);
+      try {
+        stack = deserializeItemStack(slot.getView(STACK).get());
+
+        stacks.put(i, stack);
+      } catch (NoSuchElementException e) {
+        stacks.remove(i);
+
+        fail = true;
+      }
     }
 
     i = 0;

@@ -48,7 +48,7 @@ public class InventorySyncModule extends BaseSyncModule {
       if (fail) {
         InventorySync.getLogger()
             .error(
-                "Could not load inventory of player "
+                "Could not load properly inventory of player "
                     + DataSource.getPlayerString(player)
                     + " because there where unknown item.");
         InventorySync.getLogger()

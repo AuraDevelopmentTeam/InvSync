@@ -16,15 +16,15 @@ repositories {
 }
 
 dependencies {
-    compileOnly "org.spongepowered:spongecommon:${minecraft_version}-${sponge_version}:dev"
+    api "org.spongepowered:spongecommon:${minecraft_version}-${sponge_version}:dev"
 
-    compileOnly "com.azanor.baubles:Baubles:${baubles_version}"
-    deobfProvided "cyclic:Cyclic:${cyclic_version}"
-    deobfProvided "codersafterdark.reskillable:Reskillable:${minecraft_version}-${reskillable_version}"
-    deobfProvided "spice-of-life-carrot-edition:solcarrot:${solcarrot_version}"
-    deobfProvided "the-spice-of-life:SpiceOfLife:${spiceOfLive_version}"
-    deobfProvided "thaumcraft:Thaumcraft:${minecraft_version}:${thaumcraft_version}"
-    deobfProvided "com.github.glitchfiend.biomesoplenty:ToughAsNails:${minecraft_version}-${toughAsNails_version}:api"
+    api "com.azanor.baubles:Baubles:${baubles_version}"
+    api fg.deobf("cyclic:Cyclic:${cyclic_version}")
+    api fg.deobf("codersafterdark.reskillable:Reskillable:${minecraft_version}-${reskillable_version}")
+    api fg.deobf("spice-of-life-carrot-edition:solcarrot:${solcarrot_version}")
+    api fg.deobf("the-spice-of-life:SpiceOfLife:${spiceOfLive_version}")
+    api fg.deobf("thaumcraft:Thaumcraft:${minecraft_version}:${thaumcraft_version}")
+    api fg.deobf("com.github.glitchfiend.biomesoplenty:ToughAsNails:${minecraft_version}-${toughAsNails_version}:api")
 
     shadow "org.postgresql:postgresql:${postgres_version}"
 

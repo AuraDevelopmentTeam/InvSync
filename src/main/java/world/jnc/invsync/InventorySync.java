@@ -41,20 +41,19 @@ import world.jnc.invsync.util.serializer.PlayerSerializer;
 import world.jnc.invsync.util.serializer.module.BaseSyncModule;
 
 @Plugin(
-  id = InventorySync.ID,
-  name = InventorySync.NAME,
-  version = InventorySync.VERSION,
-  description = InventorySync.DESCRIPTION,
-  url = InventorySync.URL,
-  authors = {InventorySync.AUTHOR},
-  dependencies = {
-    @Dependency(id = "baubles", optional = true),
-    @Dependency(id = "cyclicmagic", optional = true),
-    @Dependency(id = "solcarrot", version = "[1.8.2,)", optional = true),
-    @Dependency(id = "spiceoflife", optional = true),
-    @Dependency(id = "toughasnails", optional = true)
-  }
-)
+    id = InventorySync.ID,
+    name = InventorySync.NAME,
+    version = InventorySync.VERSION,
+    description = InventorySync.DESCRIPTION,
+    url = InventorySync.URL,
+    authors = {InventorySync.AUTHOR},
+    dependencies = {
+      @Dependency(id = "baubles", optional = true),
+      @Dependency(id = "cyclicmagic", optional = true),
+      @Dependency(id = "solcarrot", version = "[1.8.2,)", optional = true),
+      @Dependency(id = "spiceoflife", optional = true),
+      @Dependency(id = "toughasnails", optional = true)
+    })
 public class InventorySync {
   public static final String ID = "@id@";
   public static final String NAME = "@name@";

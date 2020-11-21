@@ -28,9 +28,8 @@ public class ToughAsNailsSyncModule extends BaseModSyncModule {
   }
 
   @SuppressFBWarnings(
-    value = "NP_NULL_PARAM_DEREF_NONVIRTUAL",
-    justification = "Capabilities aren't null during runtime (but compile time)."
-  )
+      value = "NP_NULL_PARAM_DEREF_NONVIRTUAL",
+      justification = "Capabilities aren't null during runtime (but compile time).")
   @UtilityClass
   private static class Helper {
     private static final DataQuery TEMPERATURE = DataQuery.of("temperature");

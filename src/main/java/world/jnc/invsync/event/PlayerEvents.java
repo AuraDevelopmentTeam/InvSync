@@ -236,17 +236,13 @@ public class PlayerEvents implements AutoCloseable {
       return new HashMap<>();
     }
 
-    return Sponge.getServer()
-        .getOnlinePlayers()
-        .stream()
+    return Sponge.getServer().getOnlinePlayers().stream()
         .map(Player::getUniqueId)
         .collect(Collectors.toMap(uuid -> uuid, uuid -> startAutoSaveTask(uuid, false, true)));
   }
 
   private static final SortedSet<UUID> getJoinedPlayers() {
-    return Sponge.getServer()
-        .getOnlinePlayers()
-        .stream()
+    return Sponge.getServer().getOnlinePlayers().stream()
         .map(Player::getUniqueId)
         .collect(Collectors.toCollection(TreeSet::new));
   }

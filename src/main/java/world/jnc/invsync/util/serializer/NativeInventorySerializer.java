@@ -23,11 +23,10 @@ public class NativeInventorySerializer {
   private static final DataQuery STACK = InventorySerializer.STACK;
 
   @SuppressFBWarnings(
-    value = "BC_UNCONFIRMED_CAST",
-    justification =
-        "Player must be a EntityPlayer.\n"
-            + "If this is not the case, it's a good thing this blows up with an Error rather than an exception."
-  )
+      value = "BC_UNCONFIRMED_CAST",
+      justification =
+          "Player must be a EntityPlayer.\n"
+              + "If this is not the case, it's a good thing this blows up with an Error rather than an exception.")
   public static EntityPlayer getNativePlayer(Player player) {
     return (EntityPlayer) player;
   }

@@ -39,22 +39,20 @@ public class Config {
     public static final long DANGEROUS_AUTO_SAVE_INTERVAL = 30;
 
     @Setting(
-      comment =
-          "In which interval (in s) should the plugin autosave the players. (Values lower than "
-              + DANGEROUS_AUTO_SAVE_INTERVAL
-              + "s are not recommended!)\n"
-              + "Values of 0 or lower disable auto saving."
-    )
+        comment =
+            "In which interval (in s) should the plugin autosave the players. (Values lower than "
+                + DANGEROUS_AUTO_SAVE_INTERVAL
+                + "s are not recommended!)\n"
+                + "Values of 0 or lower disable auto saving.")
     private long autoSaveInterval = 0;
 
     @Setting(comment = "Enable debug logging")
     private boolean debug = false;
 
     @Setting(
-      comment =
-          "Maximum amount of time to wait for the other server to finish writing the data. Time in ms\n"
-              + "Increase value if you notice synchronizations failing"
-    )
+        comment =
+            "Maximum amount of time to wait for the other server to finish writing the data. Time in ms\n"
+                + "Increase value if you notice synchronizations failing")
     private long maxWait = 1000L;
 
     public boolean isAutoSaveEnabled() {
@@ -72,8 +70,7 @@ public class Config {
     private static final String UTF_8 = StandardCharsets.UTF_8.name();
 
     @Setting(
-      comment = "The stoage engine that should be used\n" + "Allowed values: h2 mysql postgresql"
-    )
+        comment = "The stoage engine that should be used\n" + "Allowed values: h2 mysql postgresql")
     private StorageEngine storageEngine = StorageEngine.h2;
 
     @Setting(comment = "Settings for the h2 storage engine")
@@ -118,10 +115,9 @@ public class Config {
     @Getter
     public static class H2 {
       @Setting(
-        comment =
-            "If this is a relative path, it will be relative to the InvSync config dir (should be \"config/invsync\"). Absolute\n"
-                + "paths work too of course"
-      )
+          comment =
+              "If this is a relative path, it will be relative to the InvSync config dir (should be \"config/invsync\"). Absolute\n"
+                  + "paths work too of course")
       private String databaseFile = "inventoryStorage";
 
       public Path getAbsoluteDatabasePath() {
@@ -163,10 +159,9 @@ public class Config {
       private String tablePrefix = "invsync_";
 
       @Setting(
-        value = "postgreProperties",
-        comment =
-            "Additional properties that can be passed into the postgresql connection string. Refer to https://jdbc.postgresql.org/documentation/head/connect.html"
-      )
+          value = "postgreProperties",
+          comment =
+              "Additional properties that can be passed into the postgresql connection string. Refer to https://jdbc.postgresql.org/documentation/head/connect.html")
       private Map<String, String> properties = new HashMap<>();
 
       public String getUserEncoded() {

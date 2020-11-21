@@ -9,10 +9,6 @@ repositories {
         name "Reskillable"
         url "https://maven.blamejared.com"
     }
-    maven {
-        name "CurseMaven"
-        url "https://www.cursemaven.com"
-    }
 }
 
 dependencies {
@@ -26,8 +22,7 @@ dependencies {
     api fg.deobf("curse.maven:Thaumcraft:${thaumcraft_id}") // https://www.curseforge.com/minecraft/mc-mods/thaumcraft/files/all?filter-game-version=1738749986%3A628
     api fg.deobf("com.github.glitchfiend.biomesoplenty:ToughAsNails:${minecraft_version}-${toughAsNails_version}:api")
 
-    //shadow "org.postgresql:postgresql:${postgres_version}"
-    api "org.postgresql:postgresql:${postgres_version}"
+    shadow "org.postgresql:postgresql:${postgres_version}"
 
     testRuntime "org.spongepowered:spongecommon:${minecraft_version}-${sponge_version}:dev"
 }

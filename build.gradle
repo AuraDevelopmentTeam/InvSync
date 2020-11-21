@@ -10,23 +10,24 @@ repositories {
         url "https://maven.blamejared.com"
     }
     maven {
-        name "CurseForge"
-        url "https://minecraft.curseforge.com/api/maven/"
+        name "CurseMaven"
+        url "https://www.cursemaven.com"
     }
 }
 
 dependencies {
-    api "org.spongepowered:spongecommon:${minecraft_version}-${sponge_version}:dev"
+    compileOnly "org.spongepowered:spongecommon:${minecraft_version}-${sponge_version}:dev"
 
     api "com.azanor.baubles:Baubles:${baubles_version}"
-    api fg.deobf("cyclic:Cyclic:${cyclic_version}")
+    api fg.deobf("curse.maven:Cyclic:${cyclic_id}") // https://www.curseforge.com/minecraft/mc-mods/cyclic/files/all?filter-game-version=1738749986%3A628
     api fg.deobf("codersafterdark.reskillable:Reskillable:${minecraft_version}-${reskillable_version}")
-    api fg.deobf("spice-of-life-carrot-edition:solcarrot:${solcarrot_version}")
-    api fg.deobf("the-spice-of-life:SpiceOfLife:${spiceOfLive_version}")
-    api fg.deobf("thaumcraft:Thaumcraft:${minecraft_version}:${thaumcraft_version}")
+    api fg.deobf("curse.maven:solcarrot:${solcarrot_id}") // https://www.curseforge.com/minecraft/mc-mods/spice-of-life-carrot-edition/files/all?filter-game-version=1738749986%3A628
+    api fg.deobf("curse.maven:SpiceOfLife:${spiceOfLive_id}") // https://www.curseforge.com/minecraft/mc-mods/the-spice-of-life/files/all?filter-game-version=1738749986%3A628
+    api fg.deobf("curse.maven:Thaumcraft:${thaumcraft_id}") // https://www.curseforge.com/minecraft/mc-mods/thaumcraft/files/all?filter-game-version=1738749986%3A628
     api fg.deobf("com.github.glitchfiend.biomesoplenty:ToughAsNails:${minecraft_version}-${toughAsNails_version}:api")
 
-    shadow "org.postgresql:postgresql:${postgres_version}"
+    //shadow "org.postgresql:postgresql:${postgres_version}"
+    api "org.postgresql:postgresql:${postgres_version}"
 
     testRuntime "org.spongepowered:spongecommon:${minecraft_version}-${sponge_version}:dev"
 }

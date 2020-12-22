@@ -15,6 +15,8 @@ public class FeatureChart extends SimpleBarChart {
     final Config config = InventorySync.getConfig();
     final Config.Storage storageConfig = config.getStorage();
 
+    sortedMap.put("Servers", 1);
+
     sortedMap.put("MySQL", storageConfig.isMySQL() ? 1 : 0);
     sortedMap.put("PostgreSQL", storageConfig.isPostgreSQL() ? 1 : 0);
     sortedMap.put("H2", storageConfig.isH2() ? 1 : 0);
@@ -22,8 +24,6 @@ public class FeatureChart extends SimpleBarChart {
     for (BaseSyncModule module : PlayerSerializer.getModules()) {
       sortedMap.put("Sync" + module.getNiceName(), module.isEnabled() ? 1 : 0);
     }
-
-    sortedMap.put("Servers", 1);
 
     return sortedMap;
   }

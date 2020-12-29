@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - '**/resources/assets/*/lang/*.lang'
-  pull_request:
+  pull_request_target:
     paths:
       - '**/resources/assets/*/lang/*.lang'
   workflow_dispatch:
@@ -43,7 +43,7 @@ jobs:
         if: failure()
         run: tail -n +1 *.lang.txt
       #- name: Publish Language File Checks
-      #  if: (success() || failure()) && (github.event_name != 'pull_request')
+      #  if: success() || failure()
       #  uses: actions/upload-artifact@v2
       #  with:
       #    name: checkTranslations

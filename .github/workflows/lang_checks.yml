@@ -13,9 +13,8 @@ env:
   GRADLE_OPTS: >-
     -Dorg.gradle.internal.launcher.welcomeMessageEnabled=false
   GRADLE_CMD_OPTS: >-
-    -PbranchName=${{ github.ref }}
-    --console=plain
     --continue
+    --no-build-cache
     --no-daemon
     --parallel
 
@@ -37,8 +36,16 @@ jobs:
           architecture: x64
       - name: Checkout submodules
         run: git submodule update --init --recursive
-      - name: Check code formatting
-        run: ./gradlew ${{ env.GRADLE_CMD_OPTS }} checkTranslations
+      - uses: burrunan/gradle-cache-action@v1
+        name: Check Translation files for completenes
+        with:
+          # Properties are passed as -Pname=value
+          properties: |
+            branchName=${{ github.ref }}
+          # Arguments for Gradle execution
+          arguments: ${{ env.GRADLE_CMD_OPTS }} checkTranslations
+          # Enable concurrent cache save and restore (it's faster)
+          concurrent: true
       - name: Print checkTranslations report files
         if: failure()
         run: tail -n +1 *.lang.txt

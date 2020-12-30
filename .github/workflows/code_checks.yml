@@ -6,6 +6,8 @@ env:
   GRADLE_OPTS: >-
     -Dorg.gradle.internal.launcher.welcomeMessageEnabled=false
   GRADLE_CMD_OPTS: >-
+    -PbranchName=${{ github.ref }}
+    --console=plain
     --continue
     --no-build-cache
     --no-daemon
@@ -29,16 +31,8 @@ jobs:
           architecture: x64
       - name: Checkout submodules
         run: git submodule update --init --recursive
-      - uses: burrunan/gradle-cache-action@v1
-        name: Check code formatting
-        with:
-          # Properties are passed as -Pname=value
-          properties: |
-            branchName=${{ github.ref }}
-          # Arguments for Gradle execution
-          arguments: ${{ env.GRADLE_CMD_OPTS }} spotlessCheck
-          # Enable concurrent cache save and restore (it's faster)
-          concurrent: true
+      - name: Check code formatting
+        run: ./gradlew ${{ env.GRADLE_CMD_OPTS }} spotlessCheck
   build:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -57,15 +51,18 @@ jobs:
       - name: Checkout submodules
         run: git submodule update --init --recursive
       - uses: burrunan/gradle-cache-action@v1
-        name: Build all files
+        name: Cache .gradle
         with:
-          # Properties are passed as -Pname=value
-          properties: |
-            branchName=${{ github.ref }}
-          # Arguments for Gradle execution
-          arguments: ${{ env.GRADLE_CMD_OPTS }} assemble compileTest
-          # Enable concurrent cache save and restore (it's faster)
-          concurrent: true
+          # Disable caching of $HOME/.gradle/caches/*.*/generated-gradle-jars
+          save-generated-gradle-jars: false
+          # Disable caching of ~/.gradle/caches/build-cache-*
+          save-local-build-cache: false
+          # Enable caching of ~/.gradle/caches/modules-*
+          save-gradle-dependencies-cache: true
+          # Enable caching of ~/.m2/repository/
+          save-maven-dependencies-cache: true
+      - name: Build all files
+        run: ./gradlew ${{ env.GRADLE_CMD_OPTS }} assemble compileTest
   test:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -91,26 +88,22 @@ jobs:
           sudo ln -s /usr/lib/libssl.dylib /usr/local/opt/openssl/lib/libssl.1.0.0.dylib
           sudo ln -s /usr/lib/libcrypto.dylib /usr/local/opt/openssl/lib/libcrypto.1.0.0.dylib
       - uses: burrunan/gradle-cache-action@v1
-        name: Run all Tests
+        name: Cache .gradle
         with:
-          # Properties are passed as -Pname=value
-          properties: |
-            branchName=${{ github.ref }}
-          # Arguments for Gradle execution
-          arguments: ${{ env.GRADLE_CMD_OPTS }} -x spotlessCheck build
-          # Enable concurrent cache save and restore (it's faster)
-          concurrent: true
-      - name: Publish JUnit Test Reports
-        if: success() || failure()
-        uses: mikepenz/action-junit-report@v1
+          # Disable caching of $HOME/.gradle/caches/*.*/generated-gradle-jars
+          save-generated-gradle-jars: false
+          # Disable caching of ~/.gradle/caches/build-cache-*
+          save-local-build-cache: false
+          # Enable caching of ~/.gradle/caches/modules-*
+          save-gradle-dependencies-cache: true
+          # Enable caching of ~/.m2/repository/
+          save-maven-dependencies-cache: true
+      - name: Run all Tests
+        id: gradle_tests
+        run: ./gradlew ${{ env.GRADLE_CMD_OPTS }} -x spotlessCheck build
+      - uses: actions/download-artifact@v2
         with:
-          report_paths: '**/build/test-results/test/TEST-*.xml'
-          github_token: ${{ github.token }}
-          check_name: 'JUnit Test Report (OS: ${{ matrix.os }})'
-      - name: Publish SpotBugs Reports
-        if: success() || failure()
-        uses: jwgmeligmeyling/spotbugs-github-action@v1.2
-        with:
-          path: '**/build/reports/spotbugs/*.xml'
-          token: ${{ github.token }}
-          name: 'SpotBugs Report (OS: ${{ matrix.os }})'
+          name: ${{ github.ref }}_code_checks
+          path: |
+            **/build/test-results/test/TEST-*.xml
+            **/build/reports/spotbugs/*.xml

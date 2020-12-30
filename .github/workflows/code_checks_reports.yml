@@ -13,7 +13,6 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
-    needs: [build]
     steps:
       - run: |
           ref="${github_ref////-}"

@@ -109,7 +109,7 @@ jobs:
         run: ./gradlew ${{ env.GRADLE_CMD_OPTS }} -x spotlessCheck build
       - uses: actions/upload-artifact@v2
         with:
-          name: ${{ env.ref }}_code_checks_${{ matrix.os }}
+          name: ${{ env.ref }}_code-checks_${{ matrix.os }}
           path: |
             **/build/test-results/test/TEST-*.xml
             **/build/reports/spotbugs/*.xml

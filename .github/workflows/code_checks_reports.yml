@@ -20,9 +20,10 @@ jobs:
         env:
           github_ref: ${{ github.ref }}
         shell: bash
-      - uses: actions/download-artifact@v2
+      - uses: dawidd6/action-download-artifact@v2
         with:
-          name: ${{ env.ref }}_code_checks_${{ matrix.os }}
+          workflow: Code Checks
+          name: ${{ env.ref }}_code-checks_${{ matrix.os }}
       - name: Publish JUnit Test Reports
         if: success() || failure()
         uses: mikepenz/action-junit-report@v1

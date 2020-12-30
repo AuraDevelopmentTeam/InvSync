@@ -71,6 +71,12 @@ jobs:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
     needs: [build]
     steps:
+      - run: |
+          ref="${github_ref////-}"
+          echo "::set-env name=ref::$ref"
+        env:
+          github_ref: ${{ github.ref }}
+        shell: bash
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
@@ -103,7 +109,7 @@ jobs:
         run: ./gradlew ${{ env.GRADLE_CMD_OPTS }} -x spotlessCheck build
       - uses: actions/upload-artifact@v2
         with:
-          name: ${{ github.ref }}_code_checks
+          name: ${{ env.ref }}_code_checks_${{ matrix.os }}
           path: |
             **/build/test-results/test/TEST-*.xml
             **/build/reports/spotbugs/*.xml
